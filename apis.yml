@@ -6,8 +6,8 @@ apis:
     name: dotCMS API
     tags:
       - CMS
-      - Content Management
       - Content
+      - Content Management
     humanURL: https://www2.dotcms.com/docs/latest/workflow-rest-api
     properties:
       - url: https://www2.dotcms.com/docs/latest/workflow-rest-api
@@ -21,8 +21,8 @@ apis:
 name: dotCMS
 tags:
   - CMS
-  - Content Management
   - Content
+  - Content Management
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 access: 3rd-Party
