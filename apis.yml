@@ -1,6 +1,11 @@
 aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
+common:
+  - type: GitHubOrganization
+    url: https://github.com/dotCMS
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/dotcms
 apis:
   - aid: dotcms:rest
     name: dotCMS REST API
