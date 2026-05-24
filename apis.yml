@@ -6,6 +6,8 @@ common:
     url: https://github.com/dotCMS
   - type: LinkedIn
     url: https://www.linkedin.com/company/dotcms
+  - type: LLMsTxt
+    url: https://dev.dotcms.com/llms.txt
 apis:
   - aid: dotcms:rest
     name: dotCMS REST API
