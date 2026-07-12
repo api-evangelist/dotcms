@@ -2,12 +2,18 @@ aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
 common:
+- type: DomainSecurity
+  url: security/dotcms-domain-security.yml
+- type: Authentication
+  url: authentication/dotcms-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/dotCMS
 - type: LinkedIn
   url: https://www.linkedin.com/company/dotcms
 - type: LlmsText
   url: https://dev.dotcms.com/llms.txt
+- type: Blog
+  url: https://dotcms.com/blog
 apis:
 - aid: dotcms:rest
   name: dotCMS REST API
