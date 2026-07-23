@@ -1,0 +1,65 @@
+openapi: 3.1.0
+info:
+  title: dotCMS REST Authentication API
+  description: REST API for the dotCMS content management platform. Provides endpoints for authentication, content, workflow, search, navigation, sites, and user management. Endpoints derived from public dotCMS documentation at https://dev.dotcms.com/docs — best-effort, not exhaustive. Each dotCMS installation hosts its own API; substitute the demo base URL with your deployment's host.
+  version: '1'
+  contact:
+    name: dotCMS
+    url: https://www.dotcms.com
+  license:
+    name: Proprietary
+servers:
+- url: https://demo.dotcms.com
+  description: dotCMS demo
+security:
+- BearerAuth: []
+- BasicAuth: []
+tags:
+- name: Authentication
+paths:
+  /api/v1/authentication/api-token:
+    post:
+      tags:
+      - Authentication
+      summary: Request an API token
+      operationId: requestApiToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              - password
+              properties:
+                user:
+                  type: string
+                  example: admin@dotcms.com
+                password:
+                  type: string
+                expirationDays:
+                  type: integer
+                  example: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entity:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic

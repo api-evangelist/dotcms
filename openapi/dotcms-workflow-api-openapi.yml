@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: dotCMS REST Authentication Workflow API
+  description: REST API for the dotCMS content management platform. Provides endpoints for authentication, content, workflow, search, navigation, sites, and user management. Endpoints derived from public dotCMS documentation at https://dev.dotcms.com/docs — best-effort, not exhaustive. Each dotCMS installation hosts its own API; substitute the demo base URL with your deployment's host.
+  version: '1'
+  contact:
+    name: dotCMS
+    url: https://www.dotcms.com
+  license:
+    name: Proprietary
+servers:
+- url: https://demo.dotcms.com
+  description: dotCMS demo
+security:
+- BearerAuth: []
+- BasicAuth: []
+tags:
+- name: Workflow
+paths:
+  /api/v1/workflow/actions/default/fire/PUBLISH:
+    post:
+      tags:
+      - Workflow
+      summary: Fire default publish workflow action
+      operationId: firePublish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentlet:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: OK
+  /api/v1/workflow/actions:
+    get:
+      tags:
+      - Workflow
+      summary: List workflow actions
+      operationId: listWorkflowActions
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic
