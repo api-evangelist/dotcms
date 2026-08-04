@@ -1,0 +1,184 @@
+openapi: 3.1.0
+info:
+  title: dotCMS REST API
+  description: >-
+    REST API for the dotCMS content management platform. Provides endpoints for
+    authentication, content, workflow, search, navigation, sites, and user
+    management. Endpoints derived from public dotCMS documentation at
+    https://dev.dotcms.com/docs — best-effort, not exhaustive. Each dotCMS
+    installation hosts its own API; substitute the demo base URL with your
+    deployment's host.
+  version: "1"
+  contact:
+    name: dotCMS
+    url: https://www.dotcms.com
+  license:
+    name: Proprietary
+servers:
+  - url: https://demo.dotcms.com
+    description: dotCMS demo
+security:
+  - BearerAuth: []
+  - BasicAuth: []
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Content
+  - name: Workflow
+  - name: Search
+  - name: Navigation
+  - name: Sites
+paths:
+  /api/v1/authentication/api-token:
+    post:
+      tags: [Authentication]
+      summary: Request an API token
+      operationId: requestApiToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user, password]
+              properties:
+                user: { type: string, example: admin@dotcms.com }
+                password: { type: string }
+                expirationDays: { type: integer, example: 10 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entity:
+                    type: object
+                    properties:
+                      token: { type: string }
+  /api/v1/users/current:
+    get:
+      tags: [Users]
+      summary: Get current authenticated user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: OK
+  /api/v1/users:
+    get:
+      tags: [Users]
+      summary: List users
+      operationId: listUsers
+      parameters:
+        - in: query
+          name: filter
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: per_page
+          schema: { type: integer }
+      responses:
+        '200':
+          description: OK
+  /api/content/{idOrInode}:
+    get:
+      tags: [Content]
+      summary: Get content by identifier or inode
+      operationId: getContent
+      parameters:
+        - in: path
+          name: idOrInode
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+  /api/v1/workflow/actions/default/fire/PUBLISH:
+    post:
+      tags: [Workflow]
+      summary: Fire default publish workflow action
+      operationId: firePublish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentlet:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: OK
+  /api/v1/workflow/actions:
+    get:
+      tags: [Workflow]
+      summary: List workflow actions
+      operationId: listWorkflowActions
+      responses:
+        '200':
+          description: OK
+  /api/content/_search:
+    post:
+      tags: [Search]
+      summary: Search content
+      operationId: searchContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query: { type: string }
+                sort: { type: string }
+                limit: { type: integer }
+                offset: { type: integer }
+      responses:
+        '200':
+          description: OK
+  /api/v1/nav/{path}:
+    get:
+      tags: [Navigation]
+      summary: Get navigation tree
+      operationId: getNavigation
+      parameters:
+        - in: path
+          name: path
+          required: true
+          schema: { type: string }
+        - in: query
+          name: depth
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: OK
+  /api/v1/site:
+    get:
+      tags: [Sites]
+      summary: List sites
+      operationId: listSites
+      responses:
+        '200':
+          description: OK
+  /api/v1/site/currentSite:
+    get:
+      tags: [Sites]
+      summary: Get current site
+      operationId: getCurrentSite
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic

@@ -1,0 +1,26 @@
+{
+  "provider": "dotcms",
+  "sources": [
+    "dotcms-authentication-api-openapi.yml",
+    "dotcms-content-api-openapi.yml",
+    "dotcms-navigation-api-openapi.yml",
+    "dotcms-search-api-openapi.yml",
+    "dotcms-sites-api-openapi.yml",
+    "dotcms-users-api-openapi.yml",
+    "dotcms-workflow-api-openapi.yml"
+  ],
+  "outputs": [
+    "dotcms-authentication-api-openapi.yml",
+    "dotcms-content-api-openapi.yml",
+    "dotcms-navigation-api-openapi.yml",
+    "dotcms-search-api-openapi.yml",
+    "dotcms-sites-api-openapi.yml",
+    "dotcms-users-api-openapi.yml",
+    "dotcms-workflow-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
