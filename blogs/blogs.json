@@ -3,10 +3,7 @@
   "feeds": [
     {
       "source": "https://dotcms.com/blog",
-      "feed_url": "https://dotcms.com/blog",
-      "title": "",
-      "saved": 0,
-      "method": "none"
+      "error": "HTTPError"
     },
     {
       "source": "https://dev.dotcms.com/llms.txt",
@@ -16,6 +13,6 @@
       "method": "none"
     }
   ],
-  "fetched": "2026-08-01T15:49:00Z",
+  "fetched": "2026-08-06T14:08:46Z",
   "post_count": 13
 }
