@@ -1,0 +1,46 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "dotCMS REST Authentication Sites API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Sites",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List sites",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.dotcms.com/api/v1/site"
+          },
+          "docs": "List sites"
+        },
+        {
+          "info": {
+            "name": "Get current site",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.dotcms.com/api/v1/site/currentSite"
+          },
+          "docs": "Get current site"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

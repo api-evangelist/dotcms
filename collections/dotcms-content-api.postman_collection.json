@@ -1,0 +1,126 @@
+{
+  "item": [
+    {
+      "id": "bc4215ed-047e-46ed-b577-1a7aa1cea75f",
+      "name": "Content",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0db1bb73-c906-4ef1-90da-21b5eedda876",
+          "name": "Get content by identifier or inode",
+          "request": {
+            "name": "Get content by identifier or inode",
+            "description": {},
+            "url": {
+              "path": [
+                "api",
+                "content",
+                ":idOrInode"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "idOrInode",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "378f63ac-fb8a-4d80-a86b-bb0ca24436c7",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "content",
+                    ":idOrInode"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "idOrInode",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://demo.dotcms.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "6393d4b4-fa4e-4e08-bb4a-25b99b1ab403",
+    "name": "dotCMS REST Authentication Content API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for the dotCMS content management platform. Provides endpoints for authentication, content, workflow, search, navigation, sites, and user management. Endpoints derived from public dotCMS documentation at https://dev.dotcms.com/docs — best-effort, not exhaustive. Each dotCMS installation hosts its own API; substitute the demo base URL with your deployment's host.\n\nContact Support:\n Name: dotCMS",
+      "type": "text/plain"
+    }
+  }
+}

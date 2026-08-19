@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "dotCMS REST Authentication API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Authentication",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Request an API token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.dotcms.com/api/v1/authentication/api-token",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Request an API token"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

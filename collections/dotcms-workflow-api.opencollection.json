@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "dotCMS REST Authentication Workflow API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Workflow",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Fire default publish workflow action",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://demo.dotcms.com/api/v1/workflow/actions/default/fire/PUBLISH",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Fire default publish workflow action"
+        },
+        {
+          "info": {
+            "name": "List workflow actions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.dotcms.com/api/v1/workflow/actions"
+          },
+          "docs": "List workflow actions"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

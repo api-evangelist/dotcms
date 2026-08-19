@@ -1,0 +1,47 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "dotCMS REST Authentication Navigation API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Navigation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get navigation tree",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.dotcms.com/api/v1/nav/:path",
+            "params": [
+              {
+                "name": "path",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "depth",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Get navigation tree"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

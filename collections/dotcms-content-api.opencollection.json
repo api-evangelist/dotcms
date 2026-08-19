@@ -1,0 +1,42 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "dotCMS REST Authentication Content API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get content by identifier or inode",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://demo.dotcms.com/api/content/:idOrInode",
+            "params": [
+              {
+                "name": "idOrInode",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get content by identifier or inode"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

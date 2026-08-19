@@ -1,0 +1,145 @@
+# dotCMS Documentation
+
+@base-url: https://cdn.dotcms.dev
+
+- Getting Started
+  - [Beginning to Begin](https://cdn.dotcms.dev/getting-started/index)
+  - Set up an Instance
+    - [Demo Instance](https://cdn.dotcms.dev/getting-started/setup/demo-instance)
+    - [Run Locally](https://cdn.dotcms.dev/getting-started/setup/run-locally)
+  - Integrations
+    - [Next.js](https://cdn.dotcms.dev/getting-started/integrations/nextjs)
+    - [Angular](https://cdn.dotcms.dev/getting-started/integrations/angular)
+    - [Astro](https://cdn.dotcms.dev/getting-started/integrations/astro)
+    - [Laravel](https://cdn.dotcms.dev/getting-started/integrations/laravel)
+    - [Symfony](https://cdn.dotcms.dev/getting-started/integrations/symfony)
+  - Try the Basics
+    - [Creating your first content type](https://cdn.dotcms.dev/getting-started/back-end/creating-your-first-content-type)
+    - [Adding / Editing Content](https://cdn.dotcms.dev/getting-started/back-end/adding-editing-content)
+    - [Content APIs](https://cdn.dotcms.dev/getting-started/back-end/content-apis)
+
+- Development
+  - [Development Patterns](https://cdn.dotcms.dev/docs/developing-and-apis)
+  - APIs
+    - [REST APIs](https://cdn.dotcms.dev/docs/rest-apis)
+    - [GraphQL](https://cdn.dotcms.dev/docs/graphql)
+    - [Content CRUD](https://cdn.dotcms.dev/docs/content-api-crud-example)
+    - [Authentication](https://cdn.dotcms.dev/docs/rest-api-authentication)
+    - [Image Processing API](https://cdn.dotcms.dev/docs/image-resizing-and-processing)
+    - [API Playground](https://cdn.dotcms.dev/docs/all-rest-apis)
+  - SDKs & Libraries
+    - [@dotcms/client](https://cdn.dotcms.dev/docs/sdk-client-library)
+    - [@dotcms/react](https://cdn.dotcms.dev/docs/sdk-react-library)
+    - [@dotcms/angular](https://cdn.dotcms.dev/docs/sdk-angular-library)
+    - [@dotcms/uve](https://cdn.dotcms.dev/docs/sdk-uve-library)
+    - [@dotcms/types](https://cdn.dotcms.dev/docs/sdk-types-library)
+    - [@dotcms/experiments](https://cdn.dotcms.dev/docs/sdk-experiments-library)
+    - [@dotcms/analytics](https://cdn.dotcms.dev/docs/sdk-analytics-library)
+    - [dotcms/php-sdk (alpha)](https://cdn.dotcms.dev/docs/sdk-php-library)
+  - Native Development & Velocity
+    - [Why Velocity?](https://cdn.dotcms.dev/docs/why-velocity)
+    - [Viewtools](https://cdn.dotcms.dev/docs/velocity-viewtools)
+    - [Scripting API](https://cdn.dotcms.dev/docs/scripting-api)
+    - [Velocity User Guide](https://cdn.dotcms.dev/docs/velocity-user-s-guide)
+    - [Velocity Playground](https://cdn.dotcms.dev/docs/velocity-playground)
+  - Example Projects
+    - [Next.js Example](https://cdn.dotcms.dev/docs/sdk-nextjs-example)
+    - [Laravel Example](https://cdn.dotcms.dev/docs/sdk-laravel-example)
+    - [Symfony Example](https://cdn.dotcms.dev/docs/sdk-symfony-example)
+    - [Astro Exampl](https://cdn.dotcms.dev/docs/sdk-astro-example)
+  - Development Tools
+    - [dotCLI](https://cdn.dotcms.dev/docs/cli)
+    - [Developer Instance](https://cdn.dotcms.dev/docs/dotcms-developer-instance)
+    - [Plugins](https://cdn.dotcms.dev/docs/plugins)
+  - [Javadocs](https://cdn.dotcms.dev/docs/javadocs)
+
+- Content & Operations
+  - Content Architecture
+    - [Working With Content Types](https://cdn.dotcms.dev/docs/content-types)
+    - [Content States and Workflows](https://cdn.dotcms.dev/docs/managing-workflows)
+    - [Templating](https://cdn.dotcms.dev/docs/templating)
+    - [Themes](https://cdn.dotcms.dev/docs/creating-a-new-theme)
+    - [Multilingual Sites and Content](https://cdn.dotcms.dev/docs/multilingual-sites-and-content)
+    - [Folders & Files](https://cdn.dotcms.dev/docs/folders-files)
+    - [Fields and Field Types](https://cdn.dotcms.dev/docs/content-type-fields)
+    - [Field Variables](https://cdn.dotcms.dev/docs/field-variables)
+    - [Push Publishing](https://cdn.dotcms.dev/docs/push-publishing)
+    - [Widgets](https://cdn.dotcms.dev/docs/widgets)
+  - Content Authoring
+    - [Searching & Menus](https://cdn.dotcms.dev/docs/search)
+    - [Content](https://cdn.dotcms.dev/docs/content)
+    - [Content Editor](https://cdn.dotcms.dev/docs/content-editor)
+    - [Adding Content](https://cdn.dotcms.dev/docs/adding-and-editing-content)
+    - [Relating Content](https://cdn.dotcms.dev/docs/relationships)
+    - [Assets and Images](https://cdn.dotcms.dev/docs/files-and-images)
+    - [Multilingual Content](https://cdn.dotcms.dev/docs/multilingual-content)
+    - [AI Content Generation](https://cdn.dotcms.dev/docs/dotai-tool)
+  - Page Building
+    - [Page Editor (UVE)](https://cdn.dotcms.dev/docs/universal-visual-editor)
+    - [UVE Config for Headless Pages](https://cdn.dotcms.dev/docs/uve-headless-config)
+    - [Future Time Machine](https://cdn.dotcms.dev/docs/future-time-machine)
+    - [Adding Content to Pages](https://cdn.dotcms.dev/docs/adding-new-content-to-a-page)
+    - [Layouts](https://cdn.dotcms.dev/docs/designing-a-template-with-a-theme)
+    - [A/B Testing and Experiments](https://cdn.dotcms.dev/docs/experiments-and-a-b-testing)
+  - SEO & Personalization
+    - [URL Maps & Slugs](https://cdn.dotcms.dev/docs/slugs-and-url-maps-seo-friendly-urls)
+    - [Vanity URLs](https://cdn.dotcms.dev/docs/vanity-urls)
+    - [Marketing Rules](https://cdn.dotcms.dev/docs/rules)
+    - [Personas](https://cdn.dotcms.dev/docs/personas)
+    - [Categories and Tags](https://cdn.dotcms.dev/docs/taxonomies-and-tags)
+    - [Auto-Tagging With AI Workflows](https://cdn.dotcms.dev/docs/dotai-workflows)
+
+- System Administration
+  - System Setup
+    - [Requirements](https://cdn.dotcms.dev/docs/requirements)
+    - [Configuration Properties](https://cdn.dotcms.dev/docs/configuration-properties)
+    - [Locales & Localization](https://cdn.dotcms.dev/docs/locales)
+    - [Apps Integrations](https://cdn.dotcms.dev/docs/apps-integrations)
+    - [AI Tools Setup](https://cdn.dotcms.dev/docs/dotai)
+  - Self-Hosting
+    - [Managing Evergreen (Self-Hosted)](https://cdn.dotcms.dev/docs/managing-evergreen-on-premise)
+    - [Self-Hosting via Docker](https://cdn.dotcms.dev/docs/docker)
+    - [Docker Environment Configuration](https://cdn.dotcms.dev/docs/docker-image-configuration-options)
+    - [Cluster Setup](https://cdn.dotcms.dev/docs/cluster-setup)
+    - [Multi-site Management](https://cdn.dotcms.dev/docs/multi-site-management)
+  - Security
+    - [SAML / SSO](https://cdn.dotcms.dev/docs/saml-authentication)
+    - [Assigning Permissions](https://cdn.dotcms.dev/docs/assigning-permissions)
+    - [Roles & Tools](https://cdn.dotcms.dev/docs/roles-and-tools)
+    - [User Management](https://cdn.dotcms.dev/docs/user-management)
+    - [Login and Session Security](https://cdn.dotcms.dev/docs/login-and-session-security)
+    - [Cookie Use](https://cdn.dotcms.dev/docs/cookie-use)
+    - [XSS Prevention](https://cdn.dotcms.dev/docs/xss-prevention)
+  - Monitoring & Maintenance
+    - [System Maintenance](https://cdn.dotcms.dev/docs/maintenance)
+    - [System Info](https://cdn.dotcms.dev/docs/system-info)
+    - [Threads](https://cdn.dotcms.dev/docs/threads)
+    - [Performance Tuning](https://cdn.dotcms.dev/docs/performance-tuning)
+    - [Performing Backups](https://cdn.dotcms.dev/docs/backup-and-restore)
+
+- Community & Support
+  - Best Practices
+    - [Security Best Practices](https://cdn.dotcms.dev/docs/security-best-practices)
+    - [Privacy Best Practices](https://cdn.dotcms.dev/docs/privacy-best-practices)
+    - [Push Publishing Best Practices](https://cdn.dotcms.dev/docs/push-publishing-best-practices)
+    - [Velocity Best Practices](https://cdn.dotcms.dev/docs/velocity-best-practices)
+    - [Upgrading Best Practices](https://cdn.dotcms.dev/docs/upgrade-go-live-checklist)
+  - Community & Outreach
+    - [Community Forum](https://community.dotcms.com/)
+    - [Report an Issue](https://github.com/dotCMS/core/issues)
+    - [Trust Center](https://cdn.dotcms.dev/docs/https://security.dotcms.com/)
+    - [Contact](https://cdn.dotcms.dev/docs/https://www.dotcms.com/contact-us)
+  - Support & Help
+    - [Contact](https://www.dotcms.com/contact-us)
+    - [Training Resources](https://www2.dotcms.com/courses/)
+    - [Privacy Policy](https://cdn.dotcms.dev/docs/privacy-policy)
+    - [GDPR & CCPA Compliance](https://cdn.dotcms.dev/docs/gdpr-and-ccpa-compliance-support)
+    - [Known Security Issues](https://cdn.dotcms.dev/docs/known-security-issues)
+    - [Responsible Disclosure Policy](https://cdn.dotcms.dev/docs/responsible-disclosure-policy)
+  - Release Information
+    - [Changelogs](https://cdn.dotcms.dev/docs/changelogs)
+    - [Current Releases](https://cdn.dotcms.dev/docs/current-releases)
+    - [All Releases](https://cdn.dotcms.dev/docs/all-releases)
+    - [Release & Support Lifecycle](https://cdn.dotcms.dev/docs/release-support-lifecycle)
+    - [Deprecations](https://cdn.dotcms.dev/docs/deprecations)
+    - [Upgrading](https://cdn.dotcms.dev/docs/upgrading-dotcms)
