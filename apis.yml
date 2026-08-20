@@ -112,6 +112,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -122,6 +124,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Workflows
+  tags_raw:
   - Workflow
   properties:
   - type: OpenAPI
