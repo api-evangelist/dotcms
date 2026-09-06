@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: dotCMS REST Authentication Sites API
+  title: dotCMS REST Authentication Search API
   description: REST API for the dotCMS content management platform. Provides endpoints for authentication, content, workflow, search, navigation, sites, and user management. Endpoints derived from public dotCMS documentation at https://dev.dotcms.com/docs — best-effort, not exhaustive. Each dotCMS installation hosts its own API; substitute the demo base URL with your deployment's host.
   version: '1'
   contact:
@@ -15,23 +15,29 @@ security:
 - BearerAuth: []
 - BasicAuth: []
 tags:
-- name: Sites
+- name: Search
 paths:
-  /api/v1/site:
-    get:
+  /api/content/_search:
+    post:
       tags:
-      - Sites
-      summary: List sites
-      operationId: listSites
-      responses:
-        '200':
-          description: OK
-  /api/v1/site/currentSite:
-    get:
-      tags:
-      - Sites
-      summary: Get current site
-      operationId: getCurrentSite
+      - Search
+      summary: Search content
+      operationId: searchContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: integer
+                offset:
+                  type: integer
       responses:
         '200':
           description: OK

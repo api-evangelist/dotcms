@@ -2,6 +2,10 @@ aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
 common:
+- type: Website
+  url: https://www.dotcms.com/
+- type: VulnerabilityDisclosure
+  url: security/dotcms-vulnerability-disclosure.yml
 - type: AgenticAccess
   url: agentic-access/dotcms-agentic-access.yml
 - type: DomainSecurity
@@ -15,7 +19,72 @@ common:
 - type: LlmsText
   url: https://dev.dotcms.com/llms.txt
 - type: Blog
-  url: https://dotcms.com/blog
+  url: https://www.dotcms.com/blog
+- type: Packages
+  url: packages/dotcms-packages.yml
+- type: SDKs
+  url: packages/dotcms-packages.yml
+- type: CLI
+  url: cli/dotcms-cli.yml
+- type: Components
+  url: components/dotcms-components.yml
+- type: WellKnown
+  url: well-known/dotcms-well-known.yml
+- type: APICatalog
+  url: https://www.dotcms.com/.well-known/api-catalog
+- type: SecurityTxt
+  url: well-known/dotcms-security.txt
+- type: MCPServer
+  url: mcp/dotcms-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/dotcms-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/dotcms-llms.txt
+- type: Conformance
+  url: conformance/dotcms-conformance.yml
+- type: Compliance
+  url: https://www.dotcms.com/product/security-compliance
+- type: TrustCenter
+  url: security/dotcms-trust-center.yml
+- type: Security
+  url: >-
+    https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/responsible-disclosure-policy
+- type: Lifecycle
+  url: lifecycle/dotcms-lifecycle.yml
+- type: Deprecation
+  url: >-
+    https://dev.dotcms.com/docs/reference/releases/product-versions/release-support-lifecycle
+- type: ChangeLog
+  url: changelog/dotcms-changelog.yml
+- type: Sandbox
+  url: sandbox/dotcms-sandbox.yml
+- type: Webhooks
+  url: asyncapi/dotcms-event-surface.yml
+- type: Plans
+  url: plans/dotcms-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/dotcms-rate-limits.yml
+- type: DeveloperPortal
+  url: https://dev.dotcms.com/
+- type: Documentation
+  url: https://dev.dotcms.com/docs
+- type: APIReference
+  url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+- type: GettingStarted
+  url: https://dev.dotcms.com/getting-started
+- type: Support
+  url: https://community.dotcms.com/
+- type: Roadmap
+  url: https://www.dotcms.com/roadmap
+- type: Pricing
+  url: https://www.dotcms.com/pricing
+- type: TermsOfService
+  url: https://www.dotcms.com/bsl
+- type: PrivacyPolicy
+  url: >-
+    https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/privacy-policy
 apis:
 - aid: dotcms:rest
   name: dotCMS REST API
@@ -23,13 +92,25 @@ apis:
   - CMS
   - Content
   - Content Management
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   properties:
-  - url: https://dev.dotcms.com/docs/getting-started-rest-apis
+  - url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
     type: Documentation
-  - url: https://dev.dotcms.com/docs
-    type: Developer
+  - url: https://dev.dotcms.com/
+    type: DeveloperPortal
+  - url: openapi/dotcms-rest-api-openapi.json
+    type: OpenAPI
+  - url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+    type: APIReference
+  - url: overlays/dotcms-rest-api-overlay.yaml
+    type: Overlay
+  - url: errors/dotcms-problem-types.yml
+    type: ErrorCatalog
+  - url: data-model/dotcms-data-model.yml
+    type: DataModel
+  - url: conventions/dotcms-conventions.yml
+    type: Conventions
   description: >-
     The dotCMS REST API exposes the platform's content management capabilities through HTTP endpoints,
     allowing developers to create, read, update, and delete content, manage workflows, navigate site hierarchy,
@@ -56,85 +137,18 @@ apis:
     collections, and exposes base types for File, Form, Key/Value, Page, Persona, Vanity URL, and Widget
     content. The API accepts the same authentication methods as the dotCMS REST API and includes a built-in
     GraphQL Playground for exploring the schema.
-- aid: dotcms:dotcms-authentication-api
-  name: dotCMS Authentication API
-  description: The Authentication API from dotCMS — 1 operation(s) for authentication.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Authentication
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-authentication-api-openapi.yml
-- aid: dotcms:dotcms-content-api
-  name: dotCMS Content API
-  description: The Content API from dotCMS — 1 operation(s) for content.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Content
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-content-api-openapi.yml
-- aid: dotcms:dotcms-navigation-api
-  name: dotCMS Navigation API
-  description: The Navigation API from dotCMS — 1 operation(s) for navigation.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Navigation
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-navigation-api-openapi.yml
-- aid: dotcms:dotcms-search-api
-  name: dotCMS Search API
-  description: The Search API from dotCMS — 1 operation(s) for search.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Search
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-search-api-openapi.yml
-- aid: dotcms:dotcms-sites-api
-  name: dotCMS Sites API
-  description: The Sites API from dotCMS — 2 operation(s) for sites.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Sites
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-sites-api-openapi.yml
-- aid: dotcms:dotcms-users-api
-  name: dotCMS Users API
-  description: The Users API from dotCMS — 2 operation(s) for users.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - User
-  tags_raw:
-  - Users
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-users-api-openapi.yml
-- aid: dotcms:dotcms-workflow-api
-  name: dotCMS Workflow API
-  description: The Workflow API from dotCMS — 2 operation(s) for workflow.
-  humanURL: https://dev.dotcms.com/docs/getting-started-rest-apis
-  baseURL: https://demo.dotcms.com/api
-  tags:
-  - Workflows
-  tags_raw:
-  - Workflow
-  properties:
-  - type: OpenAPI
-    url: openapi/dotcms-workflow-api-openapi.yml
 name: dotCMS
 tags:
 - CMS
 - Content
 - Content Management
+- Headless CMS
+- Digital Experience
+- Content Delivery
+- Workflows
+- GraphQL
+- MCP
+- Java
 type: Index
 deliveryModel:
   model: unknown
@@ -164,16 +178,32 @@ accessModel:
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/dotcms.png
 access: 3rd-Party
 created: '2025-01-08'
-modified: '2026-04-28'
+modified: '2026-09-06'
 position: Consuming
 description: >-
-  dotCMS is a content management system that provides organizations with a powerful
-  platform to create, manage, and deliver digital content. It offers a wide range
-  of features, including content authoring tools, workflow management, personalization
-  capabilities, and content analytics. With dotCMS, users can easily create and update
-  websites, intranet portals, and mobile applications. The platform is designed to
-  be flexible and scalable, making it suitable for businesses of all sizes.
+  dotCMS is a Java-based visual headless content management system aimed at compliance-led
+  enterprises, deployable as SaaS (dotCMS Cloud), on premise, or as a managed service. It covers
+  content modelling, authoring, workflow, multi-site management, personalization, experiments and
+  content analytics, and pairs headless delivery with a Universal Visual Editor so authors can
+  edit content in place inside a React, Angular or Next.js front end. Every dotCMS instance
+  serves its own first-party OpenAPI 3.0.1 at /api/openapi.json — 592 paths and 754 operations
+  across 71 tags, covering content, content types, workflow, publishing, sites, roles,
+  permissions and dotAI — alongside a GraphQL endpoint at /api/v1/graphql. dotCMS also ships an
+  early agent surface: a first-party MCP server, two published Agent Skills, an RFC 9727 API
+  catalog and markdown content negotiation. It is certified to ISO/IEC 27001, ISO/IEC 42001 (AI
+  management), SOC 2 Type II and TX-RAMP Level II.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 specificationVersion: '0.23'
+x-enrichment:
+  date: '2026-09-06'
+  status: enriched
+  artifacts_added: 24
+  pass: local-v3
+  note: >-
+    STEP 0b contract discovery found the real first-party OpenAPI at
+    https://demo.dotcms.com/api/openapi.json (592 paths / 754 operations), superseding seven
+    documentation-derived scaffold specs of 19 paths total. Also found a first-party MCP server,
+    two provider-authored Agent Skills, an RFC 9727 API catalog and an RFC 9116 security.txt.
+    No agent card is served on any host (probed, 404 on all five) — nothing was written for a2a.

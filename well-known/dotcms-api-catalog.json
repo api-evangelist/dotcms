@@ -1,0 +1,208 @@
+{
+    "linkset": [
+        {
+            "anchor": "https://www.dotcms.com/.well-known/api-catalog",
+            "item": [
+                {
+                    "href": "https://www.dotcms.com/blog",
+                    "title": "Blog"
+                },
+                {
+                    "href": "https://www.dotcms.com/videos",
+                    "title": "Videos"
+                },
+                {
+                    "href": "https://www.dotcms.com/podcast",
+                    "title": "Podcast"
+                },
+                {
+                    "href": "https://www.dotcms.com/case-studies",
+                    "title": "Case Studies"
+                },
+                {
+                    "href": "https://www.dotcms.com/news",
+                    "title": "News"
+                },
+                {
+                    "href": "https://www.dotcms.com/resource-library",
+                    "title": "Resource Library"
+                },
+                {
+                    "href": "https://www.dotcms.com/authors",
+                    "title": "Authors"
+                },
+                {
+                    "href": "https://www.dotcms.com/features",
+                    "title": "Features"
+                },
+                {
+                    "href": "https://www.dotcms.com/roadmap",
+                    "title": "Product Roadmap"
+                },
+                {
+                    "href": "https://www.dotcms.com/ecosystem",
+                    "title": "Ecosystem"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/api/markdown",
+                    "type": "text/markdown",
+                    "title": "Markdown rendering: fetch any page with Accept: text/markdown header"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/blog",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/blog",
+                    "type": "text/html",
+                    "title": "Blog"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/blog/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Blog sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/videos",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/videos",
+                    "type": "text/html",
+                    "title": "Videos"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/videos/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Videos sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/podcast",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/podcast",
+                    "type": "text/html",
+                    "title": "Podcast"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/podcast/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Podcast sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/case-studies",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/case-studies",
+                    "type": "text/html",
+                    "title": "Case Studies"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/case-studies/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Case Studies sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/news",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/news",
+                    "type": "text/html",
+                    "title": "News"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/news/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "News sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/resource-library",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/resource-library",
+                    "type": "text/html",
+                    "title": "Resource Library"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/resource-library/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Resource Library sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/authors",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/authors",
+                    "type": "text/html",
+                    "title": "Authors"
+                }
+            ],
+            "alternate": [
+                {
+                    "href": "https://www.dotcms.com/authors/sitemap.xml",
+                    "type": "application/xml",
+                    "title": "Authors sitemap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/features",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/features",
+                    "type": "text/html",
+                    "title": "Features"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/roadmap",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/roadmap",
+                    "type": "text/html",
+                    "title": "Product Roadmap"
+                }
+            ]
+        },
+        {
+            "anchor": "https://www.dotcms.com/ecosystem",
+            "service-doc": [
+                {
+                    "href": "https://www.dotcms.com/ecosystem",
+                    "type": "text/html",
+                    "title": "Ecosystem"
+                }
+            ]
+        }
+    ]
+}

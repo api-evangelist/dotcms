@@ -1,0 +1,118 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the dotCMS REST API
+  version: 1.0.0
+extends: openapi/dotcms-rest-api-openapi.json
+x-generated: '2026-09-06'
+x-method: generated
+x-source: >-
+  Derived from analysis of the first-party dotCMS OpenAPI harvested from
+  https://demo.dotcms.com/api/openapi.json, plus the docs sources cited in
+  authentication/dotcms-authentication.yml and conventions/dotcms-conventions.yml.
+x-note: >-
+  This overlay is API Evangelist's annotation layer. It NEVER mutates the harvested contract.
+  Its most substantive action is the one the provider's own spec is missing: dotCMS declares
+  zero securitySchemes while 368 of its operations declare a 401, so a generated client ships
+  with no auth wiring at all. The bearer scheme added below is what the dotCMS auth docs
+  describe, expressed as the OpenAPI the docs imply — applied as an overlay so the distinction
+  between what dotCMS published and what we inferred stays visible.
+actions:
+  - target: $.info
+    description: Stamp API Evangelist provenance and the observed contract profile.
+    update:
+      x-apievangelist-slug: dotcms
+      x-apievangelist-harvested: '2026-09-06'
+      x-apievangelist-source: https://demo.dotcms.com/api/openapi.json
+      x-apievangelist-profile:
+        paths: 592
+        operations: 754
+        schemas: 606
+        tags: 71
+        operation_id_coverage: 1.0
+        deprecated_operations: 49
+        media_types_with_examples: 54
+        security_schemes_declared: 0
+        problem_json_responses: 0
+        idempotency_parameters: 0
+        rate_limit_headers: 0
+      x-apievangelist-contact:
+        name: dotCMS
+        url: https://www.dotcms.com
+        security: security@dotcms.com
+  - target: $.components.securitySchemes
+    description: >-
+      Add the bearer-JWT scheme dotCMS documents but does not declare. Source of truth is
+      https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication — the token is
+      minted at POST /api/v1/authentication/api-token (operationId requestApiToken) and sent as
+      Authorization: Bearer.
+    update:
+      dotcmsApiToken:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+        description: >-
+          dotCMS API token. Mint via POST /api/v1/authentication/api-token or in the admin UI
+          under System > Users > API Access Tokens. Documented by dotCMS; NOT declared in the
+          first-party specification — added by API Evangelist overlay.
+        x-apievangelist-added: true
+        x-apievangelist-evidence: https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication
+      dotcmsBasicAuth:
+        type: apiKey
+        in: header
+        name: AUTHENTICATION
+        description: >-
+          Base64(user:password) in the non-standard AUTHENTICATION header. dotCMS's own docs warn
+          that base64 does not encrypt the credential; HTTPS only. Modelled as apiKey because the
+          header name is not Authorization.
+        x-apievangelist-added: true
+  - target: $.info
+    description: Record the agent-facing surfaces dotCMS operates alongside this REST contract.
+    update:
+      x-apievangelist-agent-surfaces:
+        mcp_server:
+          package: "@dotcms/mcp-server"
+          transport: stdio
+          docs: https://dev.dotcms.com/docs/mcp-server
+          note: >-
+            Two of its four tools are sandboxes over THIS specification, so every operation here
+            is reachable from an agent even though only three are named in a tool binding. See
+            mcp/dotcms-tool-crosswalk.yml.
+        agent_skills:
+          repo: https://github.com/dotCMS/agent-toolkit
+          count: 2
+        graphql:
+          endpoint: /api/v1/graphql
+          introspection: disabled
+        api_catalog: https://www.dotcms.com/.well-known/api-catalog
+        markdown_negotiation:
+          note: >-
+            The RFC 9727 catalog declares a service-doc for markdown negotiation — any page on
+            www.dotcms.com returns markdown when fetched with Accept: text/markdown. Verified.
+  - target: $.info
+    description: >-
+      Record the runtime-semantics gaps an agent must plan around, so they travel with the
+      contract instead of only living in the conventions artifact.
+    update:
+      x-apievangelist-runtime-semantics:
+        idempotency:
+          coverage: none
+          consequence: >-
+            No Idempotency-Key on any of the 399 write operations. A retried write can duplicate.
+            Read state back before retrying.
+        rate_limits:
+          published: false
+          headers: []
+          status_on_exhaustion: null
+        reversibility:
+          grade: documented
+          reversible: [unpublish, unarchive, unlock, cancel, reset-permissions]
+          irreversible: [deleteAsset, deleteFolder]
+          windows: not stated by the provider
+        error_format: dotcms-response-entity
+        response_envelope:
+          payload_key: entity
+          note: The payload is always under `entity`, never at the response root.
+        deprecation:
+          in_contract: true
+          runtime_header: false
+          advance_notice: 6 months

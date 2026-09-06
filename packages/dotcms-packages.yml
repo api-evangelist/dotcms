@@ -1,0 +1,164 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  registry.npmjs.org metadata endpoints, the dotCMS SDK index at
+  https://dev.dotcms.com/llms.txt, https://www.dotcms.com/developers/sdks, and the
+  dotCMS/homebrew-tap and dotCMS/agent-toolkit GitHub repositories
+description: >-
+  dotCMS ships its first-party client libraries as an npm scope (@dotcms/*) cut from a single
+  monorepo release train — every JavaScript package below shares one version string and one
+  publish date, which makes the whole SDK surface easy to date. Registries probed with no
+  first-party dotCMS package found: PyPI, RubyGems, crates.io, NuGet, Packagist, pkg.go.dev.
+  dotCMS is a Java platform but publishes no client artifact to Maven Central; the Java surface
+  is the server itself, distributed as a Docker image and a WAR, not as a client SDK.
+registries_probed:
+  hit: [npm, github-releases]
+  miss: [pypi, rubygems, crates.io, nuget, packagist, maven-central, pkg.go.dev]
+packages:
+- language: javascript
+  registry: npm
+  name: "@dotcms/client"
+  url: https://www.npmjs.com/package/@dotcms/client
+  install: npm install @dotcms/client
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official JavaScript library for interacting with dotCMS REST APIs.
+  docs: https://dev.dotcms.com/docs/sdk-client-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/react"
+  url: https://www.npmjs.com/package/@dotcms/react
+  install: npm install @dotcms/react
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official React Components library to render a dotCMS page.
+  docs: https://dev.dotcms.com/docs/sdk-react-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/angular"
+  url: https://www.npmjs.com/package/@dotcms/angular
+  install: npm install @dotcms/angular
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official Angular Components library to render a dotCMS page.
+  docs: https://dev.dotcms.com/docs/sdk-angular-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/uve"
+  url: https://www.npmjs.com/package/@dotcms/uve
+  install: npm install @dotcms/uve
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: >-
+    Official JavaScript library for interacting with the Universal Visual Editor (UVE).
+  docs: https://dev.dotcms.com/docs/sdk-uve-library
+- language: typescript
+  registry: npm
+  name: "@dotcms/types"
+  url: https://www.npmjs.com/package/@dotcms/types
+  install: npm install -D @dotcms/types
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: TypeScript type definitions for the dotCMS SDK surface.
+  docs: https://dev.dotcms.com/docs/sdk-types-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/experiments"
+  url: https://www.npmjs.com/package/@dotcms/experiments
+  install: npm install @dotcms/experiments
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official JavaScript library to use Experiments with dotCMS.
+  docs: https://dev.dotcms.com/docs/sdk-experiments-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/analytics"
+  url: https://www.npmjs.com/package/@dotcms/analytics
+  install: npm install @dotcms/analytics
+  official: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official JavaScript library for Content Analytics with dotCMS.
+  docs: https://dev.dotcms.com/docs/sdk-analytics-library
+- language: javascript
+  registry: npm
+  name: "@dotcms/dotcli"
+  url: https://www.npmjs.com/package/@dotcms/dotcli
+  install: npm install -g @dotcms/dotcli
+  official: true
+  kind: cli
+  version: 26.9.3-1
+  published: '2026-09-03'
+  description: Official command-line tool to manage dotCMS content.
+  docs: https://dev.dotcms.com/docs/manage/administration/cicd/cli
+- language: javascript
+  registry: npm
+  name: "@dotcms/mcp-server"
+  url: https://www.npmjs.com/package/@dotcms/mcp-server
+  install: npx -y @dotcms/mcp-server@latest
+  official: true
+  kind: mcp-server
+  version: 0.1.1
+  published: '2026-09-02'
+  first_published: '2025-07-04'
+  releases: 18
+  description: >-
+    Model Context Protocol (MCP) server for dotCMS — enables AI agents to interact with dotCMS
+    content management capabilities. Source lives in dotCMS/core at
+    core-web/apps/mcp-server; binary is dotcms-mcp-server (stdio.js).
+  docs: https://dev.dotcms.com/docs/mcp-server
+- language: java
+  registry: github-releases
+  name: dotcms-cli (runner jar)
+  url: https://github.com/dotCMS/core/releases
+  install: java -jar dotcms-cli-${VERSION}-runner.jar
+  official: true
+  kind: cli
+  version: 26.09.03-01
+  published: '2026-09-03'
+  note: >-
+    The CLI is released from the dotCMS/core repo on the same calendar-versioned train as the
+    server (tag dotcms-cli-26.09.03-01). This is the same tool the npm @dotcms/dotcli package
+    wraps; the jar is the fallback for environments without Node.
+- language: java
+  registry: homebrew
+  name: dotcms-cli
+  url: https://github.com/dotCMS/homebrew-tap/blob/main/Formula/dotcms-cli.rb
+  install: brew install dotCMS/tap/dotcms-cli
+  official: true
+  kind: cli
+  version: 1.2.0
+  published: '2023-09-15'
+  stale: true
+  note: >-
+    DECAY SIGNAL — the Homebrew formula still pins dotcli-1.2.0.jar and its JReleaser header is
+    dated 2023-09-15T20:03:33, while the same CLI shipped 26.09.03-01 on npm and GitHub Releases
+    on 2026-09-03. A `brew install dotCMS/tap/dotcms-cli` today installs a build roughly three
+    years behind the API it talks to. Not a fabricated finding: the version and the generation
+    timestamp are both read verbatim from the formula file.
+- language: php
+  registry: none
+  name: dotcms/php-sdk
+  url: https://dev.dotcms.com/docs/sdk-php-library
+  official: true
+  status: alpha
+  version: null
+  published: null
+  note: >-
+    dotCMS lists a PHP SDK in its own docs SDK index as "dotcms/php-sdk (alpha)" and the docs
+    page names https://github.com/dotCMS/dotcms-php-sdk/ as its home, but neither surface
+    resolves for an anonymous consumer: the Packagist package dotcms/php-sdk returns
+    "404 not found, no packages here", the GitHub repository API returns 404, and the docs page
+    itself renders "Error loading from GitHub README". Checked 2026-09-06 — recorded as a
+    verified gap, not a guess. A PHP consumer cannot install this today.
+counts:
+  official: 12
+  npm: 9
+  with_version: 11
+  version_null: 1

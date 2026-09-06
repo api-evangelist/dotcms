@@ -1,0 +1,155 @@
+generated: '2026-09-06'
+method: derived
+source: >-
+  mcp/dotcms-mcp.yml (tool names + descriptions verbatim from
+  https://dev.dotcms.com/docs/mcp-server) bound against
+  openapi/dotcms-rest-api-openapi.json (first-party, 592 paths / 754 operations)
+description: >-
+  dotCMS is a three-surface provider — REST, GraphQL and MCP — and the three do NOT project the
+  same capabilities. The crosswalk records that divergence rather than flattening it. The most
+  important thing it records is structural: the dotCMS MCP server is a SANDBOX, not a tool
+  catalogue. Two of its four tools (`search`, `execute`) are meta-tools whose reach is the entire
+  REST surface, so a per-tool inputSchema does not exist and never will — the agent writes
+  JavaScript, and the real input contract is the OpenAPI operation it chooses to call. Only
+  `download_assets` and `upload_assets` bind to specific operations. Confidence is set honestly:
+  `high` only where the provider's own docs name the path.
+surfaces:
+  openapi:
+    file: openapi/dotcms-rest-api-openapi.json
+    version: 3.0.1
+    paths: 592
+    operations: 754
+    tags: 71
+    gated: false
+    note: >-
+      Served by every dotCMS instance at /api/openapi.json. Harvested from
+      https://demo.dotcms.com/api/openapi.json (HTTP 200).
+  graphql:
+    endpoint: https://demo.dotcms.com/api/v1/graphql
+    docs: https://dev.dotcms.com/docs/graphql
+    gated: true
+    reachable: true
+    introspection: disabled
+    evidence: >-
+      POST {"query":"{__typename}"} returns {"data":{"__typename":"Query"}} (HTTP 200,
+      unauthenticated) — the endpoint is live and answers anonymously. POST
+      {"query":"{__schema{types{name}}}"} returns
+      "Validation error of type FieldUndefined: Field 'types' in type '__Schema' is undefined",
+      i.e. the __Schema introspection fields are stripped, not auth-gated. No SDL could be
+      captured; none was fabricated.
+  mcp:
+    server: dotcms
+    transport: stdio
+    package: "@dotcms/mcp-server"
+    gated: true
+    reason: stdio-only — no remote endpoint exists to run tools/list against
+crosswalk:
+- tool: search
+  category: discovery
+  binding: meta
+  rest: []
+  rest_scope: all
+  confidence: high
+  note: >-
+    "Explore the dotCMS REST API specification using JavaScript code that runs in an isolated
+    sandbox." The tool's subject is the specification itself, so its backing REST surface is all
+    754 operations rather than any one operationId. An agent using this tool inherits the whole
+    spec as its schema.
+- tool: execute
+  category: execution
+  binding: meta
+  rest: []
+  rest_scope: all
+  confidence: high
+  note: >-
+    "Execute authenticated API calls against your dotCMS instance using JavaScript code." Same
+    shape as `search` but on the write side — this single tool can reach every mutating operation
+    in the spec, including the 13 the agentic-access classification flags safety-critical and the
+    5 it flags physical. There is no per-operation gate inside the tool; the gate is the dotCMS
+    role and permission model attached to the AUTH_TOKEN.
+- tool: upload_assets
+  category: assets
+  binding: rest
+  rest:
+  - publishFileAsset
+  confidence: high
+  note: >-
+    The provider's documentation names the endpoint explicitly — "Upload a local directory to
+    dotCMS file assets using /api/v2/assets/publish" — which is PUT /api/v2/assets/publish,
+    operationId publishFileAsset ("Publish file asset (working + live)"). A directory upload fans
+    the single tool call out across many calls to that one operation; saveFileAsset
+    (PUT /api/v2/assets/save, working version only) is the likely companion but the docs do not
+    name it, so it is not asserted here.
+- tool: download_assets
+  category: assets
+  binding: rest
+  rest:
+  - getFileAssetByPath
+  - getFileAssetById
+  confidence: medium
+  note: >-
+    "Downloads a dotCMS asset folder to the MCP server filesystem." The docs do not name the
+    endpoint for this direction. GET /api/v2/assets (getFileAssetByPath) and
+    GET /api/v2/assets/{identifier} (getFileAssetById) are the raw file-asset read operations
+    that match a path-addressed folder walk, and POST /api/v1/assets (getAssetsInfo, "Get asset
+    information by path") is the plausible directory-listing step. Mapped by semantics, marked
+    medium, not high.
+mcp_only: []
+mcp_only_note: >-
+  No tool on this server lacks a REST backing. Because `search` and `execute` are sandboxes over
+  the REST spec itself, the MCP surface is by construction a subset of REST, not a superset — the
+  opposite of the usual MCP/REST divergence. The genuine divergence at dotCMS is on the GraphQL
+  side, where content-type collections are queryable through a schema no anonymous client can
+  introspect.
+rest_only:
+- capability: Workflow
+  operations: 57
+  note: Workflow schemes, steps, actions, bulk firing. No dedicated MCP tool; reachable via `execute`.
+- capability: Content Type + Content Type Field
+  operations: 68
+  note: >-
+    Content-type and field CRUD — the surface dotCMS's own agent skills spend most of their words
+    on. Reachable only through `execute`.
+- capability: Content
+  operations: 32
+- capability: Rules Engine
+  operations: 26
+- capability: Maintenance
+  operations: 26
+- capability: AI (dotAI)
+  operations: 23
+- capability: System Configuration
+  operations: 23
+- capability: Containers
+  operations: 21
+- capability: Site
+  operations: 20
+- capability: Roles
+  operations: 19
+- capability: Search Index (Elasticsearch)
+  operations: 19
+- capability: Experiments
+  operations: 18
+- capability: Page
+  operations: 18
+- capability: Templates
+  operations: 18
+- capability: Publishing / Bundle / Push Publishing
+  operations: 32
+- capability: dotAuth (OAuth/OIDC + SAML per-site configuration)
+  operations: 15
+- capability: everything else
+  operations: 289
+  note: 71 tags in total; the long tail covers folders, forms, categories, tags, personas, themes, jobs, logging, monitoring, storage, licensing and portlets.
+coverage:
+  tools_named: 4
+  tools_bound_to_named_operations: 2
+  tools_bound_to_whole_spec: 2
+  mcp_only: 0
+  rest_operations_total: 754
+  rest_operations_with_a_named_tool: 3
+  note: >-
+    "3 of 754" is the honest number for NAMED bindings and it materially understates reach —
+    `execute` can call any of the 754. Both figures are recorded because they answer different
+    questions: an agent asking "which tool do I call to publish a file?" needs the named binding;
+    a security reviewer asking "what can this token do?" needs the 754.

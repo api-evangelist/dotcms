@@ -6,130 +6,40 @@ artifacts:
   agentic-access/dotcms-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  asyncapi/dotcms-event-surface.yml:
+    method: searched
+    evidence: declared in the artifact
   authentication/dotcms-authentication.yml:
+    method: searched
+    evidence: declared in the artifact
+  changelog/dotcms-changelog.yml:
+    method: searched
+    evidence: declared in the artifact
+  cli/dotcms-cli.yml:
+    method: searched
+    evidence: declared in the artifact
+  components/dotcms-components.yml:
+    method: searched
+    evidence: declared in the artifact
+  conformance/dotcms-conformance.yml:
+    method: searched
+    evidence: declared in the artifact
+  conventions/dotcms-conventions.yml:
+    method: searched
+    evidence: declared in the artifact
+  data-model/dotcms-data-model.yml:
     method: derived
     evidence: declared in the artifact
-  collections/dotcms-authentication-api.opencollection.json:
+  errors/dotcms-problem-types.yml:
     method: derived
-    evidence: openapi/dotcms-authentication-api
-  collections/dotcms-authentication-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-authentication-api
-  collections/dotcms-content-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-content-api
-  collections/dotcms-content-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-content-api
-  collections/dotcms-navigation-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-navigation-api
-  collections/dotcms-navigation-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-navigation-api
-  collections/dotcms-search-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-search-api
-  collections/dotcms-search-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-search-api
-  collections/dotcms-sites-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-sites-api
-  collections/dotcms-sites-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-sites-api
-  collections/dotcms-users-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-users-api
-  collections/dotcms-users-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-users-api
-  collections/dotcms-workflow-api.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms-workflow-api
-  collections/dotcms-workflow-api.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms-workflow-api
-  collections/dotcms.opencollection.json:
-    method: derived
-    evidence: openapi/dotcms
-  collections/dotcms.postman_collection.json:
-    method: derived
-    evidence: openapi/dotcms
+    evidence: declared in the artifact
   finops/dotcms-finops.yml:
     method: generated
     evidence: declared in the artifact
   graphql/dotcms-graphql.md:
     method: unknown
     evidence: no authorship recorded
-  kin/checks-2026-08-28T221322.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T094130.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T182523.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-26T223651.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T083119.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T190208.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T115055.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T170848.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T172558.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T192327.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T200725.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T133250.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T151044.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T162206.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T202106.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163141.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163302.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T171935.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T113057.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T161012.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-04T083143.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-05T153418.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-06T210741.yml:
+  kin/checks-2026-09-06T011047.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-08-07T135032.yml:
@@ -210,36 +120,123 @@ artifacts:
   kin/score-2026-08-28T221322.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T213958.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T230545.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T203505.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T220315.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-31T223420.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T063623.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T210448.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T222808.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T211804.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T224043.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T161828.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T174231.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T062714.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T212454.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T224856.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T055819.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T072335.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T144739.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T195450.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T211839.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-06T011047.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  lifecycle/dotcms-lifecycle.yml:
+    method: searched
+    evidence: declared in the artifact
   llms/dotcms-llms.txt:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
-  openapi/dotcms-authentication-api-openapi.yml:
+  mcp/dotcms-mcp.yml:
+    method: searched
+    evidence: declared in the artifact
+  mcp/dotcms-tool-crosswalk.yml:
+    method: derived
+    evidence: declared in the artifact
+  openapi/dotcms-rest-api-openapi.json:
     method: unknown
     evidence: no authorship recorded
-  openapi/dotcms-content-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  openapi/dotcms-navigation-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  openapi/dotcms-search-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  openapi/dotcms-sites-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  openapi/dotcms-users-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  openapi/dotcms-workflow-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  plans/dotcms-plans-pricing.yml:
+  overlays/dotcms-rest-api-overlay.yaml:
     method: generated
+    evidence: declared in the artifact
+  packages/dotcms-packages.yml:
+    method: searched
+    evidence: declared in the artifact
+  plans/dotcms-plans-pricing.yml:
+    method: searched
     evidence: declared in the artifact
   rate-limits/dotcms-rate-limits.yml:
-    method: generated
+    method: searched
+    evidence: declared in the artifact
+  sandbox/dotcms-sandbox.yml:
+    method: searched
     evidence: declared in the artifact
   security/dotcms-domain-security.yml:
+    method: unknown
+    evidence: no authorship recorded
+  security/dotcms-trust-center.yml:
+    method: searched
+    evidence: declared in the artifact
+  security/dotcms-vulnerability-disclosure.yml:
+    method: searched
+    evidence: declared in the artifact
+  skills/_index.yml:
+    method: searched
+    evidence: declared in the artifact
+  skills/dotcms-best-practices.md:
+    method: unknown
+    evidence: no authorship recorded
+  skills/dotcms-create-sites.md:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/dotcms-api-catalog.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/dotcms-security.txt:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/dotcms-well-known.yml:
     method: unknown
     evidence: no authorship recorded

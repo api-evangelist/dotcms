@@ -1,18 +1,102 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/dotcms-openapi.yml
+generated: '2026-09-06'
+method: searched
+source: https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication
+docs: https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication
+spec_reference: openapi/dotcms-rest-api-openapi.json
+description: >-
+  Authentication profile for the dotCMS REST and GraphQL APIs, sourced from the provider's own
+  auth documentation. It is `searched` rather than `derived` for a specific reason worth
+  recording: the first-party OpenAPI dotCMS serves at /api/openapi.json declares NO
+  components.securitySchemes and no top-level security requirement, across all 754 operations —
+  while 368 of those operations declare a 401 response. The contract knows auth is required and
+  does not say what it is. Everything below therefore comes from the docs, not from the spec.
+spec_gap:
+  security_schemes_declared: 0
+  operations_declaring_401: 368
+  operations_declaring_403: 348
+  impact: >-
+    A client generated from this spec ships with no authentication wiring at all. This is the
+    single highest-leverage contract fix available to dotCMS: adding a bearerAuth securityScheme
+    plus a top-level security block would cost a few lines and would make every generated SDK
+    and every agent tool-call correct by construction.
 summary:
-  types:
-  - http
+  types: [http, apiKey-as-bearer, session]
+  api_key_in: [header]
+  oauth2_flows: []
+  primary: bearer-jwt
 schemes:
-- name: BearerAuth
+- name: APIToken
   type: http
   scheme: bearer
   bearerFormat: JWT
-  sources:
-  - openapi/dotcms-openapi.yml
+  primary: true
+  header: Authorization
+  format: 'Authorization: Bearer <token>'
+  mint:
+    operation: POST /api/v1/authentication/api-token
+    operationId: requestApiToken
+    body_fields: [user, password, expirationDays]
+    example_shape: '{"user":"<email>","password":"<password>","expirationDays":10}'
+  ui_mint: System > Users > API Access Tokens
+  expiry: Set per token at mint time via expirationDays; tokens are stateless JWTs.
+  source: docs
+  note: >-
+    The recommended method, and the one the dotCMS MCP server and dotCLI both use. The MCP server
+    reads it from AUTH_TOKEN and its docs require write permission on Content Types, Content and
+    Workflows.
 - name: BasicAuth
   type: http
   scheme: basic
-  sources:
-  - openapi/dotcms-openapi.yml
+  header: AUTHENTICATION
+  format: 'AUTHENTICATION: <base64(user:password)>'
+  source: docs
+  note: >-
+    Note the non-standard header name — dotCMS uses AUTHENTICATION, not Authorization, for this
+    mode. The docs warn: "Base64 encoding does not encrypt the user name and password." HTTPS
+    only.
+- name: DOTAUTH
+  type: http
+  scheme: basic-variant
+  header: DOTAUTH
+  format: 'DOTAUTH: <base64(user:password)>'
+  source: docs
+  note: dotCMS-specific alias for basic auth. Security by obscurity only.
+- name: SessionCookie
+  type: session
+  source: docs
+  note: >-
+    Established by logging into the dotCMS back end or front end; both back-end and front-end
+    user roles are supported. Relevant to browser-embedded calls, not to server-to-server agents.
+- name: URLParameters
+  type: query
+  format: /user/xxx/password/yyy
+  discouraged: true
+  source: docs
+  note: >-
+    Documented for legacy compatibility and explicitly the least secure option — credentials
+    appear in access logs, proxies and browser history. Never use from an agent.
+end_user_sso:
+  note: >-
+    Distinct from API authentication. dotCMS configures OAuth/OIDC and SAML for END-USER login to
+    the platform, per site, under the `dotAuth` (15 operations) and `SAML Authentication` tags in
+    the spec. These are configuration endpoints for identity federation, not an OAuth
+    authorization surface for the API itself — which is why no scopes/ artifact is emitted: the
+    dotCMS API has no OAuth scope model. Authorization is by dotCMS role and per-asset
+    permission, evaluated server-side against the token's user.
+  spec_tags: [dotAuth, "SAML Authentication"]
+  operations: 15
+authorization_model:
+  kind: rbac-plus-acl
+  note: >-
+    dotCMS authorizes by role membership plus per-asset permissions rather than by token scope.
+    17 operations declare "Forbidden - CMS Administrator role required" and 8 declare "User lacks
+    the Scripting Developer role" — the roles are named in the contract's response descriptions
+    even though they are not modelled as scopes. Successful responses echo the caller's rights
+    back in the envelope's `permissions[]` array, which is a genuinely useful runtime signal for
+    an agent deciding whether to attempt a write.
+  runtime_signal: response envelope `permissions[]`
+revocation:
+  documented: false
+  note: >-
+    Tokens are revocable through the dotCMS admin UI (API Access Tokens tab). No REST revocation
+    endpoint is documented on the auth page; expirationDays is the primary control.

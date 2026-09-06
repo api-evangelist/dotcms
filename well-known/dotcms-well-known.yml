@@ -1,0 +1,179 @@
+generated: '2026-09-06'
+method: probed
+source: live GET of the named /.well-known/ path list on every host this record knows
+description: >-
+  Probed the closed path list against all five hosts in the record — the registrable domain
+  (dotcms.com), www.dotcms.com, the docs host (dev.dotcms.com), the API/demo host
+  (demo.dotcms.com) and the docs CDN (cdn.dotcms.dev). www.dotcms.com serves two real documents:
+  an RFC 9116 security.txt and an RFC 9727 API catalog in application/linkset+json. The apex
+  dotcms.com 301s every path to www, so the www rows are the authoritative ones. A negative
+  control was issued on every host and 404'd everywhere — no host echoes paths.
+path_echo_control: passed
+hit_count: 2
+hosts:
+- host: https://www.dotcms.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: dotcms-security.txt
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: application/linkset+json
+    file: dotcms-api-catalog.json
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/dotcms-negative-control-7f3ab91c.json
+    status: 404
+    note: negative control — 404 as required, this host does not echo paths
+- host: https://dotcms.com
+  note: >-
+    Apex redirects (HTTP 301) every probed path to the www host; no document is served here
+    directly. See the www.dotcms.com rows for the served documents.
+  documents:
+  - path: /.well-known/security.txt
+    status: 301
+  - path: /.well-known/api-catalog
+    status: 301
+  - path: /.well-known/agent-card.json
+    status: 301
+  - path: /.well-known/agent.json
+    status: 301
+  - path: /.well-known/dotcms-negative-control-7f3ab91c.json
+    status: 301
+- host: https://dev.dotcms.com
+  note: docs host — every probed path 404s
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/dotcms-negative-control-7f3ab91c.json
+    status: 404
+- host: https://demo.dotcms.com
+  note: >-
+    dotCMS demo instance — the host that serves the first-party OpenAPI at /api/openapi.json.
+    Every probed /.well-known/ path 404s.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/dotcms-negative-control-7f3ab91c.json
+    status: 404
+- host: https://cdn.dotcms.dev
+  note: >-
+    Docs CDN. Serves a second copy of the security.txt whose own first line reads
+    "# Deploy to: https://www.dotcms.com/.well-known/security.txt" — i.e. the source file, not a
+    separately-published document. Not counted as a distinct hit.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain;charset=UTF-8
+    note: source copy of the www document; not counted separately
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/dotcms-negative-control-7f3ab91c.json
+    status: 404
+api_catalog:
+  spec: RFC 9727 (linkset, application/linkset+json)
+  url: https://www.dotcms.com/.well-known/api-catalog
+  file: dotcms-api-catalog.json
+  linkset_anchors: 12
+  service_docs: 9
+  note: >-
+    The catalog is a content/service catalog for the marketing site rather than an index of the
+    REST API surface — it links the blog, videos, podcast, case studies, news, resource library,
+    authors, features, roadmap and ecosystem sections, each with a sitemap alternate. Its most
+    agent-relevant entry is a service-doc declaring markdown negotiation on every page:
+    "Markdown rendering: fetch any page with Accept: text/markdown header" at
+    https://www.dotcms.com/api/markdown. Verified 2026-09-06 — GET https://www.dotcms.com/ with
+    Accept: text/markdown returns 12,510 bytes of markdown with YAML frontmatter, not HTML.
+security_txt:
+  spec: RFC 9116
+  url: https://www.dotcms.com/.well-known/security.txt
+  file: dotcms-security.txt
+  contact: mailto:security@dotcms.com
+  expires: '2027-06-09T23:59:59.000Z'
+  canonical: https://www.dotcms.com/.well-known/security.txt
+  policy: https://www.dotcms.com/docs/latest/responsible-disclosure-policy
+  encryption:
+  - https://www.dotcms.com/.well-known/pgp-key.asc
+  - openpgp4fpr:495BC65C94B31F256FA5B7950EBE2F8A7F60998F
+  preferred_languages: en

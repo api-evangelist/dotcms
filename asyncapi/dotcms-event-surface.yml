@@ -1,0 +1,88 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/build/apis/api-basics/webhooks,
+  openapi/dotcms-rest-api-openapi.json
+spec_type: none
+asyncapi_published: false
+description: >-
+  dotCMS has an event surface, but it is not the shape the AsyncAPI family expects and there is
+  no AsyncAPI document to harvest — probed and confirmed absent, not assumed. What exists is two
+  distinct things: a server-sent-events streaming surface declared inside the REST contract, and
+  a webhook mechanism that is entirely author-defined. The second is the interesting one, and it
+  is a genuine architectural choice rather than a gap, so it is recorded as what it is rather
+  than scored as a missing event catalogue.
+probes:
+- url: https://demo.dotcms.com/asyncapi.yaml
+  status: 404
+- url: https://dev.dotcms.com/docs/asyncapi
+  status: 404
+- url: https://dev.dotcms.com/docs/build/apis/api-basics/webhooks
+  status: 200
+webhooks:
+  published: true
+  docs: https://dev.dotcms.com/docs/build/apis/api-basics/webhooks
+  model: author-defined
+  catalog: none
+  event_types: []
+  mechanism: >-
+    dotCMS ships no predefined webhook event list. Webhooks are attached at any point in the
+    content lifecycle by adding a Velocity Script Sub-Action (or a custom Java workflow action
+    plugin) to a Workflow Action; when that action fires, the script calls the remote endpoint
+    using the $json Velocity tool. The author controls the URL, method, headers, parameters and
+    the field-to-payload mapping, and has access to workflow metadata (user, action name, next
+    step).
+  provider_rationale: >-
+    "Since every 3rd party system has different hooks which require different parameters, methods
+    and HTTP headers, the ability to script when and how dotCMS fires webhooks is a very powerful
+    and flexible tool."
+  delivery_semantics:
+    retries: not documented
+    signing: not documented
+    secrets: not documented
+    ordering: not documented
+    at_least_once: not documented
+  consumer_impact: >-
+    Because the webhook is written per-installation, no two dotCMS deployments emit the same
+    payload, and there is nothing stable for a catalogue or an AsyncAPI document to describe. An
+    integrator cannot subscribe to "dotCMS content published" the way they can with a SaaS CMS —
+    they (or the site's administrator) must author the workflow sub-action first. That is the
+    trade dotCMS has made: maximum flexibility, zero out-of-the-box contract. Recorded plainly
+    because it changes how an agent should plan an integration.
+streaming:
+  published: true
+  transport: server-sent-events
+  media_type: text/event-stream
+  declared_in: openapi/dotcms-rest-api-openapi.json
+  channels:
+  - operationId: streamA11yAgentFix
+    method: POST
+    path: /api/v1/agents/a11y/fix/stream
+    summary: Run the accessibility fix agent, streaming progress over SSE.
+  - operationId: monitorContentImportJobs
+    method: GET
+    path: /api/v1/content/_import/{jobId}/monitor
+    summary: Monitor a content import job in real-time.
+  - operationId: monitorJob
+    method: GET
+    path: /api/v1/jobs/{jobId}/monitor
+    summary: Monitor a job in real time.
+  - operationId: getLogs
+    method: GET
+    path: /api/v1/logs/{fileName}/_tail
+    summary: Tail a server log file.
+  note: >-
+    These are progress streams for long-running operations, not a domain event bus — an agent
+    that fires a bulk import or an accessibility fix can watch it complete instead of polling.
+    Useful, and genuinely asynchronous, but they carry no published message schemas, so no
+    AsyncAPI channels could be derived from them without inventing the payloads.
+push_publishing:
+  note: >-
+    dotCMS's own instance-to-instance propagation (Push Publishing: bundles, environments,
+    endpoints — 32 operations in the spec) is an internal distribution mechanism between dotCMS
+    servers, not a subscribable event stream for third parties. Noted so it is not mistaken for
+    one.
+asyncapi_applicability: >-
+  A provider with no subscribable event contract is not penalised for lacking an AsyncAPI
+  document, and none was fabricated. What IS recorded is the webhook surface dotCMS documents,
+  and the four SSE channels its own contract declares.

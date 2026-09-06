@@ -1,0 +1,97 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/sdk-react-library, https://dev.dotcms.com/docs/sdk-angular-library,
+  https://dev.dotcms.com/docs/sdk-uve-library, https://www.dotcms.com/developers/sdks
+description: >-
+  dotCMS's client-side component surface is what turns a headless CMS back into an editable one.
+  The components are not decoration around the REST API — DotCMSLayoutBody renders the layout a
+  page's containers describe, and the editable components open a live channel to the Universal
+  Visual Editor so a content author clicking text in a Next.js or Angular front end edits the
+  underlying contentlet. That is the product's core differentiator ("visual headless"), and it
+  ships as npm component libraries rather than as hosted embeds or iframes.
+families:
+- name: React
+  loader: "@dotcms/react"
+  install: npm install @dotcms/react
+  version: 26.9.3-1
+  published: '2026-09-03'
+  docs: https://dev.dotcms.com/docs/sdk-react-library
+  components:
+  - name: DotCMSLayoutBody
+    description: Renders the layout for a dotCMS page, supporting both production and development modes.
+  - name: DotCMSEditableText
+    description: >-
+      Inline editing of dotCMS text fields — plain text, text area and WYSIWYG field types.
+  - name: DotCMSBlockEditorRenderer
+    description: Renders Block Editor content with support for custom block renderers.
+  - name: DotCMSShow
+    description: Conditionally renders content based on the current Universal Visual Editor mode.
+  hooks:
+  - name: useEditableDotCMSPage
+    description: >-
+      Initializes UVE communication channels and delivers real-time page updates while editing.
+  - name: useDotCMSShowWhen
+    description: Conditionally shows content based on the current UVE mode.
+  - name: useAISearch
+    description: AI-powered semantic search over dotCMS content.
+- name: Angular
+  loader: "@dotcms/angular"
+  install: npm install @dotcms/angular
+  version: 26.9.3-1
+  published: '2026-09-03'
+  docs: https://dev.dotcms.com/docs/sdk-angular-library
+  components:
+  - name: DotCMSLayoutBody
+    description: Renders the layout for a dotCMS page, production and development modes.
+  - name: DotCMSEditableText
+    description: Inline editing of dotCMS text fields.
+  - name: DotCMSBlockEditorRendererNative
+    description: Recommended renderer for Block Editor content.
+  directives:
+  - name: DotCMSShowWhen
+    description: Conditionally shows content based on the current UVE mode.
+  services:
+  - name: DotCMSEditablePageService
+    description: Real-time page updates when using the Universal Visual Editor.
+  - name: DotCMSClient
+    description: Core client for fetching and managing dotCMS data, injected via providers.
+  providers:
+  - name: provideDotCMSClient
+    description: Recommended way to configure the dotCMS client in an Angular application.
+  - name: provideDotCMSImageLoader
+    description: Configures Angular image loading against a dotCMS instance.
+- name: Universal Visual Editor (UVE)
+  loader: "@dotcms/uve"
+  install: npm install @dotcms/uve
+  version: 26.9.3-1
+  published: '2026-09-03'
+  docs: https://dev.dotcms.com/docs/sdk-uve-library
+  description: >-
+    The framework-agnostic runtime the React and Angular editable components sit on. It is the
+    bridge between a headless front end and the dotCMS editing shell; the framework packages are
+    thin bindings over it.
+- name: Analytics + Experiments
+  loader: ["@dotcms/analytics", "@dotcms/experiments"]
+  version: 26.9.3-1
+  published: '2026-09-03'
+  docs:
+  - https://dev.dotcms.com/docs/sdk-analytics-library
+  - https://dev.dotcms.com/docs/sdk-experiments-library
+  description: >-
+    Client-side instrumentation libraries — Content Analytics collection and A/B experiment
+    variant assignment. Listed here rather than in packages/ only as a cross-reference; they are
+    catalogued as packages too.
+hosted_embeds:
+  published: false
+  note: >-
+    dotCMS publishes no hosted/prebuilt embed surface (no drop-in <script> widget, no iframe
+    dashboard). Everything is an npm library compiled into the consumer's own application. The
+    single CDN-delivered surface dotCMS does operate is image processing on the instance itself
+    (/dA/... resize and quality parameters), which is an API, not a component.
+counts:
+  families: 4
+  components: 7
+  hooks: 3
+  directives: 1
+  services: 2

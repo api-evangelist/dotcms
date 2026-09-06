@@ -1,0 +1,65 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/reference/releases/product-versions/changelogs and the
+  dotCMS/core GitHub releases feed (https://api.github.com/repos/dotCMS/core/releases)
+description: >-
+  dotCMS publishes a dated changelog on its developer site, but the page renders client-side and
+  serves "No data" to a non-JavaScript fetch, so the machine-readable record of what shipped and
+  when is the dotCMS/core GitHub releases feed. Both are recorded: the docs URL is the human
+  changelog dotCMS points customers at, the releases feed is the one an agent can actually read.
+docs: https://dev.dotcms.com/docs/reference/releases/product-versions/changelogs
+machine_readable_feed: https://api.github.com/repos/dotCMS/core/releases
+human_feed: https://github.com/dotCMS/core/releases
+scheme: calendar
+format: YY.MM.DD-NN
+current_version: 26.09.03-01
+current_released: '2026-09-03'
+cadence: >-
+  Roughly twice-weekly. Fifteen releases in the 16 days to 2026-09-03, each pairing a server tag
+  (v26.09.03-01) with a matching CLI tag (dotcms-cli-26.09.03-01). LTS patches land on their own
+  track (v25.07.10_lts_v18, 2026-09-01).
+window: '2026-08-20 to 2026-09-03'
+entries:
+- version: 26.09.03-01
+  date: '2026-09-03'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 26.09.02-01
+  date: '2026-09-02'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 25.07.10_lts_v18
+  date: '2026-09-01'
+  track: lts
+  artifacts: [server]
+  note: 18th patch on the 25.07.10 LTS series.
+- version: 26.08.31-02
+  date: '2026-08-31'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 26.08.31-01
+  date: '2026-08-31'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 26.08.28-01
+  date: '2026-08-28'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 26.08.24-01
+  date: '2026-08-24'
+  track: current
+  artifacts: [server, dotcms-cli]
+- version: 26.08.19-04
+  date: '2026-08-20'
+  track: current
+  artifacts: [server, dotcms-cli]
+breaking_change_policy: >-
+  Releases carrying significant architectural shifts are explicitly labelled "Breaking Change
+  releases" so customers can estimate migration effort. Deprecations get at least six months of
+  notice before removal — see lifecycle/dotcms-lifecycle.yml.
+note: >-
+  Per-release highlights are not transcribed here. The release notes live on the GitHub releases
+  feed and the docs changelog; reproducing a partial summary of each would invent emphasis the
+  provider did not give. What is recorded is what can be stated exactly: version, date, track and
+  which artifacts shipped.

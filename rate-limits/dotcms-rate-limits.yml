@@ -4,92 +4,94 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: dotCMS
 providerId: dotcms
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-09-06'
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://www.dotcms.com/pricing, openapi/dotcms-rest-api-openapi.json,
+  https://dev.dotcms.com/docs
 tags:
   - CMS
   - Content
   - Content Management
   - Rate Limiting
   - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the dotCMS API surface. Captures per-tier quotas,
-  burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to be replaced
-  with published provider limits.
+description: >-
+  dotCMS publishes NO API rate limits, and that appears to be deliberate rather than an
+  omission — dotCMS Cloud is marketed as shipping without API rate limiting or throttling, with
+  self-provisioned scaling instead. What dotCMS does publish is a monthly REQUEST QUOTA per
+  pricing tier, which is a commercial ceiling rather than a runtime throttle. The two are
+  recorded separately below because they behave differently: a quota is billed, a rate limit is
+  rejected, and an agent needs to know which it is about to hit.
+limit_count: 0
+limit_count_note: >-
+  Zero published per-second/minute/hour rate limits. This is an honest zero established by three
+  checks, not an unsearched blank: (1) no RateLimit-*, X-RateLimit-* or Retry-After header is
+  declared anywhere in the 754-operation first-party OpenAPI; (2) no 429 response is declared on
+  any operation in that spec — the closest is a single 503; (3) the docs surface no rate-limit
+  reference page. Checked 2026-09-06.
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
+  limit: null
+  remaining: null
+  reset: null
+  retryAfter: null
+  policy: null
+  note: >-
+    No rate-limit signalling headers exist. An agent gets no runtime budget signal from dotCMS
+    and must self-pace. This is the main practical cost of the no-rate-limit design: there is
+    nothing to back off against, so a runaway client degrades the instance rather than being
+    throttled by it.
 responseCodes:
-  throttled: 429
-  quotaExceeded: 429
+  throttled: null
+  quotaExceeded: null
   serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - dotCMS REST API
-      - dotCMS GraphQL API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - dotCMS REST API
-      - dotCMS GraphQL API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - dotCMS REST API
-      - dotCMS GraphQL API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - dotCMS REST API
-      - dotCMS GraphQL API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - dotCMS REST API
-      - dotCMS GraphQL API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  note: >-
+    503 is declared once in the spec. 429 appears zero times. Quota exhaustion is handled
+    commercially (overage billed per the add-on units in plans/dotcms-plans-pricing.yml), not by
+    an HTTP status.
+limits: []
+quotas:
+  note: >-
+    Monthly request and bandwidth ceilings published on the pricing comparison table. These are
+    contractual capacity, not enforced throttles — dotCMS sells additional request and bandwidth
+    blocks as annual add-ons (1,000,000 requests; 0.5 TB bandwidth), which is how overage is
+    handled.
+  source: https://www.dotcms.com/pricing
+  entries:
+    - tier: Starter
+      metric: requests_per_month
+      limit: 100000
+    - tier: Starter
+      metric: bandwidth_per_month
+      limit: 1
+      unit: TB
+    - tier: Professional
+      metric: requests_per_month
+      limit: 500000
+    - tier: Professional
+      metric: bandwidth_per_month
+      limit: 5
+      unit: TB
+    - tier: Business
+      metric: requests_per_month
+      limit: 2000000
+    - tier: Business
+      metric: bandwidth_per_month
+      limit: 15
+      unit: TB
+    - tier: Enterprise
+      metric: requests_per_month
+      limit: 10000000
+    - tier: Enterprise
+      metric: bandwidth_per_month
+      limit: 50
+      unit: TB
+self_hosted_note: >-
+  A self-hosted dotCMS instance has no vendor-imposed limit at all — the ceiling is the
+  customer's own infrastructure. Rate limiting, where a customer wants it, is applied at their
+  edge (dotCMS bundles a Web Application Firewall from the Professional tier upward) rather than
+  by the application. Any limit a consumer meets on a customer's dotCMS is that customer's
+  policy, not dotCMS's.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

@@ -1,0 +1,202 @@
+generated: '2026-09-06'
+method: derived
+source: openapi/dotcms-rest-api-openapi.json
+format: dotcms-response-entity
+notes: >-
+  dotCMS does NOT emit RFC 9457 application/problem+json — probed across all 754 operations in the
+  first-party spec, zero responses declare a problem+json media type. Errors are returned as the
+  standard dotCMS ResponseEntityView envelope (schema components.schemas.ErrorEntity /
+  MessageEntity) with application/json, carrying `errors[]` with `errorCode` and `message`.
+  Titles below are the response descriptions the provider wrote in its own spec; remediation is
+  API Evangelist guidance derived from those descriptions, not a provider statement.
+envelope:
+  media_type: application/json
+  schema: "#/components/schemas/ErrorEntity"
+  fields: [errors, messages, entity, pagination]
+problems:
+- status: 400
+  title: "Bad request"
+  occurrences: 249
+  spec_descriptions:
+  - description: "Bad request"
+    count: 43
+  - description: "Bad Request"
+    count: 9
+  - description: "The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available)."
+    count: 8
+  - description: "Bad request - Container ID is required"
+    count: 6
+  remediation: "Validate the request body/params against the operation schema before retrying; the same request will fail again unchanged."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#testAiProviderConnection
+  - openapi/dotcms-rest-api-openapi.json#saveAiConfig
+  - openapi/dotcms-rest-api-openapi.json#rawPrompt
+  - openapi/dotcms-rest-api-openapi.json#summarizeFromContent
+  - openapi/dotcms-rest-api-openapi.json#exchange
+  - openapi/dotcms-rest-api-openapi.json#saveDotAuthConfig
+- status: 401
+  title: "Unauthorized"
+  occurrences: 368
+  spec_descriptions:
+  - description: "Unauthorized - authentication required"
+    count: 111
+  - description: "Authentication required"
+    count: 65
+  - description: "Invalid User"
+    count: 59
+  - description: "Unauthorized access"
+    count: 34
+  remediation: "Attach a valid dotCMS API token as `Authorization: Bearer <token>`, or re-mint one via POST /api/v1/authentication/api-token. Do not retry without new credentials."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#listAiProviders
+  - openapi/dotcms-rest-api-openapi.json#testAiProviderConnection
+  - openapi/dotcms-rest-api-openapi.json#getAiConfig
+  - openapi/dotcms-rest-api-openapi.json#rawPrompt
+  - openapi/dotcms-rest-api-openapi.json#summarizeFromContent
+  - openapi/dotcms-rest-api-openapi.json#exchange
+- status: 403
+  title: "Forbidden"
+  occurrences: 348
+  spec_descriptions:
+  - description: "Forbidden"
+    count: 76
+  - description: "Forbidden - insufficient permissions"
+    count: 47
+  - description: "Forbidden - CMS Administrator role required"
+    count: 17
+  - description: "Insufficient permissions"
+    count: 15
+  remediation: "The authenticated user lacks the required role or asset permission. Grant the role (frequently CMS Administrator or a Scripting Developer role) rather than retrying."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#testAiProviderConnection
+  - openapi/dotcms-rest-api-openapi.json#getAiConfig
+  - openapi/dotcms-rest-api-openapi.json#saveAiConfig
+  - openapi/dotcms-rest-api-openapi.json#exchange
+  - openapi/dotcms-rest-api-openapi.json#getDotAuthConfig
+  - openapi/dotcms-rest-api-openapi.json#saveDotAuthConfig
+- status: 404
+  title: "Not found"
+  occurrences: 226
+  spec_descriptions:
+  - description: "Content not found"
+    count: 13
+  - description: "Page not found"
+    count: 12
+  - description: "Site not found"
+    count: 11
+  - description: "Workflow action not found"
+    count: 10
+  remediation: "The identifier, inode, path or key does not resolve in this instance/host/language. Re-resolve the identifier; do not retry blindly."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#exchange
+  - openapi/dotcms-rest-api-openapi.json#getDotAuthConfig
+  - openapi/dotcms-rest-api-openapi.json#saveDotAuthConfig
+  - openapi/dotcms-rest-api-openapi.json#clearDotAuthConfig
+  - openapi/dotcms-rest-api-openapi.json#getSamlSpMetadata
+  - openapi/dotcms-rest-api-openapi.json#doLogin
+- status: 405
+  title: "Method not allowed"
+  occurrences: 1
+  spec_descriptions:
+  - description: "Method Not Allowed"
+    count: 1
+  remediation: "Use a method the path supports."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#generateSiteAuth
+- status: 406
+  title: "Not acceptable"
+  occurrences: 56
+  spec_descriptions:
+  - description: "Not Acceptable"
+    count: 56
+  remediation: "Send an Accept header the operation produces (usually application/json)."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#addSeparatorAction
+  - openapi/dotcms-rest-api-openapi.json#postAddWorkflowStep
+  - openapi/dotcms-rest-api-openapi.json#postCopyScheme
+  - openapi/dotcms-rest-api-openapi.json#getWorkflowActionByActionId
+  - openapi/dotcms-rest-api-openapi.json#putSaveActionsByWorkflowActionForm
+  - openapi/dotcms-rest-api-openapi.json#deleteWorkflowActionByActionId
+- status: 409
+  title: "Conflict"
+  occurrences: 13
+  spec_descriptions:
+  - description: "Folder already exists at the specified path"
+    count: 1
+  - description: "Conflict - a clean-assets job is already running"
+    count: 1
+  - description: "Conflict - a fix-assets job is already running"
+    count: 1
+  - description: "Conflict \u2014 net content loss exceeds the configured threshold; refresh and retry"
+    count: 1
+  remediation: "State conflict \u2014 the asset is locked, already exists, or is in a workflow step that forbids the change. Re-read state, then act."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#createFolder
+  - openapi/dotcms-rest-api-openapi.json#requestCleanAssetsJob
+  - openapi/dotcms-rest-api-openapi.json#requestFixAssetsJob
+  - openapi/dotcms-rest-api-openapi.json#addContentToPage
+  - openapi/dotcms-rest-api-openapi.json#addAssetsToBundle
+  - openapi/dotcms-rest-api-openapi.json#removeAssetsFromBundle
+- status: 415
+  title: "Unsupported media type"
+  occurrences: 37
+  spec_descriptions:
+  - description: "Unsupported Media Type"
+    count: 36
+  - description: "Body must be a JSON object"
+    count: 1
+  remediation: "Set Content-Type to a media type the operation consumes (application/json, or multipart/form-data for asset upload)."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#postValidateContent
+  - openapi/dotcms-rest-api-openapi.json#putGetRemoteTokenV1
+  - openapi/dotcms-rest-api-openapi.json#postIssueApiTokenV1
+  - openapi/dotcms-rest-api-openapi.json#postAuthenticationV1
+  - openapi/dotcms-rest-api-openapi.json#bulkRefreshContent
+  - openapi/dotcms-rest-api-openapi.json#postContentTypeCopy
+- status: 422
+  title: "Unprocessable entity"
+  occurrences: 1
+  spec_descriptions:
+  - description: "Whole batch skipped \u2014 none of the input contentlets are on a workflow scheme that owns the supplied 'workflowActionId'."
+    count: 1
+  remediation: "The payload parsed but failed semantic validation. Correct the field values named in the response."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#putBulkActionsFire
+- status: 500
+  title: "Internal server error"
+  occurrences: 221
+  spec_descriptions:
+  - description: "Internal Server Error"
+    count: 90
+  - description: "Internal server error"
+    count: 78
+  - description: "Internal Server Error: An unexpected error occurred while retrieving jobs."
+    count: 15
+  - description: "Unexpected server error"
+    count: 7
+  remediation: "Server-side failure. Safe to retry idempotent GETs with backoff; re-verify state before retrying a write, because dotCMS ships no idempotency key."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#getAiConfig
+  - openapi/dotcms-rest-api-openapi.json#saveAiConfig
+  - openapi/dotcms-rest-api-openapi.json#rawPrompt
+  - openapi/dotcms-rest-api-openapi.json#summarizeFromContent
+  - openapi/dotcms-rest-api-openapi.json#getDotAuthConfig
+  - openapi/dotcms-rest-api-openapi.json#saveDotAuthConfig
+- status: 502
+  title: "Bad gateway"
+  occurrences: 1
+  spec_descriptions:
+  - description: "Reporting service unavailable or unauthorized"
+    count: 1
+  remediation: "Upstream/proxy failure. Retry with backoff."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#reportIssue
+- status: 503
+  title: "Service unavailable"
+  occurrences: 1
+  spec_descriptions:
+  - description: "OAuth is not configured for this site"
+    count: 1
+  remediation: "Instance unavailable (often during a demo-instance reset or a node restart). Retry with backoff."
+  source_operations:
+  - openapi/dotcms-rest-api-openapi.json#exchange

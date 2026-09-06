@@ -1,0 +1,43 @@
+generated: '2026-09-06'
+method: searched
+probe: true
+url: https://security.dotcms.com/
+public_summary: https://www.dotcms.com/product/security-compliance
+description: >-
+  dotCMS runs a hosted trust center at security.dotcms.com carrying its certifications, the CAIQ
+  and a gated SOC 2 report request. The public summary page at /product/security-compliance
+  names the certifications outright, so they are recorded here from the provider's own words
+  rather than inferred from a badge image.
+certifications:
+- ISO/IEC 27001:2022
+- ISO/IEC 42001:2023
+- SOC 2 Type II
+- TX-RAMP Level II
+- CSA CAIQ
+documents:
+- name: SOC 2 Type II report
+  access: request
+  url: https://security.dotcms.com/?requestAccessOpen=true&requestedResources=68bf49dffa149b0f145d21eb
+  note: Gated behind an access request, which is normal for a SOC 2 Type II report.
+- name: CAIQ (Consensus Assessments Initiative Questionnaire)
+  access: public
+  url: https://security.dotcms.com/doc/trust?rid=65ea66456af50d8aa7bb69bc&r=2sr38oqu8xcq3f7qdsuhn
+positioning: >-
+  Compliance is dotCMS's stated market position, not a footnote — the homepage title is
+  "Visual Headless CMS for Compliance-led Enterprises" and the security page frames governance as
+  "enforced by the platform, not configured per site". ISO/IEC 42001 is the notable one: dotCMS
+  extends its AI governance claim to agent behaviour, describing an AI agent as "another actor in
+  the system: it works inside the same roles, permissions, and workflows as a person, and every
+  change it makes stays traceable and reversible through version history" — a claim that lines up
+  with the reversibility surface recorded in conventions/dotcms-conventions.yml.
+evidence:
+- source: https://security.dotcms.com/
+  status: 200
+  kind: trust center
+- source: https://www.dotcms.com/product/security-compliance
+  status: 200
+  keywords: [iso 27001, iso 42001, soc 2 type ii, tx-ramp, caiq, trust center]
+- source: https://www.dotcms.com/.well-known/security.txt
+  status: 200
+  kind: security.txt
+checked: '2026-09-06'

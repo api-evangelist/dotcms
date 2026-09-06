@@ -1,0 +1,91 @@
+generated: '2026-09-06'
+method: searched
+status: published
+source: https://dev.dotcms.com/docs/mcp-server
+description: >-
+  dotCMS ships a first-party MCP server. It is distributed as an npm package run over stdio —
+  there is no hosted endpoint an agent can POST to — and its source lives inside the open-source
+  dotCMS/core monorepo at core-web/apps/mcp-server. The design is unusual and worth recording:
+  rather than exposing one MCP tool per REST operation, dotCMS exposes four meta-tools that hand
+  the agent a JavaScript sandbox over the whole 754-operation REST surface. `search` explores the
+  OpenAPI specification; `execute` runs authenticated calls. That means the server's real
+  capability surface IS the OpenAPI in openapi/dotcms-rest-api-openapi.json, not a curated tool
+  list — which is exactly why the tool crosswalk in this directory maps two tools to 754
+  operations rather than 754 tools to 754 operations.
+deployment:
+  mode: local-stdio
+  install: npx -y @dotcms/mcp-server@latest
+  package: https://www.npmjs.com/package/@dotcms/mcp-server
+  auth: api-key
+  verified: searched
+server:
+  name: dotcms
+  transport: stdio
+  package: "@dotcms/mcp-server"
+  version: 0.1.1
+  published: '2026-09-02'
+  binary: dotcms-mcp-server
+  source: https://github.com/dotCMS/core/tree/main/core-web/apps/mcp-server
+  license: MIT (agent-toolkit distribution)
+authentication:
+  type: api-key
+  env:
+  - name: DOTCMS_URL
+    required: true
+    description: The dotCMS instance URL the server talks to, e.g. https://demo.dotcms.com
+  - name: AUTH_TOKEN
+    required: true
+    description: >-
+      dotCMS API token, minted under System > Users > API Access Tokens, or via
+      POST /api/v1/authentication/api-token. The docs require write permissions on Content Types,
+      Content and Workflows and advise minting the smallest token that works.
+  - name: SANDBOX_TIMEOUT
+    required: false
+    description: JavaScript sandbox execution timeout in milliseconds (default 45000).
+  - name: DEBUG
+    required: false
+    description: Diagnostic logging when set to any truthy value.
+  note: >-
+    Both DOTCMS_URL and AUTH_TOKEN must be exported in the shell that launches the MCP client.
+    The provider's own README calls out the failure mode: an unset variable is passed through as
+    the literal string "${AUTH_TOKEN}" and surfaces as a confusing 401 rather than a missing-
+    credential error.
+tools:
+- name: search
+  description: >-
+    Explore the dotCMS REST API specification using JavaScript code that runs in an isolated
+    sandbox.
+  kind: meta
+  backing_surface: openapi/dotcms-rest-api-openapi.json
+- name: execute
+  description: Execute authenticated API calls against your dotCMS instance using JavaScript code.
+  kind: meta
+  backing_surface: openapi/dotcms-rest-api-openapi.json
+- name: download_assets
+  description: Downloads a dotCMS asset folder to the MCP server filesystem.
+  kind: bound
+  backing_surface: openapi/dotcms-rest-api-openapi.json
+- name: upload_assets
+  description: Upload a local directory to dotCMS file assets using /api/v2/assets/publish.
+  kind: bound
+  backing_surface: openapi/dotcms-rest-api-openapi.json
+tools_list_probe:
+  attempted: false
+  reason: >-
+    tools/list is a live JSON-RPC method against a running server process. This server has no
+    remote endpoint to POST to — it is stdio-only — so there is no anonymous URL to introspect.
+    The four tools above are read verbatim from the provider's own documentation at
+    https://dev.dotcms.com/docs/mcp-server, not guessed. Their inputSchemas would require
+    installing and running the package with a live instance token.
+distribution:
+  agent_plugin:
+    repo: https://github.com/dotCMS/agent-toolkit
+    spec: Agent Plugins 1.0.0 (https://agent-plugins.org/specification)
+    manifests: [plugin.json, mcp.json, .claude-plugin/, .cursor-plugin/, .codex-plugin/]
+    install_claude_code: "/plugin marketplace add dotCMS/agent-toolkit && /plugin install dotcms@dotcms"
+    bundles_skills: true
+    note: >-
+      The agent-toolkit repo bundles the MCP server together with dotCMS's two published Agent
+      Skills (see skills/). The bundled .mcp.json declares the same stdio server and reads
+      ${DOTCMS_URL} and ${AUTH_TOKEN} from the environment.
+marketing: https://www.dotcms.com/product/dotcms-mcp

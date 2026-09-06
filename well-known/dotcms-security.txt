@@ -1,0 +1,7 @@
+Contact: mailto:security@dotcms.com
+Expires: 2027-06-09T23:59:59.000Z
+Encryption: https://www.dotcms.com/.well-known/pgp-key.asc
+Encryption: openpgp4fpr:495BC65C94B31F256FA5B7950EBE2F8A7F60998F
+Preferred-Languages: en
+Canonical: https://www.dotcms.com/.well-known/security.txt
+Policy: https://www.dotcms.com/docs/latest/responsible-disclosure-policy

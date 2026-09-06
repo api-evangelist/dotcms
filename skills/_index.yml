@@ -1,0 +1,59 @@
+generated: '2026-09-06'
+method: searched
+source: https://github.com/dotCMS/agent-toolkit
+license: MIT
+description: >-
+  dotCMS publishes its own Agent Skills — they were not generated here. Both files in this
+  directory are saved verbatim from the dotCMS/agent-toolkit repository, which dotCMS ships
+  alongside its MCP server as an Agent Plugins 1.0.0 bundle for Claude Code, Cursor, Codex and
+  any Agent Skills-compatible client. Only the top-level SKILL.md of each skill is mirrored here;
+  each one also carries a `reference/` tree in the source repo (core, vtl and nextjs guidance)
+  that is loaded on demand by the agent and is not duplicated into this catalogue.
+  Worth noting why these skills exist at all, in dotCMS's own words: "in dotCMS a missing piece
+  renders blank or shell-only with HTTP 200, never an error. A successful response is not
+  evidence that anything rendered." Every build path in these skills therefore ends in a verify
+  step — which is a rare and honest piece of agent guidance from a vendor.
+install:
+  skills_any_agent: npx skills add dotCMS/agent-toolkit
+  claude_code_plugin: "/plugin marketplace add dotCMS/agent-toolkit && /plugin install dotcms@dotcms"
+  bundled_mcp_server: "@dotcms/mcp-server (stdio) — see mcp/dotcms-mcp.yml"
+skills:
+  - file: dotcms-best-practices.md
+    name: dotcms-best-practices
+    author: dotCMS
+    source: https://github.com/dotCMS/agent-toolkit/blob/main/skills/dotcms-best-practices/SKILL.md
+    api: openapi/dotcms-rest-api-openapi.json
+    description: >-
+      Reference for doing any single thing in dotCMS correctly — create a content type, page,
+      template or container; place content; author VTL; wire a headless Next.js frontend; or
+      debug a page that renders blank. Indexed by intent, so the agent loads one file for the
+      task at hand.
+    reference_tree:
+      - reference/core/ (00-what-must-exist … 09-placement)
+      - reference/vtl/ (wiring, mechanism choice, themes, containers, listings, verify/debug, velocity)
+      - reference/nextjs/ (connect, component contract, next config, routing, listings, verify)
+    delivery_modes: [vtl-rendered, headless-nextjs]
+  - file: dotcms-create-sites.md
+    name: dotcms-create-sites
+    author: dotCMS
+    source: https://github.com/dotCMS/agent-toolkit/blob/main/skills/dotcms-create-sites/SKILL.md
+    api: openapi/dotcms-rest-api-openapi.json
+    description: >-
+      Plans and builds a complete dotCMS site in two phases. Phase 1 interviews the user and
+      writes PLAN.md (purpose, sitemap, data model, every fact tagged confirmed/placeholder/n-a)
+      and DESIGN.md (visual identity tokens). Phase 2 hands off to dotcms-best-practices and
+      holds a verify-and-fix loop until every page type renders. Stops invented facts shipping
+      as real.
+    reference_tree:
+      - reference/plan/ (interview, plan-template, design-template)
+    delivery_modes: [vtl-rendered, headless-nextjs]
+counts:
+  skills: 2
+  provider_authored: 2
+  api_evangelist_generated: 0
+note: >-
+  No API Evangelist skills were generated for dotCMS. The provider already publishes skills that
+  cover its marquee flows, and generating a competing set grounded in the same operationIds would
+  add noise rather than coverage. If dotCMS's set ever narrows, the gap to fill first is a
+  content-lifecycle skill grounded in the workflow operations (fireWorkflowAction and the 57
+  Workflow-tagged operations), which neither published skill addresses.

@@ -1,0 +1,127 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/reference/releases/product-versions/release-support-lifecycle,
+  https://dev.dotcms.com/docs/reference/releases/product-versions/changelogs,
+  https://github.com/dotCMS/core/releases, openapi/dotcms-rest-api-openapi.json
+description: >-
+  dotCMS is versioned as a shipped product, not as a hosted API version train. There is no
+  /v1 -> /v2 API contract version to negotiate; the API version you get is the version of the
+  instance you are pointed at, which for a self-hosted or cloud customer is a deployment
+  decision. The lifecycle that matters to an integrator is therefore the RELEASE lifecycle:
+  which build a customer is on, how long it is supported, and how much warning a removal gets.
+versioning:
+  scheme: calendar
+  format: YY.MM.DD-NN
+  current: 26.09.03-01
+  current_released: '2026-09-03'
+  docs: https://dev.dotcms.com/docs/reference/releases/product-versions/changelogs
+  note: >-
+    Releases are tagged v26.09.03-01 style in dotCMS/core, with the CLI released on the same
+    train under dotcms-cli-26.09.03-01. The OpenAPI itself declares info.version "3", which is
+    the REST API generation, not the product version — the two are independent and both are
+    recorded here so an agent does not confuse them.
+  api_version_in_spec: '3'
+  path_versioning:
+    observed: true
+    note: >-
+      Paths carry /api/v1/, /api/v2/ and a legacy unversioned /api/ prefix simultaneously; 49
+      operations in the spec are flagged deprecated:true, mostly the unversioned legacy shapes
+      (/api/content/{params}, /api/role/loadbyid/{params}) and the v1 tag endpoints superseded by
+      v2. Version is per-endpoint, not per-API.
+release_tracks:
+- name: Current release
+  support_window: 1 year from release date
+  note: Standard agile releases.
+- name: LTS (Long-Term Supported)
+  support_window: minimum 18 months from LTS designation
+  note: >-
+    "LTS patch releases are explicitly designed to be installable with minimal risk and without
+    the need for a full upgrade" — often under ten minutes of downtime on a single node. The
+    current LTS series observed on the release feed is 25.07.10_lts_v18 (patched 2026-09-01).
+deprecation:
+  policy_url: https://dev.dotcms.com/docs/reference/releases/product-versions/release-support-lifecycle
+  advance_notice: 6 months
+  sunset_header: false
+  policy: >-
+    "Deprecations are announced at least six months before the impact reaches customer
+    instances." Deprecated functionality keeps working during that window before removal.
+    Releases carrying significant architectural shifts are labelled Breaking Change releases so
+    customers can size the migration.
+  end_of_life: >-
+    Past EOL, Enterprise customers receive "patches and hotfixes ... for critical security
+    vulnerabilities only, at the discretion of dotCMS."
+  machine_signal:
+    in_spec: true
+    mechanism: OpenAPI deprecated:true
+    count: 49
+    note: >-
+      dotCMS does mark deprecation in the contract, which is more than most providers do — but it
+      does not emit RFC 8594 Sunset or Deprecation response headers, so a running agent gets no
+      runtime warning. The only machine-readable deprecation signal is design-time, in the spec.
+deprecated_operations:
+- openapi/dotcms-rest-api-openapi.json#deleteEndpoint
+- openapi/dotcms-rest-api-openapi.json#saveCompanyLogo
+- openapi/dotcms-rest-api-openapi.json#canLockContentLegacy
+- openapi/dotcms-rest-api-openapi.json#singlePutContent
+- openapi/dotcms-rest-api-openapi.json#singlePostContent
+- openapi/dotcms-rest-api-openapi.json#lockContentLegacy
+- openapi/dotcms-rest-api-openapi.json#unlockContentLegacy
+- openapi/dotcms-rest-api-openapi.json#getInstalledBundles
+- openapi/dotcms-rest-api-openapi.json#processBundle
+- openapi/dotcms-rest-api-openapi.json#updateBundles
+- openapi/dotcms-rest-api-openapi.json#loadRoleByIdLegacy
+- openapi/dotcms-rest-api-openapi.json#loadRolesByNameLegacy
+- openapi/dotcms-rest-api-openapi.json#loadRoleChildrenLegacy
+- openapi/dotcms-rest-api-openapi.json#getTagsV1
+- openapi/dotcms-rest-api-openapi.json#updateTagV1
+- openapi/dotcms-rest-api-openapi.json#addTagV1
+- openapi/dotcms-rest-api-openapi.json#deleteTagV1
+- openapi/dotcms-rest-api-openapi.json#findTagsByInodeV1
+- openapi/dotcms-rest-api-openapi.json#deleteTagInodesByInodeV1
+- openapi/dotcms-rest-api-openapi.json#getTagsByNameOrIdV1
+deprecated_operations_note: >-
+  20 of 49 listed. The full set is machine-readable from the spec — every operation carrying
+  deprecated:true in openapi/dotcms-rest-api-openapi.json.
+sla:
+  source: https://www.dotcms.com/pricing
+  published: true
+  targets:
+  - tier: Starter
+    uptime_target: 99.5%
+    environments: [Dev, "Production (99.5%)"]
+  - tier: Professional
+    uptime_target: 99.9%
+    environments: [Dev, "Auth", "HA Production (99.9%)"]
+  - tier: Business
+    uptime_target: 99.9%
+    environments: [Dev, "HA Auth (99.9%)", "HA Production (99.9%)"]
+  - tier: Enterprise
+    uptime_target: 99.9%
+    environments: [Dev, "HA Auth (99.9%)", "HA Production (99.9%)"]
+  note: >-
+    Uptime targets are published on the pricing page's comparison table. They apply to dotCMS
+    Cloud; a self-hosted deployment has no dotCMS SLA by definition.
+status_page:
+  published: false
+  probed:
+  - url: https://status.dotcms.com/
+    status: '000'
+    note: does not resolve (no DNS record)
+  - url: https://dotcms.statuspage.io/
+    status: 302
+    note: redirects to atlassian.com/software/statuspage — the vendor's marketing page, not a dotCMS status page
+  - url: https://www.dotcms.com/dotcms-status
+    status: 404
+  - url: https://www.dotcms.com/cloud-status
+    status: 404
+  note: >-
+    No public status page found on 2026-09-06. This is a defensible product decision rather than
+    an omission — dotCMS is predominantly deployed per-customer (self-hosted, managed or single-
+    tenant cloud), so there is no shared multi-tenant plane whose health a single public page
+    could describe. Recorded as absent, with the probes that established it. No StatusPage
+    pointer is emitted.
+support:
+  community: https://community.dotcms.com/
+  services: https://www.dotcms.com/services
+  contact: https://www.dotcms.com/contact-us

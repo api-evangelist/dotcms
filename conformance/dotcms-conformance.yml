@@ -1,0 +1,195 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  openapi/dotcms-rest-api-openapi.json, https://www.dotcms.com/product/security-compliance,
+  https://security.dotcms.com/, https://www.dotcms.com/.well-known/api-catalog,
+  https://www.dotcms.com/.well-known/security.txt,
+  https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication
+description: >-
+  Cross-cutting and industry standards dotCMS conforms to, each with the evidence that
+  established it. Two entries are worth calling out. dotCMS DOES serve an RFC 9727 API catalog
+  and an RFC 9116 security.txt — both verified by fetch, both uncommon. And dotCMS is certified
+  to ISO/IEC 42001:2023, the AI management-system standard, which is still rare enough in 2026
+  that it is the strongest single differentiator in this file. Absences are recorded as
+  conforms:false rather than omitted, so the next run can show movement.
+standards:
+- id: rfc9727-api-catalog
+  name: RFC 9727 — API Catalog (linkset)
+  conforms: true
+  evidence: >-
+    GET https://www.dotcms.com/.well-known/api-catalog returns HTTP 200 with Content-Type
+    application/linkset+json and a valid linkset[] of 12 anchors. Saved verbatim to
+    well-known/dotcms-api-catalog.json. Verified 2026-09-06.
+- id: rfc9116-security-txt
+  name: RFC 9116 — security.txt
+  conforms: true
+  evidence: >-
+    GET https://www.dotcms.com/.well-known/security.txt returns HTTP 200 with Contact, Expires,
+    Encryption, Preferred-Languages, Canonical and Policy fields. Expires 2027-06-09 (not stale).
+    Saved to well-known/dotcms-security.txt.
+- id: openapi-3
+  name: OpenAPI Specification
+  conforms: true
+  version: 3.0.1
+  evidence: >-
+    Every dotCMS instance serves a first-party OpenAPI 3.0.1 document at /api/openapi.json —
+    592 paths, 754 operations, 606 component schemas, 100% operationId coverage. Harvested from
+    https://demo.dotcms.com/api/openapi.json.
+- id: graphql
+  name: GraphQL
+  conforms: true
+  evidence: >-
+    Live GraphQL endpoint at /api/v1/graphql; POST {"query":"{__typename}"} returns
+    {"data":{"__typename":"Query"}}. Schema introspection is disabled server-side, so no SDL
+    could be captured.
+  caveat: __Schema introspection fields are stripped; the schema is not machine-discoverable.
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  evidence: >-
+    First-party MCP server published as @dotcms/mcp-server (0.1.1, 2026-09-02), source in
+    dotCMS/core at core-web/apps/mcp-server, documented at
+    https://dev.dotcms.com/docs/mcp-server. stdio transport.
+- id: agent-skills
+  name: Agent Skills
+  conforms: true
+  evidence: >-
+    Two provider-authored Agent Skills published at https://github.com/dotCMS/agent-toolkit
+    (MIT), saved verbatim to skills/. Frontmatter conforms to the Agent Skills format
+    (name + description).
+- id: agent-plugins-1.0.0
+  name: Agent Plugins 1.0.0
+  conforms: true
+  evidence: >-
+    dotCMS/agent-toolkit ships plugin.json and mcp.json declaring
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json", plus per-client
+    manifests for Claude Code, Cursor and Codex.
+- id: jwt-rfc7519
+  name: JSON Web Token
+  conforms: true
+  evidence: >-
+    The primary API credential is a JWT minted at POST /api/v1/authentication/api-token and sent
+    as Authorization: Bearer. Documented at
+    https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: partial
+  evidence: >-
+    dotCMS configures OAuth 2.0 / OIDC for END-USER login to the platform, per site, through the
+    dotAuth tag (15 operations). The REST API itself is NOT OAuth-protected — there is no
+    authorization server, no token endpoint for API access, and no scope model. Recorded as
+    partial to keep the distinction honest.
+- id: oidc
+  name: OpenID Connect
+  conforms: partial
+  evidence: >-
+    Same as oauth2 — supported as a federated login mechanism for platform users (dotAuth), not
+    as API authorization. No /.well-known/openid-configuration is served on any dotCMS host
+    (probed, 404 on all five).
+- id: saml
+  name: SAML 2.0
+  conforms: true
+  evidence: >-
+    "SAML Authentication" is a first-class tag in the OpenAPI, and dotCMS maintains a dedicated
+    SAML plugin repository (dotCMS/com.dotcms.dotsaml). End-user federation, not API auth.
+- id: rfc9457-problem-details
+  name: RFC 9457 — Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    Zero application/problem+json media types across all 754 operations. Errors use the dotCMS
+    ResponseEntityView envelope with errors[] {errorCode, message, fieldName}. See
+    errors/dotcms-problem-types.yml.
+- id: rfc8594-sunset-header
+  name: RFC 8594 — Sunset HTTP Header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation response header is declared anywhere in the spec. dotCMS does mark
+    49 operations deprecated:true in the contract and publishes a six-month deprecation notice
+    policy, so the design-time signal exists; only the runtime header is missing.
+- id: idempotency
+  name: Idempotency keys for unsafe methods
+  conforms: false
+  evidence: >-
+    No Idempotency-Key header or equivalent on any of the 399 write operations. See
+    conventions/dotcms-conventions.yml (idempotency.coverage: none).
+- id: rate-limit-headers
+  name: RateLimit header fields for HTTP
+  conforms: false
+  evidence: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header and no 429 response declared in the
+    spec. dotCMS Cloud is documented as shipping without API rate limiting.
+- id: json-api
+  name: JSON:API
+  conforms: false
+  evidence: dotCMS uses its own ResponseEntityView envelope, not the JSON:API document structure.
+- id: odata
+  name: OData
+  conforms: false
+- id: scim
+  name: SCIM 2.0
+  conforms: false
+  evidence: >-
+    No urn:ietf:params:scim:schemas:* URN and no /scim/v2 path in the spec. User provisioning is
+    through the dotCMS Users API (/api/v1/users) and SAML/OIDC federation instead. Worth flagging
+    as a real gap for an enterprise buyer: SCIM is the standard an identity team expects for
+    lifecycle provisioning, and dotCMS's absence of it means a bespoke connector.
+- id: cmis
+  name: CMIS (Content Management Interoperability Services)
+  conforms: false
+  evidence: >-
+    No CMIS AtomPub or Browser binding in the spec. Recorded because CMIS is the one long-
+    standing interoperability standard for this market; dotCMS, like most modern headless CMS
+    vendors, does not implement it.
+domain_standards:
+  market: content management / digital experience platform
+  finding: >-
+    No content-management domain standard is DECLARED in the dotCMS contract. CMIS is the
+    historical candidate and is absent; there is no widely-adopted machine-readable standard for
+    headless content delivery that a 2026 CMS could conform to. This is a reward-only dimension
+    and dotCMS is not penalised for a standard its market does not have. The nearest thing to a
+    domain standard dotCMS DOES implement is the agent-facing stack — MCP, Agent Skills, Agent
+    Plugins 1.0.0 — where it is an early adopter rather than a laggard.
+compliance_program:
+  published: true
+  url: https://www.dotcms.com/product/security-compliance
+  trust_center: https://security.dotcms.com/
+  certifications:
+  - id: iso-27001-2022
+    name: ISO/IEC 27001:2022
+    scope: Information security management system across cloud services and supporting operations.
+  - id: iso-42001-2023
+    name: ISO/IEC 42001:2023
+    scope: >-
+      AI management system, covering governance and risk management for customer-facing dotAI
+      capabilities and internal AI use.
+    note: >-
+      Still uncommon in 2026 — this is the certification that distinguishes dotCMS's compliance
+      posture from its peers, and it is directly relevant to the MCP/agent surface catalogued in
+      mcp/.
+  - id: soc2-type-ii
+    name: SOC 2 Type II
+    scope: >-
+      AICPA Trust Services Criteria for security, availability and confidentiality, tested over
+      time by an independent CPA firm. Full report available on request through the trust center.
+  - id: tx-ramp-level-ii
+    name: TX-RAMP Level II
+    scope: >-
+      Texas state-agency cloud security requirements. dotCMS Cloud is certified at Level II.
+  - id: csa-caiq
+    name: CSA CAIQ
+    scope: >-
+      Completed Cloud Security Alliance Consensus Assessments Initiative Questionnaire, published
+      through the trust center.
+  evidence:
+  - source: https://www.dotcms.com/product/security-compliance
+    quote: >-
+      "dotCMS is the compliance-led CMS: ISO 27001, ISO 42001, SOC 2 Type II and TX-RAMP Level II
+      certified, with governance enforced by the platform, not configured per site."
+  - source: https://security.dotcms.com/
+    status: 200
+counts:
+  standards_evaluated: 18
+  conforms_true: 9
+  conforms_partial: 2
+  conforms_false: 7
+  certifications: 5

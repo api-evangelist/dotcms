@@ -1,0 +1,220 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/build/apis/api-basics/rest-api-authentication,
+  https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis,
+  openapi/dotcms-rest-api-openapi.json (592 paths / 754 operations)
+description: >-
+  Cross-cutting request/response semantics for the dotCMS REST API. Two things dominate and both
+  are unusual enough to state up front. First, every successful response is wrapped in a single
+  envelope — the payload is always under `entity`, never at the root — so an agent that reads the
+  body directly will find nothing. Second, dotCMS has NO idempotency mechanism of any kind: there
+  is no Idempotency-Key header, no client-supplied request id, no dedupe window, across all 399
+  write operations. That is recorded here as a machine verdict, not as prose, because a
+  retry-on-timeout against a dotCMS write can and will create a duplicate.
+authentication:
+  style: bearer-jwt
+  primary:
+    header: 'Authorization: Bearer <token>'
+    mint: POST /api/v1/authentication/api-token
+    operationId: requestApiToken
+    body: '{"user":"...","password":"...","expirationDays":10}'
+    expiry: configurable at mint time via expirationDays
+  alternatives:
+  - style: basic
+    header: 'AUTHENTICATION: <base64(user:password)>'
+    note: >-
+      dotCMS's own docs warn "Base64 encoding does not encrypt the user name and password" — use
+      over HTTPS only.
+  - style: dotauth
+    header: 'DOTAUTH: <base64(user:password)>'
+    note: A dotCMS-specific variant of basic; obscurity only, no added security.
+  - style: session-cookie
+    note: Established by front-end or back-end login through the dotCMS UI.
+  - style: url-parameters
+    form: /user/xxx/password/yyy
+    discouraged: true
+    note: >-
+      Documented but least secure — credentials land in access logs and proxies. Do not use from
+      an agent.
+  in_spec: false
+  spec_gap: >-
+    The first-party OpenAPI declares NO components.securitySchemes and no top-level `security`
+    block, even though every operation requires auth in practice and 368 operations declare a 401
+    response. A generated client from this spec will emit no auth wiring. See
+    authentication/dotcms-authentication.yml — that profile is sourced from the docs precisely
+    because the contract omits it.
+  detail: authentication/dotcms-authentication.yml
+idempotency:
+  supported: false
+  coverage: none
+  header: null
+  scope: []
+  retention: null
+  evidence: >-
+    Zero parameters matching /idempot/i across all 754 operations in
+    openapi/dotcms-rest-api-openapi.json, and no idempotency, request-key or deduplication
+    concept in the REST API docs. Checked 2026-09-06.
+  consequence: >-
+    A timed-out or retried POST /api/v1/workflow/actions/fire (or any content-creating write) can
+    produce a second contentlet. An agent must read state back before retrying a write, or use a
+    dotCMS-side natural key. dotCMS's own agent skill states the related trap plainly for the
+    rendering surface: "A missing piece renders blank or shell-only with HTTP 200, never an
+    error. A successful response is not evidence that anything rendered."
+  mitigations_available:
+  - >-
+    Content writes can carry a client-chosen `identifier`; supplying the same identifier on a
+    subsequent write updates rather than duplicates, which is a natural-key substitute for an
+    idempotency key — but it is a data-model property, not a replay-protection contract, and
+    dotCMS does not document it as one.
+reversibility:
+  grade: documented
+  overall: >-
+    dotCMS is unusually reversible for a write-heavy API, because reversibility is a product
+    feature rather than an API feature: every contentlet is versioned, and publish, archive and
+    delete are three distinct states rather than one destructive step. The reversal OPERATIONS
+    are real and named in the contract (18 of them). What is missing is the WINDOW — dotCMS does
+    not publish a retention period for archived content, a purge horizon, or a version-history
+    depth, so the grade is `documented`, not `verified`. No window is asserted here that the docs
+    do not state.
+  surfaces:
+  - write: publish (content, sites, containers, templates)
+    reversal: unpublish
+    operations: [unpublishSite, unpublishContainer, bulkUnpublishContainers, unpublishTemplates]
+    window: not stated
+    note: >-
+      Unpublish returns the asset to working-only state; the working version survives. Reversible
+      indefinitely so far as the docs say.
+  - write: archive
+    reversal: unarchive
+    operations: [unarchiveSite, unarchiveContainer, bulkUnarchiveContainers, unarchiveTemplates]
+    window: not stated
+    note: >-
+      Archive is dotCMS's soft delete. Unarchive restores. The docs do not state whether or when
+      archived assets are purged.
+  - write: lock
+    reversal: unlock
+    operations: [unlockContent, unlockContentLegacy]
+    window: not stated
+  - write: permanent delete
+    reversal: none
+    operations: [deleteAsset, deleteFolder]
+    window: n/a
+    note: >-
+      IRREVERSIBLE. The spec's own summaries say so: "Delete asset permanently", "Delete folder
+      permanently". An agent must treat these as terminal; there is no restore path and no
+      trash retention documented.
+  - write: long-running jobs (content import, job queue, scheduled experiments)
+    reversal: cancel
+    operations: [cancelContentImportJob, cancelJobQueueJob, cancel]
+    window: while the job is queued or running
+    note: >-
+      Cancel is a stop, not an undo — work already committed by a partially-executed import is
+      not rolled back. getCanceledJobs / getCanceledContentImportJobs read back what was stopped.
+  - write: permission changes
+    reversal: reset to inherited
+    operations: [resetAssetPermissions]
+    window: not stated
+  version_history: >-
+    dotCMS keeps a version history per contentlet and its own security page describes agent work
+    as "traceable and reversible through version history". That is the real backstop behind every
+    row above, and it is a product guarantee dotCMS states about itself.
+dry_run_mode:
+  supported: false
+  note: >-
+    No preview/dry-run/validate-only parameter on any write operation. The nearest equivalent is
+    dotCMS's working-vs-live distinction: saveFileAsset writes the working version only, and
+    publishFileAsset promotes working plus live — so "write without going live" exists as a
+    product state, not as a rehearsal flag.
+pagination:
+  style: page-number
+  request_params:
+  - name: page
+    description: 1-based page number.
+    occurrences: 36
+  - name: per_page
+    description: Page size.
+    occurrences: 21
+  - name: pageSize
+    description: Page size on the newer endpoints; the two spellings coexist.
+    occurrences: 15
+  - name: orderby
+    description: Sort field.
+    occurrences: 13
+  - name: direction
+    description: Sort direction (ASC/DESC).
+    occurrences: 16
+  - name: filter
+    description: Free-text filter.
+    occurrences: 17
+  response_object: pagination
+  response_fields: [currentPage, perPage, totalEntries]
+  schema: "#/components/schemas/Pagination"
+  cursor: false
+  note: >-
+    Offset/page-number pagination with a total count — convenient, but not stable under
+    concurrent writes. There is no cursor. The inconsistent `per_page` vs `pageSize` spelling is
+    a real integration hazard and is recorded as observed, not corrected.
+response_envelope:
+  shape: >-
+    Every ResponseEntity*View schema (there are hundreds, one per payload type) has the same five
+    top-level keys. The payload is ALWAYS under `entity`.
+  fields:
+  - name: entity
+    description: The actual payload. Read this, not the root.
+  - name: errors
+    description: Array of ErrorEntity {errorCode, message, fieldName}.
+  - name: messages
+    description: Array of MessageEntity {message}.
+  - name: i18nMessagesMap
+    description: Map of localised message strings.
+  - name: permissions
+    description: Array of permission strings the caller holds on the returned asset.
+  - name: pagination
+    description: Pagination {currentPage, perPage, totalEntries} on list endpoints.
+  schema_example: "#/components/schemas/ResponseEntityStringView"
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shape: 'errors: [{errorCode, message, fieldName}]'
+  detail: errors/dotcms-problem-types.yml
+  note: >-
+    No application/problem+json anywhere in the spec. `fieldName` is the useful part — validation
+    failures name the offending field, which is more than most non-RFC-9457 envelopes give.
+request_tracing:
+  request_id_header: null
+  supported: false
+  note: >-
+    No correlation-id request or response header is declared anywhere in the spec (the only
+    header parameter in all 754 operations is a single `Range`). An agent cannot correlate a
+    dotCMS-side log line to its own call from the response alone.
+versioning:
+  style: uri-path
+  observed: [/api/, /api/v1/, /api/v2/]
+  detail: lifecycle/dotcms-lifecycle.yml
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: null
+  detail: rate-limits/dotcms-rate-limits.yml
+  note: >-
+    dotCMS declares no rate-limit response headers and no 429 in the entire spec. See the
+    rate-limits artifact for what that means.
+field_expansion:
+  supported: partial
+  note: >-
+    There is no generic `expand=` mechanism. Depth/expansion is per-endpoint — e.g. the content
+    and page endpoints take `depth`, `render` and `fireRules` style flags — so it must be read
+    per operation from the spec rather than applied uniformly.
+content_negotiation:
+  produces: [application/json, application/javascript, application/xml, text/plain, text/html, application/octet-stream, text/event-stream, text/csv, application/zip]
+  note: >-
+    56 operations declare a 406 response, so Accept is enforced rather than ignored. Four
+    operations stream text/event-stream (job and import monitors, the accessibility fix agent) —
+    see asyncapi/dotcms-event-surface.yml.
+cross_links:
+  authentication: authentication/dotcms-authentication.yml
+  errors: errors/dotcms-problem-types.yml
+  lifecycle: lifecycle/dotcms-lifecycle.yml
+  rate_limits: rate-limits/dotcms-rate-limits.yml
+  data_model: data-model/dotcms-data-model.yml
+  events: asyncapi/dotcms-event-surface.yml

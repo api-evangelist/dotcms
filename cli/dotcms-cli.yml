@@ -1,0 +1,102 @@
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://dev.dotcms.com/docs/manage/administration/cicd/cli,
+  https://www.npmjs.com/package/@dotcms/dotcli,
+  https://github.com/dotCMS/homebrew-tap/blob/main/Formula/dotcms-cli.rb
+name: dotCLI
+description: >-
+  dotCLI is dotCMS's first-party command-line tool. Its purpose is not ad-hoc API poking but
+  workspace synchronisation: it pulls content types, sites, languages and file assets out of an
+  instance into a local directory tree, and pushes that tree back — which is what makes dotCMS
+  content model changes reviewable in git and deployable through CI/CD. The docs page lives under
+  the CI/CD section for that reason.
+docs: https://dev.dotcms.com/docs/manage/administration/cicd/cli
+install:
+- method: npm
+  command: npm install -g @dotcms/dotcli
+  recommended: true
+  version: 26.9.3-1
+  published: '2026-09-03'
+- method: jar
+  command: java -jar dotcms-cli-${VERSION}-runner.jar
+  source: https://github.com/dotCMS/core/releases
+  version: 26.09.03-01
+  published: '2026-09-03'
+- method: homebrew
+  command: brew install dotCMS/tap/dotcms-cli
+  version: 1.2.0
+  published: '2023-09-15'
+  stale: true
+  note: >-
+    The tap formula is roughly three years behind the npm and jar distributions (see
+    packages/dotcms-packages.yml). Prefer npm.
+authentication:
+  command: dotcli login
+  mechanism: >-
+    Authenticates against a configured instance and stores the session for subsequent commands.
+    Instances are registered with `dotcli config`; `dotcli status` reports the active instance,
+    user and API URL.
+commands:
+- group: configuration
+  commands:
+  - name: config
+    description: Interactive management of registered dotCMS instances.
+  - name: status
+    description: Show the active instance, user and API URL.
+  - name: instance
+    description: List available dotCMS instances.
+  - name: login
+    description: Authenticate to a dotCMS instance.
+- group: workspace sync
+  commands:
+  - name: push
+    description: Synchronise the local workspace to the instance (global push across resources).
+  - name: pull
+    description: Synchronise the instance to the local workspace (global pull across resources).
+- group: content-type
+  aliases: [ct]
+  commands:
+  - name: content-type find
+  - name: content-type pull
+  - name: content-type push
+  - name: content-type remove
+    aliases: [rm]
+- group: site
+  aliases: [host]
+  commands:
+  - name: site find
+  - name: site pull
+  - name: site push
+  - name: site create
+  - name: site remove
+  - name: site copy
+  - name: site start
+  - name: site stop
+  - name: site archive
+  - name: site unarchive
+- group: language
+  aliases: [lang]
+  commands:
+  - name: language find
+  - name: language pull
+  - name: language push
+  - name: language remove
+    aliases: [rm]
+- group: files
+  commands:
+  - name: files tree
+  - name: files ls
+  - name: files pull
+  - name: files push
+flows:
+- name: Round-trip a content model through git
+  steps:
+  - dotcli config
+  - dotcli login
+  - dotcli pull --workspace ~/my-workspace
+  - edit the files locally / commit them
+  - dotcli push ~/my-workspace
+counts:
+  groups: 6
+  commands: 30

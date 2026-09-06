@@ -64,14 +64,14 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-dotCMS is a content management system that provides organizations with a powerful platform to create, manage, and deliver digital content. It offers a wide range of features, including content authoring tools, workflow management, personalization capabilities, and content analytics. With dotCMS, users can easily create and update websites, intranet portals, and mobile applications. The platform is designed to be flexible and scalable, making it suitable for businesses of all sizes.
+dotCMS is a Java-based visual headless content management system aimed at compliance-led enterprises, deployable as SaaS (dotCMS Cloud), on premise, or as a managed service. It covers content modelling, authoring, workflow, multi-site management, personalization, experiments and content analytics, and pairs headless delivery with a Universal Visual Editor so authors can edit content in place inside a React, Angular or Next.js front end.
 
 **APIs.json:** [https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml)
 
 ## Scope
 
 - **Type:** Index
-- **Position:** Consumer
+- **Position:** Consuming
 - **Access:** 3rd-Party
 
 ## Tags
@@ -79,59 +79,95 @@ dotCMS is a content management system that provides organizations with a powerfu
 - CMS
 - Content
 - Content Management
+- Headless CMS
+- Digital Experience
+- Content Delivery
+- Workflows
+- GraphQL
+- MCP
+- Java
 
 ## Timestamps
 
 - **Created:** 2025-01-08
-- **Modified:** 2026-04-28
+- **Modified:** 2026-09-06
 
 ## APIs
 
 ### dotCMS REST API
 
-The dotCMS REST API exposes the platform's content management capabilities through HTTP endpoints, allowing developers to create, read, update, and delete content, manage workflows, navigate site hierarchy, perform search queries, and administer users, roles, and permissions. The API is organized into resource groups including Content, Workflow, Search, Navigation, Sites, and User management, and supports authentication via JWT tokens, basic auth, and API keys.
+Every dotCMS instance serves its own first-party OpenAPI 3.0.1 document at `/api/openapi.json` — **592 paths, 754 operations, 606 component schemas, 71 tags**, covering content and content types, workflow, search, publishing, sites, folders, templates, containers, roles, permissions, experiments, jobs and dotAI. The copy in `openapi/` was harvested verbatim from dotCMS's own demo instance.
 
-- **Human URL:** [https://dev.dotcms.com/docs/getting-started-rest-apis](https://dev.dotcms.com/docs/getting-started-rest-apis)
+- **Human URL:** [https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis](https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis)
 - **Base URL:** `https://demo.dotcms.com/api`
-
-#### Tags
-
-- CMS
-- Content
-- Content Management
+- **Spec source:** `https://demo.dotcms.com/api/openapi.json` (HTTP 200, harvested 2026-09-06)
 
 #### Properties
 
-- [Documentation](https://dev.dotcms.com/docs/getting-started-rest-apis)
-- [Developer](https://dev.dotcms.com/docs)
-- [Postman Collection](collections/dotcms.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/dotcms.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [OpenAPI](openapi/dotcms-rest-api-openapi.json) — [OpenAPI 3.0.1](https://spec.openapis.org/oas/latest.html)
+- [Documentation](https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis)
+- [API Reference](https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground)
+- [Developer Portal](https://dev.dotcms.com/)
+- [Overlay](overlays/dotcms-rest-api-overlay.yaml)
+- [Error Catalog](errors/dotcms-problem-types.yml)
+- [Data Model](data-model/dotcms-data-model.yml)
+- [Conventions](conventions/dotcms-conventions.yml)
 
 ### dotCMS GraphQL API
 
-The dotCMS GraphQL API provides a single endpoint for querying content across all content types using a self-documenting schema. It supports Lucene-style query strings, pagination, sorting, and content-type collections, and exposes base types for File, Form, Key/Value, Page, Persona, Vanity URL, and Widget content. The API accepts the same authentication methods as the dotCMS REST API and includes a built-in GraphQL Playground for exploring the schema.
+A single endpoint for querying content across all content types. The endpoint answers anonymously on the demo instance, but `__schema` introspection is disabled server-side, so no SDL could be captured and none was fabricated.
 
 - **Human URL:** [https://dev.dotcms.com/docs/graphql](https://dev.dotcms.com/docs/graphql)
 - **Base URL:** `https://demo.dotcms.com/api/v1/graphql`
 
-#### Tags
-
-- CMS
-- Content
-- Content Management
-- GraphQL
-
 #### Properties
 
 - [Documentation](https://dev.dotcms.com/docs/graphql)
-- [Postman Collection](collections/dotcms.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/dotcms.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [GraphQL](graphql/dotcms-graphql.md)
+
+## Agent surface
+
+dotCMS ships an early and unusually complete agent surface, all of it first-party:
+
+- **MCP server** — `@dotcms/mcp-server` (stdio), source in `dotCMS/core`, documented at [dev.dotcms.com/docs/mcp-server](https://dev.dotcms.com/docs/mcp-server). Four tools, two of which are sandboxes over the whole REST spec. See `mcp/`.
+- **Agent Skills** — two provider-authored skills published at [dotCMS/agent-toolkit](https://github.com/dotCMS/agent-toolkit) (MIT), mirrored verbatim in `skills/`.
+- **RFC 9727 API catalog** — served at [`/.well-known/api-catalog`](https://www.dotcms.com/.well-known/api-catalog) as `application/linkset+json`, declaring markdown content negotiation across the site.
+- **RFC 9116 security.txt** — served at [`/.well-known/security.txt`](https://www.dotcms.com/.well-known/security.txt).
+- **llms.txt** — published at [dev.dotcms.com/llms.txt](https://dev.dotcms.com/llms.txt).
+
+## Compliance
+
+ISO/IEC 27001:2022 · ISO/IEC 42001:2023 (AI management) · SOC 2 Type II · TX-RAMP Level II · CSA CAIQ — trust center at [security.dotcms.com](https://security.dotcms.com/).
 
 ## Common Properties
 
 - [GitHub Organization](https://github.com/dotCMS)
 - [LinkedIn](https://www.linkedin.com/company/dotcms)
-- [L L Ms Txt](https://dev.dotcms.com/llms.txt)
+- [llms.txt](llms/dotcms-llms.txt)
+- [Packages / SDKs](packages/dotcms-packages.yml)
+- [CLI](cli/dotcms-cli.yml)
+- [Components](components/dotcms-components.yml)
+- [Well-Known](well-known/dotcms-well-known.yml)
+- [MCP Server](mcp/dotcms-mcp.yml)
+- [Tool Crosswalk](mcp/dotcms-tool-crosswalk.yml)
+- [Agent Skills](skills/_index.yml)
+- [Conformance](conformance/dotcms-conformance.yml)
+- [Compliance](https://www.dotcms.com/product/security-compliance)
+- [Trust Center](security/dotcms-trust-center.yml)
+- [Security / Responsible Disclosure](https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/responsible-disclosure-policy)
+- [Lifecycle](lifecycle/dotcms-lifecycle.yml)
+- [Changelog](changelog/dotcms-changelog.yml)
+- [Sandbox](sandbox/dotcms-sandbox.yml)
+- [Webhooks / Event surface](asyncapi/dotcms-event-surface.yml)
+- [Plans](plans/dotcms-plans-pricing.yml)
+- [Rate Limits](rate-limits/dotcms-rate-limits.yml)
+- [Roadmap](https://www.dotcms.com/roadmap)
+- [Pricing](https://www.dotcms.com/pricing)
+- [Support](https://community.dotcms.com/)
+
+## Superseded artifacts
+
+`openapi/_superseded/` and `collections/_superseded/` hold the documentation-derived scaffold specs (19 paths) and the collections generated from them, retired on 2026-09-06 when the real 754-operation contract was harvested. They are kept for audit; nothing points at them. See the README in each directory.
 
 ## Maintainers
 
