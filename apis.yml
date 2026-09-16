@@ -2,6 +2,8 @@ aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
 common:
+- type: Overlay
+  url: overlays/dotcms-rest-api-overlay.yaml
 - type: Website
   url: https://www.dotcms.com/
 - type: VulnerabilityDisclosure
@@ -86,37 +88,6 @@ common:
   url: >-
     https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/privacy-policy
 apis:
-- aid: dotcms:rest
-  name: dotCMS REST API
-  tags:
-  - CMS
-  - Content
-  - Content Management
-  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
-  baseURL: https://demo.dotcms.com/api
-  properties:
-  - url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
-    type: Documentation
-  - url: https://dev.dotcms.com/
-    type: DeveloperPortal
-  - url: openapi/dotcms-rest-api-openapi.json
-    type: OpenAPI
-  - url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
-    type: APIReference
-  - url: overlays/dotcms-rest-api-overlay.yaml
-    type: Overlay
-  - url: errors/dotcms-problem-types.yml
-    type: ErrorCatalog
-  - url: data-model/dotcms-data-model.yml
-    type: DataModel
-  - url: conventions/dotcms-conventions.yml
-    type: Conventions
-  description: >-
-    The dotCMS REST API exposes the platform's content management capabilities through HTTP endpoints,
-    allowing developers to create, read, update, and delete content, manage workflows, navigate site hierarchy,
-    perform search queries, and administer users, roles, and permissions. The API is organized into resource
-    groups including Content, Workflow, Search, Navigation, Sites, and User management, and supports authentication
-    via JWT tokens, basic auth, and API keys.
 - aid: dotcms:graphql
   name: dotCMS GraphQL API
   tags:
@@ -137,6 +108,1592 @@ apis:
     collections, and exposes base types for File, Form, Key/Value, Page, Persona, Vanity URL, and Widget
     content. The API accepts the same authentication methods as the dotCMS REST API and includes a built-in
     GraphQL Playground for exploring the schema.
+- aid: dotcms:dotcms-accessibility-agent-api
+  name: dotCMS Accessibility Agent API
+  description: Streaming a11y-fix agent proxy
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Accessibility Agent
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-accessibility-agent-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-accessibility-checker-api
+  name: dotCMS Accessibility Checker API
+  description: Endpoints that perform operations related to validating accessibility in content.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Accessibility Checker
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-accessibility-checker-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-administration-api
+  name: dotCMS Administration API
+  description: System administration and management tools
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Administration
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-administration-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-ai-api
+  name: dotCMS AI API
+  description: AI-powered content generation and analysis endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - AI
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-ai-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-announcements-api
+  name: dotCMS Announcements API
+  description: System announcements and notifications
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Announcements
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-announcements-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-api-token-api
+  name: dotCMS API Token API
+  description: API token management and authentication
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - API Token
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-api-token-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-apps-api
+  name: dotCMS Apps API
+  description: Third-party application integration and configuration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Apps
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-apps-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-authentication-api
+  name: dotCMS Authentication API
+  description: The Authentication API from dotCMS — 6 operation(s) for authentication.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-authentication-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-browser-tree-api
+  name: dotCMS Browser Tree API
+  description: File and folder browser tree operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Browser Tree
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-browser-tree-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-bundle-api
+  name: dotCMS Bundle API
+  description: Content bundle management and deployment
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Bundle
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-bundle-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-cache-management-api
+  name: dotCMS Cache Management API
+  description: Cache provider management and operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Cache Management
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-cache-management-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-categories-api
+  name: dotCMS Categories API
+  description: Content categorization and taxonomy
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-categories-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-cluster-management-api
+  name: dotCMS Cluster Management API
+  description: Cluster nodes and distributed system management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Cluster Management
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-cluster-management-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-containers-api
+  name: dotCMS Containers API
+  description: Endpoints for managing Container objects and their content
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Containers
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-containers-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-analytics-api
+  name: dotCMS Content Analytics API
+  description: Proxy endpoints that forward analytics requests to the dot-ca-event-manager service.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-analytics-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-api
+  name: dotCMS Content API
+  description: Endpoints for managing content and contentlets - the core data objects in dotCMS
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-delivery-api
+  name: dotCMS Content Delivery API
+  description: Content retrieval and manipulation endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Delivery
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-delivery-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-import-api
+  name: dotCMS Content Import API
+  description: The Content Import API from dotCMS — 11 operation(s) for content import.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Import
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-import-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-report-api
+  name: dotCMS Content Report API
+  description: Content reporting and analytics
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Report
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-report-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-type-api
+  name: dotCMS Content Type API
+  description: Content type definitions and schema management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Type
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-type-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-content-type-field-api
+  name: dotCMS Content Type Field API
+  description: Content type field definitions and configuration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Content Type Field
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-content-type-field-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-data-integrity-api
+  name: dotCMS Data Integrity API
+  description: Data integrity checking and conflict resolution
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Data Integrity
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-data-integrity-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-dotauth-api
+  name: dotCMS Dot Auth API
+  description: >-
+    OAuth/OIDC and SAML authentication: per-site configuration (SYSTEM_HOST is the global default) and
+    headless OIDC token exchange
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - dotAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-dotauth-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-elasticsearch-content-search-api
+  name: dotCMS Elasticsearch Content Search API
+  description: Backend Elasticsearch search endpoints for portlet context
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Elasticsearch Content Search
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-elasticsearch-content-search-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-environment-api
+  name: dotCMS Environment API
+  description: Publishing environment management and configuration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Environment
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-environment-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-experiment-api
+  name: dotCMS Experiment API
+  description: The Experiment API from dotCMS — 15 operation(s) for experiment.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Experiment
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-experiment-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-file-assets-api
+  name: dotCMS File Assets API
+  description: File asset management and download operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - File Assets
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-file-assets-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-folders-api
+  name: dotCMS Folders API
+  description: Endpoints for managing folder structure and organization
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Folders
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-folders-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-forms-api
+  name: dotCMS Forms API
+  description: Form management and processing
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Forms
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-forms-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-getpagescontenttypes-api
+  name: dotCMS Get Pages Content Types API
+  description: Returns the content types valid for a page based on the container/types on the layout
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - getPagesContentTypes
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-getpagescontenttypes-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-health-api
+  name: dotCMS Health API
+  description: Health management and monitoring endpoints for administrative dashboards
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-health-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-internationalization-api
+  name: dotCMS Internationalization API
+  description: Language management and localization
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Internationalization
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-internationalization-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-javascript-api
+  name: dotCMS Java Script API
+  description: JavaScript execution and server-side scripting
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - JavaScript
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-javascript-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-job-queue-api
+  name: dotCMS Job Queue API
+  description: Endpoints for managing background jobs and job queues
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Job Queue
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-job-queue-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-language-api
+  name: dotCMS Language API
+  description: Language configuration and management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Language
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-language-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-layout-api
+  name: dotCMS Layout API
+  description: The Layout API from dotCMS — 1 operation(s) for layout.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Layout
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-layout-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-license-api
+  name: dotCMS License API
+  description: License management and validation
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - License
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-license-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-maintenance-api
+  name: dotCMS Maintenance API
+  description: System maintenance and administration operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Maintenance
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-maintenance-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-navigation-api
+  name: dotCMS Navigation API
+  description: Site navigation tree endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Navigation
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-navigation-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-notifications-api
+  name: dotCMS Notifications API
+  description: User notifications and alerts management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-notifications-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-osgi-plugins-api
+  name: dotCMS OSGi Plugins API
+  description: OSGi plugin management and dynamic deployment
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - OSGi Plugins
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-osgi-plugins-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-page-api
+  name: dotCMS Page API
+  description: Page rendering, layout management, and content operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Page
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-page-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-permissions-api
+  name: dotCMS Permissions API
+  description: Permission management and access control
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Permissions
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-permissions-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-personalization-api
+  name: dotCMS Personalization API
+  description: Content personalization and persona management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Personalization
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-personalization-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-personas-api
+  name: dotCMS Personas API
+  description: Content persona management and targeting
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Personas
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-personas-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-portlets-api
+  name: dotCMS Portlets API
+  description: Portlet management and administration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Portlets
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-portlets-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-publishing-api
+  name: dotCMS Publishing API
+  description: Push publishing job management endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Publishing
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-publishing-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-relationships-api
+  name: dotCMS Relationships API
+  description: Content relationship management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Relationships
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-relationships-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-roles-api
+  name: dotCMS Roles API
+  description: User role and permission management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Roles
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-roles-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-rules-engine-api
+  name: dotCMS Rules Engine API
+  description: Business rules and conditional logic management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Rules Engine
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-rules-engine-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-saml-authentication-api
+  name: dotCMS SAML Authentication API
+  description: SAML SSO authentication and integration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - SAML Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-saml-authentication-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-search-index-api
+  name: dotCMS Search Index API
+  description: Elasticsearch index management and operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Search Index
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-search-index-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-site-api
+  name: dotCMS Site API
+  description: Site management, lifecycle, and configuration endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Site
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-site-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-system-api
+  name: dotCMS System API
+  description: System-level operations and Redis management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - System
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-system-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-system-configuration-api
+  name: dotCMS System Configuration API
+  description: System configuration and company settings
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - System Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-system-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-system-logging-api
+  name: dotCMS System Logging API
+  description: System logging configuration and management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - System Logging
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-system-logging-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-system-monitoring-api
+  name: dotCMS System Monitoring API
+  description: System monitoring and health checks
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - System Monitoring
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-system-monitoring-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-system-storage-api
+  name: dotCMS System Storage API
+  description: Storage providers and data replication management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - System Storage
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-system-storage-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-tag-v1-api
+  name: dotCMS Tag (v1) API
+  description: Legacy tag management endpoints (deprecated - use v2 TagResource instead)
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Tag (v1)
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-tag-v1-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-tags-api
+  name: dotCMS Tags API
+  description: Content tagging and labeling
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-tags-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-taillog-api
+  name: dotCMS Tail Log API
+  description: Server log file monitoring and real-time viewing
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - TailLog
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-taillog-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-template-api
+  name: dotCMS Template API
+  description: Template CRUD, publish, archive, and layout management endpoints
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Template
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-template-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-templates-api
+  name: dotCMS Templates API
+  description: Template design and management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-templates-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-temporary-files-api
+  name: dotCMS Temporary Files API
+  description: Temporary file upload and management for content creation
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Temporary Files
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-temporary-files-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-testresource-api
+  name: dotCMS Test Resource API
+  description: The TestResource API from dotCMS — 2 operation(s) for testresource.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - TestResource
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-testresource-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-theme-api
+  name: dotCMS Theme API
+  description: Theme browsing and management
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Theme
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-theme-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-usage-api
+  name: dotCMS Usage API
+  description: Provides business intelligence metrics for dashboard usage
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Usage
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-usage-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-users-api
+  name: dotCMS Users API
+  description: User account management and administration
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-users-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-variants-api
+  name: dotCMS Variants API
+  description: Endpoints for managing content variants
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Variants
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-variants-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-web-assets-api
+  name: dotCMS Web Assets API
+  description: Web asset management and operations
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Web Assets
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-web-assets-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-widgets-api
+  name: dotCMS Widgets API
+  description: Widget development and rendering
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Widgets
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-widgets-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
+- aid: dotcms:dotcms-workflow-api
+  name: dotCMS Workflow API
+  description: Endpoints that perform operations related to workflows.
+  humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  baseURL: https://demo.dotcms.com/api
+  tags:
+  - Workflow
+  properties:
+  - type: OpenAPI
+    url: openapi/dotcms-workflow-api-openapi.yml
+  - type: Documentation
+    url: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
+  - type: DeveloperPortal
+    url: https://dev.dotcms.com/
+  - type: APIReference
+    url: https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground
+  - type: ErrorCatalog
+    url: errors/dotcms-problem-types.yml
+  - type: DataModel
+    url: data-model/dotcms-data-model.yml
+  - type: Conventions
+    url: conventions/dotcms-conventions.yml
 name: dotCMS
 tags:
 - CMS
