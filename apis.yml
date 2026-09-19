@@ -180,6 +180,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Artificial Intelligence
+  tags_raw:
   - AI
   properties:
   - type: OpenAPI
@@ -246,6 +248,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Application
+  tags_raw:
   - Apps
   properties:
   - type: OpenAPI
@@ -532,6 +536,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - ContentType
+  tags_raw:
   - Content Type
   properties:
   - type: OpenAPI
@@ -599,7 +605,8 @@ apis:
     headless OIDC token exchange
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
-  tags:
+  tags: []
+  tags_raw:
   - dotAuth
   properties:
   - type: OpenAPI
@@ -753,7 +760,8 @@ apis:
   description: Returns the content types valid for a page based on the container/types on the layout
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
-  tags:
+  tags: []
+  tags_raw:
   - getPagesContentTypes
   properties:
   - type: OpenAPI
@@ -974,6 +982,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Notification
+  tags_raw:
   - Notifications
   properties:
   - type: OpenAPI
@@ -1458,6 +1468,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Templates
+  tags_raw:
   - Template
   properties:
   - type: OpenAPI
@@ -1590,6 +1602,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -1678,6 +1692,8 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
+  - Workflows
+  tags_raw:
   - Workflow
   properties:
   - type: OpenAPI
