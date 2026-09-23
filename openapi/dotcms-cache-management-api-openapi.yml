@@ -1,0 +1,517 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Cache Management API
+  version: '3'
+  description: Cache provider management and operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Cache Management
+  description: Cache provider management and operations
+paths:
+  /api/v1/caches/menucache:
+    delete:
+      tags:
+      - Cache Management
+      summary: Deletes the menu cache
+      description: Just deletes the menu cache by request
+      operationId: deleteMenuCache
+      responses:
+        '200':
+          description: Action(s) returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '500':
+          description: General Error
+  /api/v1/caches/provider/{provider}/flush:
+    delete:
+      tags:
+      - Cache Management
+      summary: Flush all caches
+      description: Flushes all caches across all providers, resets permission references, and reloads PushPublishing filters. The provider path parameter is ignored.
+      operationId: flushAll
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: All caches flushed successfully
+        '401':
+          description: Unauthorized - authentication required
+        '403':
+          description: Forbidden - requires maintenance portlet access
+  /api/v1/caches/provider/{provider}/flush/{group}:
+    delete:
+      tags:
+      - Cache Management
+      operationId: flushGroup
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Flush group
+      x-summary-source: derived
+  /api/v1/caches/provider/{provider}/flush/{group}/{id}:
+    delete:
+      tags:
+      - Cache Management
+      operationId: flushObject
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Flush object
+      x-summary-source: derived
+  /api/v1/caches/region/{regionName}:
+    delete:
+      tags:
+      - Cache Management
+      summary: Flush a cache region
+      description: Flushes a specific cache region across all providers, resets permission references, and conditionally reloads PushPublishing filters. Pass 'all' to flush all caches.
+      operationId: flushRegion
+      parameters:
+      - name: regionName
+        in: path
+        description: Cache region name (case-insensitive, as returned by GET /api/v1/caches) or 'all' to flush all caches
+        required: true
+        schema:
+          pattern: .*
+          type: string
+        example: Permission
+      responses:
+        '200':
+          description: Cache region flushed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '400':
+          description: Bad request - unknown cache region name
+        '401':
+          description: Unauthorized - authentication required
+        '403':
+          description: Forbidden - requires maintenance portlet access
+  /api/v1/caches/stats:
+    get:
+      tags:
+      - Cache Management
+      summary: Get cache statistics
+      description: Returns JVM memory information and per-provider per-region cache statistics including hit counts, miss counts, and memory usage.
+      operationId: getCacheStats
+      responses:
+        '200':
+          description: Cache statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCacheStatsView'
+        '401':
+          description: Unauthorized - authentication required
+        '403':
+          description: Forbidden - requires maintenance portlet access
+  /api/v1/caches/provider/{provider}/keys/{group}:
+    get:
+      tags:
+      - Cache Management
+      operationId: getKeys
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get keys
+      x-summary-source: derived
+  /api/v1/caches:
+    get:
+      tags:
+      - Cache Management
+      summary: List cache region names
+      description: Returns an alphabetically sorted list of all cache region names. Used to populate the flush-cache dropdown in the Maintenance portlet Cache tab.
+      operationId: listRegions
+      responses:
+        '200':
+          description: Cache regions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListStringView'
+        '401':
+          description: Unauthorized - authentication required
+        '403':
+          description: Forbidden - requires maintenance portlet access
+  /api/v1/caches/provider/{provider}/object/{group}/{id}:
+    get:
+      tags:
+      - Cache Management
+      operationId: showObject
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Show object
+      x-summary-source: derived
+  /api/v1/caches/provider/{provider}/objects/{group}:
+    get:
+      tags:
+      - Cache Management
+      operationId: showObjects
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Show objects
+      x-summary-source: derived
+  /api/v1/caches/providers/{group}:
+    get:
+      tags:
+      - Cache Management
+      operationId: showProviders
+      parameters:
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Show providers
+      x-summary-source: derived
+  /api/v1/caches/provider/{provider}/{group}:
+    get:
+      tags:
+      - Cache Management
+      operationId: showProviders_1
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: group
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Show providers 1
+      x-summary-source: derived
+components:
+  schemas:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JvmMemoryView:
+      required:
+      - allocatedMemory
+      - freeMemory
+      - maxMemory
+      - usedMemory
+      type: object
+      properties:
+        maxMemory:
+          type: integer
+          description: Maximum memory the JVM will attempt to use (Xmx)
+          format: int64
+          example: 8589934592
+        allocatedMemory:
+          type: integer
+          description: Total memory currently allocated by the JVM
+          format: int64
+          example: 4294967296
+        usedMemory:
+          type: integer
+          description: Memory currently in use (allocated minus free)
+          format: int64
+          example: 2147483648
+        freeMemory:
+          type: integer
+          description: Available memory (max minus used)
+          format: int64
+          example: 6442450944
+      description: JVM memory statistics
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityCacheStatsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CacheStatsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CacheStatsView:
+      required:
+      - clusterId
+      - memory
+      - providers
+      - serverId
+      - serverName
+      type: object
+      properties:
+        clusterId:
+          type: string
+          description: Cluster identifier (shared across all nodes in the cluster)
+          example: b1c2d3e4-f5a6-7890-abcd-ef1234567890
+        serverId:
+          type: string
+          description: Server identifier (unique per node — identifies which node reported these stats)
+          example: a9f3c1d2-e456-7890-bcde-f12345678901
+        serverName:
+          type: string
+          description: Server hostname
+          example: dotcms-node-1.example.com
+        memory:
+          $ref: '#/components/schemas/JvmMemoryView'
+        providers:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/CacheProviderStatsView'
+            last:
+              $ref: '#/components/schemas/CacheProviderStatsView'
+          description: Per-provider cache statistics
+          items:
+            $ref: '#/components/schemas/CacheProviderStatsView'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    CacheProviderStatsView:
+      required:
+      - columns
+      - providerName
+      - stats
+      type: object
+      properties:
+        providerName:
+          type: string
+          description: Cache provider display name
+          example: Guava Memory Cache
+        columns:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Ordered list of stat column names reported by this provider
+          example:
+          - Region
+          - Configured Size
+          - Memory Used
+          - Is Default
+          - Hit Count
+          - Miss Count
+          items:
+            type: string
+            description: Ordered list of stat column names reported by this provider
+            example: '["Region","Configured Size","Memory Used","Is Default","Hit Count","Miss Count"]'
+        stats:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: object
+              additionalProperties:
+                type: string
+            last:
+              type: object
+              additionalProperties:
+                type: string
+          description: Per-region statistics, each row keyed by column name
+          items:
+            type: object
+            additionalProperties:
+              type: string
+              description: Per-region statistics, each row keyed by column name
+            description: Per-region statistics, each row keyed by column name
+    ResponseEntityListStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

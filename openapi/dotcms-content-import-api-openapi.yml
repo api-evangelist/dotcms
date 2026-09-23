@@ -1,0 +1,672 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content Import API
+  version: '3'
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content Import
+paths:
+  /api/v1/content/_import/abandoned:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves abandoned content import jobs
+      description: Fetches a paginated list of abandoned content import jobs (jobs with state ABANDONED). Results can be paginated using query parameters.
+      operationId: getAbandonedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of abandoned content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/active:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves active content import jobs
+      description: Fetches a paginated list of active content import jobs (jobs with state NEW, PROCESSING, or WAITING). Results can be paginated using query parameters.
+      operationId: getActiveContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of active content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/{jobId}/cancel:
+    post:
+      tags:
+      - Content Import
+      summary: Cancel a content import job
+      description: Requests cancellation of a specific content import job identified by its ID. Note that cancellation is asynchronous and may not be immediate.
+      operationId: cancelContentImportJob
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job to be cancelled.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Cancellation request successfully sent to the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+              example:
+                entity: Cancellation request successfully sent to job e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to cancel the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found or is already completed/cancelled.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while attempting to cancel the job.'
+  /api/v1/content/_import/canceled:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves canceled content import jobs
+      description: Fetches a paginated list of canceled content import jobs (jobs with state CANCELED). Results can be paginated using query parameters.
+      operationId: getCanceledContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of canceled content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/completed:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves completed content import jobs
+      description: Fetches a paginated list of completed content import jobs (jobs with state COMPLETED). Results can be paginated using query parameters.
+      operationId: getCompletedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of completed content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/failed:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves failed content import jobs
+      description: Fetches a paginated list of failed content import jobs (jobs with state FAILED). Results can be paginated using query parameters.
+      operationId: getFailedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of failed content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/{jobId}:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves the status of a content import job
+      description: Fetches the detailed current status of a specific content import job identified by its ID.
+      operationId: getJobStatus
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job whose status is to be retrieved.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Successfully retrieved job status. The entity contains detailed information about the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to view the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving the job status.'
+  /api/v1/content/_import:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves content import jobs
+      description: Fetches a paginated list of all content import jobs regardless of state. Results can be paginated using query parameters.
+      operationId: getContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+    post:
+      tags:
+      - Content Import
+      summary: Imports content from a CSV file
+      description: Creates and enqueues a new content import job. Requires a CSV file and a JSON string representing import parameters.
+      operationId: importContent
+      requestBody:
+        description: "This endpoint accepts a `multipart/form-data` request with two fields:\n\n| **Field** | **Type** | **Required** | **Description** |\n|-----------|----------|--------------|-----------------|\n| `file`    | File     | ✅ Yes        | The CSV file to import. Must contain content rows and match the expected structure for the content type. |\n| `form`    | String   | ✅ Yes        | A JSON string containing the import parameters. See structure below. |\n\n**`form` field structure:**\n\n| **Property**         | **Type**   | **Required** | **Default** | **Description** |\n|----------------------|------------|--------------|-------------|-----------------|\n| `contentType`        | String     | ✅ Yes        | –           | Content Type variable or ID to import data into. |\n| `language`           | String     | ❌ No         | Default language | Language code (e.g., `en-US`) or language ID. |\n| `workflowActionId`   | String     | ✅ Yes        | –           | Workflow Action UUID to apply to imported content. |\n| `fields`             | String[]   | ❌ No         | –           | List of field variables or IDs used as keys for content updates. |\n| `stopOnError`        | Boolean    | ❌ No         | `false`     | Whether to stop import on first validation error. |\n| `commitGranularity`  | Integer    | ❌ No         | `100`       | Number of rows to commit in each transaction batch. |\n\n**Example `form` value:**\n\n```json\n{\n  \"contentType\": \"webPageContent\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"],\n  \"stopOnError\": false,\n  \"commitGranularity\": 100\n}\n```"
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentImportParamsSchema'
+        required: true
+      responses:
+        '200':
+          description: Content import job successfully created and enqueued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+        '400':
+          description: 'Bad Request: Invalid parameters or malformed request (e.g., missing file, invalid JSON in ''form'', file not CSV).'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions for content import or workflow action.'
+        '404':
+          description: 'Not Found: Specified Content Type or Language could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred during job creation or processing.'
+  /api/v1/content/_import/{jobId}/monitor:
+    get:
+      tags:
+      - Content Import
+      summary: Monitor a content import job in real-time
+      description: Establishes a Server-Sent Events (SSE) connection to monitor the progress of a specific content import job in real-time. This endpoint will continuously send updates as the job progresses, including status changes and completion information.
+      operationId: monitorContentImportJobs
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job whose status is to be retrieved.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Server-Sent Events stream established successfully. Events will be sent as the job progresses.
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/EventOutput'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to monitor the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while establishing the monitoring connection.'
+  /api/v1/content/_import/successful:
+    get:
+      tags:
+      - Content Import
+      summary: Retrieves successful content import jobs
+      description: Fetches a paginated list of successful content import jobs (jobs with state COMPLETED and successful result). Results can be paginated using query parameters.
+      operationId: getSuccessfulContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of successful content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/_validate:
+    post:
+      tags:
+      - Content Import
+      summary: Validates content import from a CSV file
+      description: Creates and enqueues a content import job in preview mode. This validates the CSV data against the specified Content Type, language, and workflow action without actually importing content.
+      operationId: validateContentImport
+      requestBody:
+        description: "This endpoint accepts a `multipart/form-data` request with two fields:\n\n| **Field** | **Type** | **Required** | **Description** |\n|-----------|----------|--------------|-----------------|\n| `file`    | File     | ✅ Yes        | The CSV file to import. Must contain content rows and match the expected structure for the content type. |\n| `form`    | String   | ✅ Yes        | A JSON string containing the import parameters. See structure below. |\n\n**`form` field structure:**\n\n| **Property**         | **Type**   | **Required** | **Default** | **Description** |\n|----------------------|------------|--------------|-------------|-----------------|\n| `contentType`        | String     | ✅ Yes        | –           | Content Type variable or ID to import data into. |\n| `language`           | String     | ❌ No         | Default language | Language code (e.g., `en-US`) or language ID. |\n| `workflowActionId`   | String     | ✅ Yes        | –           | Workflow Action UUID to apply to imported content. |\n| `fields`             | String[]   | ❌ No         | –           | List of field variables or IDs used as keys for content updates. |\n| `stopOnError`        | Boolean    | ❌ No         | `false`     | Whether to stop import on first validation error. |\n| `commitGranularity`  | Integer    | ❌ No         | `100`       | Number of rows to commit in each transaction batch. |\n\n**Example `form` value:**\n\n```json\n{\n  \"contentType\": \"webPageContent\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"],\n  \"stopOnError\": false,\n  \"commitGranularity\": 100\n}\n```"
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentImportParamsSchema'
+        required: true
+      responses:
+        '200':
+          description: Content import validation job successfully created and enqueued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+              example:
+                entity:
+                  jobId: e6d9bae8-657b-4e2f-8524-c0222db66355
+                  statusUrl: http://localhost:8080/api/v1/_import/e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: 'Bad Request: Invalid parameters or malformed request (e.g., missing file, invalid JSON in ''form'', file not CSV).'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions for validation or workflow action.'
+        '404':
+          description: 'Not Found: Specified Content Type or Language could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred during job creation or processing.'
+components:
+  schemas:
+    JobResult:
+      type: object
+      properties:
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContentImportParamsSchema:
+      required:
+      - file
+      - form
+      type: object
+      properties:
+        file:
+          type: string
+          description: The CSV file to import.
+          format: binary
+        form:
+          type: string
+          description: JSON string representing import settings.
+          example: "{\n  \"contentType\": \"activity\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"]\n  \"stopOnError\":false \n  \"commitGranularity\": 100\n}"
+      description: Schema for content import parameters.
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        queueName:
+          type: string
+        state:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - SUCCESS
+          - FAILED
+          - FAILED_PERMANENTLY
+          - ABANDONED
+          - ABANDONED_PERMANENTLY
+          - CANCEL_REQUESTED
+          - CANCELLING
+          - CANCELED
+        executionNode:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        result:
+          $ref: '#/components/schemas/JobResult'
+        parameters:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        retryCount:
+          type: integer
+          format: int32
+        progress:
+          type: number
+          format: float
+    JobPaginatedResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        jobs:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/Job'
+            last:
+              $ref: '#/components/schemas/Job'
+          items:
+            $ref: '#/components/schemas/Job'
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    ResponseEntityJobPaginatedResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobPaginatedResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityJobView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Job'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorDetail:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptionClass:
+          type: string
+        stackTrace:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        processingStage:
+          type: string

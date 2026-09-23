@@ -1,0 +1,54 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Relationships API
+  version: '3'
+  description: Content relationship management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Relationships
+  description: Content relationship management
+paths:
+  /api/v1/relationships/cardinalities:
+    get:
+      tags:
+      - Relationships
+      operationId: getCardinality
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get cardinality
+      x-summary-source: derived
+  /api/v1/relationships:
+    get:
+      tags:
+      - Relationships
+      operationId: getOneSidedRelationships
+      parameters:
+      - name: contentTypeId
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get one sided relationships
+      x-summary-source: derived

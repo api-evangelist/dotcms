@@ -1,0 +1,181 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Theme API
+  version: '3'
+  description: Theme browsing and management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Theme
+  description: Theme browsing and management
+paths:
+  /api/v1/themes/id/{id}:
+    get:
+      tags:
+      - Theme
+      summary: Get theme by ID
+      description: Returns a single theme given its folder inode ID. The 'theme' identifier in this endpoint corresponds to 'themeId' used in template endpoints.
+      operationId: findThemeById
+      parameters:
+      - name: id
+        in: path
+        description: Theme folder inode identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Theme returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '401':
+          description: Authentication required
+        '404':
+          description: Theme not found
+  /api/v1/themes:
+    get:
+      tags:
+      - Theme
+      summary: List themes with pagination
+      description: 'Returns a paginated list of themes for a given host (site). Results can be filtered by a search parameter and sorted in ascending or descending order. The hostId parameter is required. Note: The ''theme'' identifier returned by this endpoint corresponds to ''themeId'' used in template endpoints.'
+      operationId: findThemes
+      parameters:
+      - name: hostId
+        in: query
+        description: Host (site) identifier to filter themes by (required)
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page (-1 for default)
+        schema:
+          type: integer
+          format: int32
+          default: -1
+      - name: direction
+        in: query
+        description: 'Sort direction: ASC or DESC'
+        schema:
+          type: string
+          default: ASC
+      - name: searchParam
+        in: query
+        description: 'Search term to filter themes (Lucene criteria: +catchall:*searchParam*)'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Themes returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedArrayListMapView'
+        '400':
+          description: Missing or invalid hostId parameter
+        '401':
+          description: Authentication required
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityMapStringObjectView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityPaginatedArrayListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          properties:
+            totalResults:
+              type: integer
+              format: int64
+            query:
+              type: string
+            empty:
+              type: boolean
+            first:
+              type: object
+              additionalProperties:
+                type: object
+            last:
+              type: object
+              additionalProperties:
+                type: object
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

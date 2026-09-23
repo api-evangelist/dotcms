@@ -1,0 +1,566 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Bundle API
+  version: '3'
+  description: Content bundle management and deployment
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Bundle
+  description: Content bundle management and deployment
+paths:
+  /api/bundlePublisher/publish:
+    post:
+      tags:
+      - Bundle
+      operationId: publish
+      parameters:
+      - name: type
+        in: query
+        schema:
+          type: string
+      - name: callback
+        in: query
+        schema:
+          type: string
+      - name: FORCE_PUSH
+        in: query
+        schema:
+          type: boolean
+      - name: filterkey
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Publish
+      x-summary-source: derived
+  /api/bundle/all:
+    delete:
+      tags:
+      - Bundle
+      operationId: deleteAll
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete all
+      x-summary-source: derived
+  /api/bundle/all/fail:
+    delete:
+      tags:
+      - Bundle
+      operationId: deleteAllFail
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete all fail
+      x-summary-source: derived
+  /api/bundle/all/success:
+    delete:
+      tags:
+      - Bundle
+      operationId: deleteAllSuccess
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete all success
+      x-summary-source: derived
+  /api/bundle/ids:
+    delete:
+      tags:
+      - Bundle
+      operationId: deleteBundlesByIdentifiers
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/DeleteBundlesByIdentifierForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete bundles by identifiers
+      x-summary-source: derived
+  /api/bundle/olderthan/{olderThan}:
+    delete:
+      tags:
+      - Bundle
+      operationId: deleteBundlesOlderThan
+      parameters:
+      - name: olderThan
+        in: path
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete bundles older than
+      x-summary-source: derived
+  /api/bundle/deleteenvironmentpushhistory/{params}:
+    get:
+      tags:
+      - Bundle
+      operationId: deleteEnvironmentPushHistory
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete environment push history
+      x-summary-source: derived
+  /api/bundle/deletepushhistory/{params}:
+    get:
+      tags:
+      - Bundle
+      operationId: deletePushHistory
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete push history
+      x-summary-source: derived
+  /api/bundle/_download/{bundleId}:
+    get:
+      tags:
+      - Bundle
+      operationId: downloadBundle
+      parameters:
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+      summary: Download bundle
+      x-summary-source: derived
+  /api/bundle/{bundleId}/manifest:
+    get:
+      tags:
+      - Bundle
+      operationId: downloadManifest
+      parameters:
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/octet-stream: {}
+      summary: Download manifest
+      x-summary-source: derived
+  /api/bundle/_generate:
+    post:
+      tags:
+      - Bundle
+      operationId: generateBundle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateBundleForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+      summary: Generate bundle
+      x-summary-source: derived
+  /api/bundle/{bundleId}/assets:
+    get:
+      tags:
+      - Bundle
+      operationId: getPublishQueueElements
+      parameters:
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get publish queue elements
+      x-summary-source: derived
+  /api/bundle/getunsendbundles/{params}:
+    get:
+      tags:
+      - Bundle
+      operationId: getUnsendBundles
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get unsend bundles
+      x-summary-source: derived
+  /api/bundle/updatebundle/{params}:
+    get:
+      tags:
+      - Bundle
+      operationId: updateBundle
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Update bundle
+      x-summary-source: derived
+  /api/bundle:
+    post:
+      tags:
+      - Bundle
+      operationId: uploadBundleAsync
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Upload bundle async
+      x-summary-source: derived
+  /api/bundle/sync:
+    post:
+      tags:
+      - Bundle
+      operationId: uploadBundleSync
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Upload bundle sync
+      x-summary-source: derived
+components:
+  schemas:
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    DeleteBundlesByIdentifierForm:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            type: string
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    MessageBodyWorkers:
+      type: object
+    GenerateBundleForm:
+      type: object
+      properties:
+        bundleId:
+          type: string
+        operation:
+          type: string
+          enum:
+          - PUBLISH
+          - UNPUBLISH
+        filterKey:
+          type: string
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'

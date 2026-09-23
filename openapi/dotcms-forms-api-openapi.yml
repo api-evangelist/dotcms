@@ -1,0 +1,30 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Forms API
+  version: '3'
+  description: Form management and processing
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Forms
+  description: Form management and processing
+paths:
+  /api/v1/form/{idOrVar}/successCallback:
+    get:
+      tags:
+      - Forms
+      operationId: getSuccessCallbackFunction
+      parameters:
+      - name: idOrVar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/javascript: {}
+      summary: Get success callback function
+      x-summary-source: derived

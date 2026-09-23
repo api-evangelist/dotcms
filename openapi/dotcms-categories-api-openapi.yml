@@ -1,0 +1,692 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Categories API
+  version: '3'
+  description: Content categorization and taxonomy
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Categories
+  description: Content categorization and taxonomy
+paths:
+  /api/v1/categories:
+    get:
+      tags:
+      - Categories
+      summary: Get paginated list of categories
+      description: Returns a paginated list of categories. Supports filtering by name, sorting, and optionally including the count of child categories for each result.
+      operationId: getCategories
+      parameters:
+      - name: filter
+        in: query
+        description: Filter string to match against category names
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number (zero-based)
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: Field to order results by
+        schema:
+          type: string
+          default: category_name
+      - name: direction
+        in: query
+        description: 'Sort direction: ASC or DESC'
+        schema:
+          type: string
+          default: ASC
+      - name: showChildrenCount
+        in: query
+        description: Whether to include children count for each category
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Paginated categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+    put:
+      tags:
+      - Categories
+      summary: Update an existing category
+      description: Updates a working version of an existing category. The form must contain the inode of the category to update.
+      operationId: updateCategory
+      requestBody:
+        description: Category form with updated properties including inode
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryForm'
+        required: true
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryView'
+        '400':
+          description: Bad request
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions to update categories
+        '404':
+          description: Category not found
+    post:
+      tags:
+      - Categories
+      summary: Create a new category
+      description: Creates a new category using the provided form data. The category name is required.
+      operationId: createCategory
+      requestBody:
+        description: Category form with name and properties
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryForm'
+        required: true
+      responses:
+        '200':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryView'
+        '400':
+          description: Bad request — category name is required
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+    delete:
+      tags:
+      - Categories
+      summary: Delete categories by inodes
+      description: Deletes one or more categories and all their descendants at every depth. EDIT permission is validated on each selected category and every descendant before anything is deleted; a category that fails validation is skipped whole. Accepts a JSON array of category inodes. Inodes that could not be deleted are reported in the `fails` list of the result with the failure reason (category does not exist, insufficient permissions, or a permission-protected descendant). `successCount` counts the requested inodes that were deleted, while `deletedCount` counts every category actually removed, descendants included.
+      operationId: deleteCategories
+      requestBody:
+        description: JSON payload containing a list of the inodes of categories to delete.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk delete result returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryBulkDeleteResultView'
+        '400':
+          description: Bad request
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+  /api/v1/categories/_export:
+    get:
+      tags:
+      - Categories
+      summary: Export categories as CSV
+      description: Exports categories to a CSV file. Optionally filter by name and scope to a parent category inode.
+      operationId: exportCategories
+      parameters:
+      - name: contextInode
+        in: query
+        description: Context category inode to export from
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter pattern to match category names
+        schema:
+          type: string
+      responses:
+        '200':
+          description: CSV file streamed successfully
+          content:
+            text/csv: {}
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Context category not found
+  /api/v1/categories/{idOrKey}:
+    get:
+      tags:
+      - Categories
+      summary: Get a category by ID or key
+      description: Retrieves a single category by either its inode (ID) or its unique key. First attempts to find by inode; if not found, searches by key.
+      operationId: getCategoryByIdOrKey
+      parameters:
+      - name: idOrKey
+        in: path
+        description: Category ID (inode) or key
+        required: true
+        schema:
+          type: string
+      - name: showChildrenCount
+        in: query
+        description: Whether to include children count
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryView'
+        '400':
+          description: Bad request — idOrKey is required
+        '401':
+          description: Authentication required
+        '404':
+          description: Category not found
+  /api/v1/categories/children:
+    get:
+      tags:
+      - Categories
+      summary: Get children of a category
+      description: Returns a paginated list of child categories for the specified parent category inode. When 'allLevels' is true, returns categories at any depth; otherwise only immediate children.
+      operationId: getCategoryChildren
+      parameters:
+      - name: filter
+        in: query
+        description: Filter text to search child categories
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: Field to order results by
+        schema:
+          type: string
+          default: category_name
+      - name: direction
+        in: query
+        description: Sort direction (ASC or DESC)
+        schema:
+          type: string
+          default: ASC
+      - name: inode
+        in: query
+        description: Parent category inode to get children for
+        schema:
+          type: string
+      - name: showChildrenCount
+        in: query
+        description: Whether to include children count for each category
+        schema:
+          type: boolean
+      - name: allLevels
+        in: query
+        description: Whether to include all nested levels
+        schema:
+          type: boolean
+      - name: parentList
+        in: query
+        description: Whether to include parent list hierarchy
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Children categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryWithChildCountView'
+        '400':
+          description: Bad request
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Parent category not found
+  /api/v1/categories/hierarchy:
+    post:
+      tags:
+      - Categories
+      summary: Get category hierarchy for multiple categories
+      description: Retrieves the parent hierarchy for a set of categories specified by their keys. Returns parent lists for each category, starting from the top-level parent down to the direct parent. Categories that don't exist are ignored.
+      operationId: getCategoryHierarchy
+      requestBody:
+        description: Category keys form containing array of category keys
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryKeysForm'
+        required: true
+      responses:
+        '200':
+          description: Category hierarchies retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HierarchyShortCategoriesResponseView'
+        '400':
+          description: Bad request - invalid category keys form
+        '401':
+          description: Unauthorized - user authentication required
+  /api/v1/categories/_import:
+    post:
+      tags:
+      - Categories
+      summary: Import categories from a CSV file
+      description: 'Imports categories from an uploaded CSV file. The ''exportType'' parameter controls the import strategy: ''replace'' deletes existing categories before importing, ''merge'' adds or updates without removing existing ones.'
+      operationId: importCategories
+      requestBody:
+        description: CSV file containing categories to be imported.
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryImportFormSchema'
+        required: true
+      responses:
+        '200':
+          description: Import result returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Bad request or invalid file
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+  /api/v1/categories/_sort:
+    put:
+      tags:
+      - Categories
+      summary: Update category sort order
+      description: Updates the sort order of one or more existing categories.
+      operationId: updateCategorySortOrder
+      requestBody:
+        description: List of category inodes to delete
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryEditForm'
+        required: true
+      responses:
+        '200':
+          description: Sort order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCategoryView'
+        '400':
+          description: Bad request
+        '403':
+          description: Insufficient permissions
+        '401':
+          description: Authentication required
+components:
+  schemas:
+    CategoryImportFormSchema:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: Filter pattern for categories
+        exportType:
+          type: string
+          description: Import behavior
+          enum:
+          - replace
+          - merge
+        contextInode:
+          type: string
+          description: Context category inode to import into
+        file:
+          type: string
+          description: CSV file containing categories to import
+          format: binary
+      description: Category import form data with CSV file and processing parameters
+    CategoryForm:
+      required:
+      - categoryName
+      type: object
+      properties:
+        siteId:
+          type: string
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityCategoryBulkDeleteResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryBulkDeleteResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    CategoryView:
+      type: object
+      properties:
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+    HierarchyShortCategoriesResponseView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/HierarchyShortCategory'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityCategoryView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityCategoryWithChildCountView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryWithChildCountView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ShortCategory:
+      type: object
+      properties:
+        name:
+          type: string
+        inode:
+          type: string
+        key:
+          type: string
+    CategoryBulkDeleteResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+        deletedCount:
+          type: integer
+          format: int64
+    CategoryWithChildCountView:
+      type: object
+      properties:
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        childrenCount:
+          type: integer
+          format: int32
+    HierarchyShortCategory:
+      type: object
+      properties:
+        inode:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        parentList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortCategory'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CategoryEditForm:
+      type: object
+      properties:
+        filter:
+          type: string
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        direction:
+          type: string
+        orderBy:
+          type: string
+        siteId:
+          type: string
+        parentInode:
+          type: string
+        categoryData:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+    CategoryKeysForm:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

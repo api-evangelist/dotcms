@@ -1,0 +1,974 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Templates API
+  version: '3'
+  description: Template design and management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Templates
+  description: Template design and management
+paths:
+  /api/vtl/{folder}:
+    get:
+      tags:
+      - Templates
+      operationId: get_6
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Get 6
+      x-summary-source: derived
+    put:
+      tags:
+      - Templates
+      operationId: putMultipart_2
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Put multipart 2
+      x-summary-source: derived
+    post:
+      tags:
+      - Templates
+      operationId: postMultipart_2
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Post multipart 2
+      x-summary-source: derived
+    delete:
+      tags:
+      - Templates
+      operationId: delete_11
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Delete 11
+      x-summary-source: derived
+    patch:
+      tags:
+      - Templates
+      operationId: patchMultipart_2
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Patch multipart 2
+      x-summary-source: derived
+  /api/vtl/{folder}/{pathParam}:
+    get:
+      tags:
+      - Templates
+      operationId: get_7
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Get 7
+      x-summary-source: derived
+    put:
+      tags:
+      - Templates
+      operationId: putMultipart_3
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Put multipart 3
+      x-summary-source: derived
+    post:
+      tags:
+      - Templates
+      operationId: postMultipart_3
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Post multipart 3
+      x-summary-source: derived
+    delete:
+      tags:
+      - Templates
+      operationId: delete_12
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Delete 12
+      x-summary-source: derived
+    patch:
+      tags:
+      - Templates
+      operationId: patchMultipart_3
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Patch multipart 3
+      x-summary-source: derived
+  /api/vtl/dynamic/{pathParam}:
+    get:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (GET)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicGet_2
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    put:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (PUT)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicPut_2
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    post:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (POST)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicPost_2
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    delete:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (DELETE)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicDelete_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    patch:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (PATCH)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicPatch_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+  /api/vtl/dynamic:
+    get:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (GET)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicGetNoPath
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    put:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (PUT)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicPutNoPath
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+    post:
+      tags:
+      - Templates
+      summary: Evaluate inline Velocity code (POST)
+      description: 'Evaluates Velocity (VTL) code supplied directly in the request body — no `.vtl` file on disk is required — and returns the result. The code is read from a `velocity` property of the JSON body (properly escaped), or the body may be the raw VTL itself.
+
+
+        The caller requires the **Scripting Developer** role.
+
+
+        **Response shape** is decided by the submitted code:
+
+        - If the code populates `$dotJSON` (e.g. `$dotJSON.put("key", ...)`), the response is that JSON object.
+
+        - Otherwise the raw evaluated output is returned, with the content type set by the script (defaults to `text/plain`).
+
+
+        **Velocity errors** (syntax/parse errors, method-invocation failures, missing resources) are reported as a `400` with a structured body so an automated caller can locate and fix the offending code instead of receiving partial output. Application-level errors set by the script via `$dotJSON.put("errors", ...)` are also returned as `400`.
+
+
+        **Warnings** — dotCMS evaluates Velocity in non-strict mode, so an undefined reference (`$noSuchVar`) renders as literal text and a method returning `null` produces no output. These likely-typos are collected and, on a successful response, returned in the `X-Dot-Velocity-Warnings` header (a JSON array); on a `400` they appear in the `warnings` field of the body.'
+      operationId: dynamicPostNoPath
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Velocity evaluated successfully; body is the raw output or the JSON object produced by the script
+        '400':
+          description: The submitted Velocity failed to parse or evaluate, or the script reported errors. The body carries the Velocity error detail (message, error type, and line/column when available).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityErrorResponseView'
+        '403':
+          description: User lacks the Scripting Developer role
+components:
+  schemas:
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    VelocityWarningView:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The kind of warning.
+          example: UNDEFINED_REFERENCE
+          enum:
+          - UNDEFINED_REFERENCE
+          - NULL_METHOD_RESULT
+          - INVALID_METHOD
+          - NULL_SET
+        message:
+          type: string
+          description: Human-readable description of the warning.
+          example: Undefined reference '$noSuchVar' — renders as literal text in non-strict mode
+        reference:
+          type: string
+          description: The reference or method expression that triggered the warning, when known.
+          example: $noSuchVar
+        line:
+          type: integer
+          description: 1-based line number where the reference appears, when Velocity reports it. Omitted when unavailable.
+          format: int32
+          example: 3
+        column:
+          type: integer
+          description: 1-based column number where the reference appears, when Velocity reports it. Omitted when unavailable.
+          format: int32
+          example: 1
+      description: A non-fatal Velocity warning, such as an undefined reference or a method call that returned null. The script still evaluated; warnings flag likely typos in non-strict mode.
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    MessageBodyWorkers:
+      type: object
+    VelocityErrorView:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Concise, single-line Velocity error message including the offending token and position when available. See `detail` for the full engine output.
+          example: Encountered "<EOF>" at line 6, column 39
+        errorType:
+          type: string
+          description: Simple class name of the underlying Velocity error, normalized to the public Velocity type (e.g. ParseErrorException, MethodInvocationException, ResourceNotFoundException) rather than a dotCMS-internal subclass. Lets the caller distinguish a syntax error from a runtime error.
+          example: ParseErrorException
+        templateName:
+          type: string
+          description: Name Velocity associated with the evaluated template. For dynamic requests this is a synthetic name identifying the submitted script.
+          example: dynamic velocity
+        line:
+          type: integer
+          description: 1-based line number in the submitted velocity where the error occurred, when Velocity reports it. Omitted when unavailable.
+          format: int32
+          example: 6
+        column:
+          type: integer
+          description: 1-based column number in the submitted velocity where the error occurred, when Velocity reports it. Omitted when unavailable.
+          format: int32
+          example: 39
+        detail:
+          type: string
+          description: Full, multi-line engine output for the error, including the complete grammar-token list for parse errors. Intended for human display; omitted when it adds nothing beyond `message`.
+          example: "Encountered \"<EOF>\" at line 6, column 39\nWas expecting one of:\n    \"[\" ...\n    \"(\" ..."
+      description: A single Velocity evaluation error, structured so an automated caller can locate and fix the offending code without parsing a stack trace.
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    VelocityErrorResponseView:
+      type: object
+      properties:
+        errors:
+          type: array
+          description: List of Velocity errors detected while evaluating the submitted code.
+          items:
+            $ref: '#/components/schemas/VelocityErrorView'
+        warnings:
+          type: array
+          description: Non-fatal warnings (undefined references, null method results) observed before the error. Omitted when there are none.
+          items:
+            $ref: '#/components/schemas/VelocityWarningView'

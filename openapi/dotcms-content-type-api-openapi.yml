@@ -1,0 +1,1465 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content Type API
+  version: '3'
+  description: Content type definitions and schema management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content Type
+  description: Content type definitions and schema management
+paths:
+  /api/structure/{path}:
+    get:
+      tags:
+      - Content Type
+      operationId: getStructuresWithWYSIWYGFields
+      parameters:
+      - name: path
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: name
+        in: query
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: callback
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get structures with WYSIWYG fields
+      x-summary-source: derived
+  /api/v1/contenttype/{baseVariableName}/_copy:
+    post:
+      tags:
+      - Content Type
+      summary: Copies a content type
+      description: 'Creates a new content type by copying an existing one.
+
+
+        Returns resulting content type.'
+      operationId: postContentTypeCopy
+      parameters:
+      - name: baseVariableName
+        in: path
+        description: 'The variable name of the content type to copy.
+
+
+          Example value: `htmlpageasset` (Default page content type)'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'Requires POST body consisting of a JSON object with the following properties:
+
+
+          | Property |  Type  | Description |
+
+          |----------|--------|-------------|
+
+          | `name`   | String | **Required.** Name of new content type |
+
+          | `variable` | String | Velocity variable name of the new content type |
+
+          | `folder`   | String | Folder in which new content type will live |
+
+          | `host`   | String | Site or host to which the new content type will belong |
+
+          | `icon`   | String | System icon to represent content type |
+
+
+          The copy preserves: `description`, `host`, `folder`, full `fields[]` (with new field IDs), layout (Row/Column markers), `metadata`, and workflow assignments. Unspecified values default to those of the original content type.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyContentTypeForm'
+            example:
+              name: Copied Content Type Name
+              variable: copiedContentTypeVar
+              folder: SYSTEM_FOLDER
+              host: 8a7d5e23-da1e-420a-b4f0-471e7da8ea2d
+              icon: event_note
+        required: true
+      responses:
+        '200':
+          description: Content type copied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentTypeOperationView'
+              example:
+                errors:
+                - errorCode: string
+                  message: string
+                  fieldName: string
+                entity:
+                  baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fields: []
+                  fixed: true
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  name: string1
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  systemActionMappings: {}
+                  variable: string
+                  versionable: true
+                  workflows: []
+                messages:
+                - message: string
+                i18nMessagesMap:
+                  additionalProp1: string
+                  additionalProp2: string
+                  additionalProp3: string
+                permissions:
+                - string
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype:
+    get:
+      tags:
+      - Content Type
+      summary: Retrieves a list of content types
+      description: Returns a list of content type objects based on the filtering criteria.
+      operationId: getContentType
+      parameters:
+      - name: filter
+        in: query
+        description: String to filter/search for specific content types; leave blank to return all.
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Page number in response pagination.
+
+
+          Default: `1`'
+        schema:
+          type: integer
+          format: int64
+      - name: per_page
+        in: query
+        description: 'Number of results per page for pagination.
+
+
+          Default: `10`'
+        schema:
+          type: integer
+          format: int64
+      - name: orderby
+        in: query
+        description: 'Column(s) to sort the results. Multiple columns can be combined in a comma-separated list. Column names can also be set within a SQL string function, such as `upper()`.
+
+
+          Some possible values:
+
+
+          `name`, `velocity_var_name`, `mod_date`, `sort_order`
+
+
+          `description`, `structuretype`, `category`, `inode`'
+        schema:
+          type: string
+          default: upper(name)
+      - name: direction
+        in: query
+        description: 'Sort direction: choose between ascending or descending.'
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+          default: ASC
+      - name: type
+        in: query
+        description: Variable name of [base content type](https://www.dotcms.com/docs/latest/base-content-types).
+        style: form
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - ANY
+            - CONTENT
+            - WIDGET
+            - FORM
+            - FILEASSET
+            - HTMLPAGE
+            - PERSONA
+            - VANITY_URL
+            - KEY_VALUE
+            - DOTASSET
+          enum:
+          - ANY
+          - CONTENT
+          - WIDGET
+          - FORM
+          - FILEASSET
+          - HTMLPAGE
+          - PERSONA
+          - VANITY_URL
+          - KEY_VALUE
+          - DOTASSET
+      - name: host
+        in: query
+        description: Filter by site identifier.
+        schema:
+          type: string
+      - name: sites
+        in: query
+        description: 'Multi-site filter: Takes comma-separated list of site identifiers or keys.'
+        schema:
+          type: string
+      - name: ensure
+        in: query
+        description: 'Guarantee Content Types to be included in the response: Comma-separated content type keys (e.g. `activity, blog, product`).'
+        schema:
+          type: string
+      - name: system
+        in: query
+        description: 'Whether to include system Content Types (e.g. Host, Favorite Page) in the response.
+
+
+          When `true` or omitted, system Content Types are included (default, backward-compatible). When `false`, they are excluded. Combines with `filter`.'
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Content types retrieved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fixed: true
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  nEntries: 0
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  variable: string
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+                permissions: []
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+      - Content Type
+      summary: Creates one or more content types
+      description: 'Creates one or more content types specified in the JSON payload.
+
+
+        Returns a list entity containing the created content type objects.'
+      operationId: postContentTypeCreate
+      requestBody:
+        description: 'Accepts either a single content-type object or an array. The body is the content-type object directly (not wrapped in a ''contentType'' envelope).
+
+
+          **Required properties:**
+
+          - `clazz` *(string)* — the base type, as a case-insensitive base-type name: `CONTENT`, `WIDGET`, `FORM`, `FILEASSET`, `HTMLPAGE`, `PERSONA`, `VANITY_URL`, `KEY_VALUE`, or `DOTASSET`.
+
+          - `name` *(string)* — display name
+
+
+          **Common optional properties:**
+
+          - `variable` *(string)* — Velocity variable name (unique, alphanumeric, starts with a letter; auto-generated if omitted)
+
+          - `host` *(string)* — site identifier UUID or the literal `SYSTEM_HOST` (defaults to the default site)
+
+          - `folder` *(string)* — folder identifier UUID or the literal `SYSTEM_FOLDER` (defaults to `SYSTEM_FOLDER`)
+
+          - `description` *(string)*
+
+          - `workflow` *(array of workflow scheme UUIDs)* — e.g. `["d61a59e1-a49c-46f2-a929-db2b4bfa88b2"]` for System Workflow. ⚠️ **Note:** this is `workflow` (singular) in the request. GET responses return `workflows` (plural, array of objects) — clients round-tripping an object must rename this key.
+
+          - `fields` *(array of field objects)* — see field schema below (`ContentTypeFieldView`)
+
+          - `metadata` *(object)* — known keys: `CONTENT_EDITOR2_ENABLED` (boolean), `DOT_STYLE_EDITOR_SCHEMA` (JSON string)
+
+          - `systemActionMappings` *(object)* — maps system actions (`NEW`, `EDIT`, `PUBLISH`, `UNPUBLISH`, `ARCHIVE`, `UNARCHIVE`, `DELETE`, `DESTROY`) to workflow action UUIDs
+
+
+          **WIDGET content types:** Creating `clazz: WIDGET` automatically adds `widgetTitle`, `widgetUsage`, `widgetCode`, and `widgetPreexecute`. `widgetCode` is an `ImmutableConstantField`; set the field''s `values` property on the content type. Putting `widgetCode` in a workflow contentlet body is silently ignored.
+
+
+          **Field object schema** (each item in `fields[]`):
+
+          - `clazz` *(string, required)* — the field type as a case-insensitive short name: `TEXT`, `TEXT_AREA`, `STORY_BLOCK_FIELD`, `WYSIWYG`, `BINARY`, `IMAGE`, `FILE`, `TAG`, `CATEGORY`, `CHECKBOX`, `RADIO`, `SELECT`, `MULTI_SELECT`, `DATE`, `TIME`, `DATE_TIME`, `KEY_VALUE`, `JSON_FIELD`, `CONSTANT`, `HIDDEN`, `CUSTOM_FIELD`, `RELATIONSHIP`, `ROW_FIELD` *(layout marker)*, `COLUMN_FIELD` *(layout marker)*. The fully-qualified `Immutable*` class name is also accepted.
+
+          - `name`, `variable`, `dataType` (one of `TEXT`, `LONG_TEXT`, `SYSTEM`, `BOOL`, `INTEGER`, `FLOAT`, `DATE`), `required`, `indexed`, `listed`, `sortOrder` *(integer, position in the fields array)*
+
+          - ⚠️ **`dataType` is the storage type, not the UI type.** Asset-reference fields — `ImmutableImageField`, `ImmutableFileField`, `ImmutableBinaryField` — use `dataType: TEXT` (they store a reference in a text column), **never** `SYSTEM`. Reserve `SYSTEM` for true layout/tab/relationship system fields (rows, columns, dividers, permission/relationship tabs).
+
+          - `values` *(string)* — for Radio/Select/Checkbox: newline-separated `Display|value` pairs. For a boolean field use `ImmutableRadioField` + `dataType: BOOL` + `values: ''True|true\r\nFalse|false''` — there is no dedicated Boolean field class.
+
+
+          **Layout encoding:** Rows and columns are regular field entries placed in `fields[]`. `ImmutableRowField` begins a new row; `ImmutableColumnField` begins a new column inside that row; following content fields belong to the most-recent column until the next marker.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentTypeRequestView'
+            example:
+            - clazz: CONTENT
+              defaultType: false
+              name: The Content Type 1
+              description: THE DESCRIPTION
+              host: 48190c8c-42c4-46af-8d1a-0cd5db894797
+              owner: dotcms.org.1
+              variable: TheContentType1
+              fixed: false
+              system: false
+              folder: SYSTEM_FOLDER
+              systemActionMappings:
+                NEW: ceca71a0-deee-4999-bd47-b01baa1bcfc8
+                PUBLISH: ceca71a0-deee-4999-bd47-b01baa1bcfc8
+              workflow:
+              - d61a59e1-a49c-46f2-a929-db2b4bfa88b2
+            - clazz: CONTENT
+              defaultType: false
+              name: The Content Type 2
+              description: THE DESCRIPTION
+              host: 48190c8c-42c4-46af-8d1a-0cd5db894797
+              owner: dotcms.org.1
+              variable: TheContentType2
+              fixed: false
+              system: false
+              folder: SYSTEM_FOLDER
+              workflow:
+              - d61a59e1-a49c-46f2-a929-db2b4bfa88b2
+        required: true
+      responses:
+        '200':
+          description: Content type(s) created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fields: []
+                  fixed: true
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  name: string
+                  owner: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  systemActionMappings: {}
+                  variable: string
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/id/{idOrVar}:
+    get:
+      tags:
+      - Content Type
+      summary: Retrieves a single content type
+      description: 'Returns one content type based on the provided ID or Velocity variable name.
+
+
+        The response includes a `fields[]` array describing every field on the type. Each field has a `clazz` property (e.g. `ImmutableBinaryField`, `ImmutableImageField`, `ImmutableTextField`) that determines what values the field accepts. This is particularly important for file-like fields: `ImmutableBinaryField` only accepts a `temp_` from `POST /api/v1/temp`; `ImmutableImageField` accepts a `temp_` or a dotAsset `identifier`. Always inspect `fields[].clazz` before attempting to set binary or image field values via the workflow fire endpoint.'
+      operationId: getContentTypeIdVar
+      parameters:
+      - name: idOrVar
+        in: path
+        description: 'The ID or Velocity variable name of the content type to retrieve.
+
+
+          Variable name example: `htmlpageasset` (Default page content type)'
+        required: true
+        schema:
+          type: string
+      - name: languageId
+        in: query
+        description: The language ID for localization.
+        schema:
+          type: integer
+          format: int64
+      - name: live
+        in: query
+        description: Determines whether live versions of language variables are used in the returned object.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Content type retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentTypeDetailView'
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fields: []
+                  fixed: false
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  variable: string
+                  systemActionMappings: {}
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+                permissions: []
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+      - Content Type
+      summary: Updates a content type
+      description: 'Updates the content type based on the given ID or Velocity variable name.
+
+
+        ⚠️ **Destructive semantics.** (with one exception). This endpoint treats the request body as the full desired state. Any editable property (including items in `fields[]`) absent from the body will be removed. **Exception: `metadata`** — if the `metadata` key is absent from the request body, the server preserves the existing metadata unchanged. To explicitly clear all metadata, send `"metadata": null`.
+
+
+        **Recommended update pattern:**
+
+        1. `GET /api/v1/contenttype/id/{idOrVar}` to fetch the current object.
+
+        2. Mutate the returned object in place. Rename `workflows` (array of objects) → `workflow` (array of UUIDs) before sending.
+
+        3. PUT the entire mutated object back.
+
+
+        This is also the only supported way to add, remove, or modify individual fields — the `/api/v1/contenttype/{typeId}/fields/**` family is deprecated in favor of this full-CT PUT.
+
+
+        ⚠️ **`systemActionMappings` is validated on write.** Each entry''s `workflowAction.id` must still exist; if a mapping points to a deleted workflow action, the entire PUT fails with `"The workflow action with the id does not exists"`. When round-tripping the object, prune `systemActionMappings` entries you do not intend to update — or omit the `systemActionMappings` property entirely if no mapping changes are needed.'
+      operationId: putContentTypeUpdate
+      parameters:
+      - name: idOrVar
+        in: path
+        description: 'The ID or Velocity variable name of the content type to update.
+
+
+          Example value: `htmlpageasset` (Default page content type)'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'The minimum required properties for a successful update are `clazz`, `id`, and `name`.
+
+
+          May also optionally include the following special properties:
+
+
+          | Property | Value | Description |
+
+          |-|-|-|
+
+          | `systemActionMappings` | JSON Object | Maps [Default Workflow Actions](https://www.dotcms.com/docs/latest/managing-workflows#DefaultActions) (as keys) to workflow action identifiers (as values) for this content type.|
+
+          | `workflow` | List of Strings | A list of identifiers of workflow schemes to be associated with the content type.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentTypeRequestView'
+            example:
+              clazz: com.dotcms.contenttype.model.type.ImmutableSimpleContentType
+              defaultType: false
+              id: 39fecdb0-46cc-40a9-a056-f2e1a80ea78c
+              name: The Content Type 2
+              description: THE DESCRIPTION 2
+              host: 48190c8c-42c4-46af-8d1a-0cd5db894797
+              owner: dotcms.org.1
+              variable: TheContentType1
+              fixed: false
+              system: false
+              folder: SYSTEM_FOLDER
+              workflow:
+              - d61a59e1-a49c-46f2-a929-db2b4bfa88b2
+        required: true
+      responses:
+        '200':
+          description: Content type updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentTypeDetailView'
+              example:
+                entity:
+                  baseType: string
+                  clazz: string
+                  defaultType: true
+                  fields: []
+                  fixed: true
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  systemActionMappings: {}
+                  variable: string
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+      - Content Type
+      summary: Deletes a content type
+      description: 'Deletes the content type based on the provided ID or Velocity variable name.
+
+
+        ⚠️ **Note:** The `entity` field in the response is a **JSON-encoded string**, not an object. Typed clients must call `JSON.parse(entity)` before use to get `{ "deleted": "" }`. This differs from other endpoints in the same family where `entity` is a direct object.'
+      operationId: deleteContentType
+      parameters:
+      - name: idOrVar
+        in: path
+        description: The ID or Velocity variable name of the content type to delete.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content type deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentTypeJsonView'
+              example:
+                entity: '{"deleted":"string"}'
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '403':
+          description: Forbidden
+        '404':
+          description: Content type not found
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/_filter:
+    post:
+      tags:
+      - Content Type
+      summary: Filters content types
+      description: 'Returns the list of content type objects that match the specified filter, with optional pagination criteria.
+
+
+        For simple substring filtering without pagination control, `GET /api/v1/contenttype?filter=` is equivalent and simpler. Use `_filter` when you need pagination, ordering, and direction together.'
+      operationId: postContentTypeFilter
+      requestBody:
+        description: 'Requires POST body consisting of a JSON object with the following properties:
+
+
+          | Property |  Type  | Description |
+
+          |----------|--------|-------------|
+
+          | `filter`   | JSON Object | Contains three properties: <table><tr><td>`query`</td><td>A simple query returning full or partial matches.</td></tr><tr><td>`types`</td><td>A comma-separated list of specific content type variables.</td></tr><tr><td>`sites`</td><td>A comma-separated list of site identifiers or keys.</td></tr></table> |
+
+          | `page` | Integer | Which page of results to show. Defaults to `1`. |
+
+          | `perPage`   | Integer | Number of results to display per page. Defaults to `10`. |
+
+          | `orderBy`   | String | Sorting parameter: `name` (default), `velocity_var_name`, `mod_date`, or `sort_order`. |
+
+          | `direction`   | String | `ASC` (default) or `DESC` for ascending or descending. |'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilteredContentTypesForm'
+            example:
+              filter:
+                query: ''
+                types: Blog,Activity
+                sites: demo.dotcms.com,SYSTEM_HOST
+              page: 1
+              perPage: 10
+              orderBy: name
+              direction: ASC
+        required: true
+      responses:
+        '200':
+          description: Content types filtered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListContentTypeView'
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fixed: false
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  nEntries: 0
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  variable: string
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+                permissions: []
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/page:
+    get:
+      tags:
+      - Content Type
+      summary: Retrieves a list of content types for a page
+      description: Returns a list of content type objects based on the filtering criteria.
+      operationId: getPagesContentTypes
+      parameters:
+      - name: pagePathOrId
+        in: query
+        description: The URL or Identifier of the page to filter content types for the palette
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Optional Language id
+        schema:
+          type: string
+          default: '-1'
+      - name: filter
+        in: query
+        description: String to filter/search for specific content types; leave blank to return all.
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Page number in response pagination.
+
+
+          Default: `1`'
+        schema:
+          type: integer
+          format: int64
+          default: 1
+      - name: per_page
+        in: query
+        description: 'Number of results per page for pagination.
+
+
+          Default: `10`'
+        schema:
+          type: integer
+          format: int64
+          default: 10
+      - name: orderby
+        in: query
+        description: 'Column(s) to sort the results. Multiple columns can be combined in a comma-separated list. Column names can also be set within a SQL string function, such as `upper()`.
+
+
+          Some possible values:
+
+
+          `name`, `velocity_var_name`, `mod_date`, `sort_order`
+
+
+          `description`, `structuretype`, `category`, `inode`'
+        schema:
+          type: string
+          default: usage
+      - name: direction
+        in: query
+        description: 'Sort direction: choose between ascending or descending.'
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+          default: ASC
+      - name: type
+        in: query
+        description: List of variable names of [base content type](https://www.dotcms.com/docs/latest/base-content-types).
+        style: form
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - ANY
+            - CONTENT
+            - WIDGET
+            - FORM
+            - FILEASSET
+            - HTMLPAGE
+            - PERSONA
+            - VANITY_URL
+            - KEY_VALUE
+            - DOTASSET
+          enum:
+          - ANY
+          - CONTENT
+          - WIDGET
+          - FORM
+          - FILEASSET
+          - HTMLPAGE
+          - PERSONA
+          - VANITY_URL
+          - KEY_VALUE
+          - DOTASSET
+      - name: host
+        in: query
+        description: Filter by site identifier.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content types retrieved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fixed: true
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  nEntries: 0
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  variable: string
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+                permissions: []
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/basetypes:
+    get:
+      tags:
+      - Content Type
+      summary: Retrieves base content types
+      description: Returns a list of base content types.
+      operationId: getContentTypeBaseTypes
+      responses:
+        '200':
+          description: Base content types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBaseContentTypesView'
+              example:
+                entity:
+                - index: int
+                  label: string
+                  name: string
+                  types: null
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/render/id/{idOrVar}:
+    get:
+      tags:
+      - Content Type
+      summary: Retrieves a single content type with their rendered custom fields
+      description: Returns a content type based on the provided ID or Velocity variable name. Additionally, the Velocity code in all of its custom fields will be parsed.
+      operationId: getContentTypeRenderedCustomFieldIdVar
+      parameters:
+      - name: idOrVar
+        in: path
+        description: 'The ID or Velocity variable name of the content type to retrieve.
+
+
+          Variable name example: `htmlpageasset` (Default page content type)'
+        required: true
+        schema:
+          type: string
+      - name: languageId
+        in: query
+        description: The language ID for localization.
+        schema:
+          type: integer
+          format: int64
+      - name: live
+        in: query
+        description: Determines whether live versions of language variables are used in the returned object.
+        schema:
+          type: boolean
+      - name: inode
+        in: query
+        description: Optional contentlet inode. When provided, contentlet-specific Velocity variables ($inode, $identifier, $lang, etc.) will be available when rendering Custom Fields.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content type retrieved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - baseType: string
+                  clazz: string
+                  defaultType: true
+                  description: string
+                  fields: []
+                  fixed: false
+                  folder: string
+                  folderPath: string
+                  host: string
+                  iDate: 0
+                  icon: string
+                  id: string
+                  layout: []
+                  metadata: {}
+                  modDate: 0
+                  multilingualable: true
+                  name: string
+                  siteName: string
+                  sortOrder: 0
+                  system: true
+                  variable: string
+                  systemActionMappings: {}
+                  versionable: true
+                  workflows: []
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination:
+                  currentPage: 0
+                  perPage: 0
+                  totalEntries: 0
+                permissions: []
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/v1/contenttype/id/{idOrVar}/metadata:
+    patch:
+      tags:
+      - Content Type
+      summary: Updates the metadata of a Content Type
+      description: 'Merges the provided key/value pairs into the Content Type''s `metadata` map without touching fields, workflows, or any other structural property. Keys present in the body are added or overwritten; keys absent from the body are left unchanged. To remove a key, set its value explicitly to `null`.
+
+
+        Known metadata keys:
+
+        - `CONTENT_EDITOR2_ENABLED` *(boolean)* — enables the new content editor
+
+        - `DOT_STYLE_EDITOR_SCHEMA` *(JSON string)* — Style Editor schema definition'
+      operationId: updateContentTypeMetadata
+      parameters:
+      - name: idOrVar
+        in: path
+        description: 'The ID or Velocity variable name of the Content Type to update.
+
+
+          Example value: `htmlpageasset` (Default page content type)'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A flat JSON object whose keys are merged into the Content Type's existing metadata. Set a key's value to `null` to remove it. An absent or empty body is treated as a no-op — the current metadata is returned unchanged with HTTP 200.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Metadata key/value pairs to merge
+            example:
+              DOT_STYLE_EDITOR_SCHEMA: '{"contentType":"htmlpageasset","sections":[{"title":"New Section","fields":[{"type":"dropdown","label":"Color","id":"color","config":{"options":[{"label":"Red","value":"red"}]}}]}]}'
+      responses:
+        '200':
+          description: Metadata updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentTypeDetailView'
+        '400':
+          description: Bad request — invalid JSON body
+        '401':
+          description: User not authenticated
+        '403':
+          description: User does not have permission to edit this Content Type
+        '404':
+          description: Content Type not found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    ContentType:
+      required:
+      - clazz
+      type: object
+      properties:
+        owner:
+          type: string
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ContentTypeFieldView:
+      required:
+      - clazz
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Field identifier. Preserve this when updating an existing field.
+        contentTypeId:
+          type: string
+          description: Identifier of the content type that owns this field.
+        clazz:
+          type: string
+          description: 'Field type, as a case-insensitive short field-type name (the discriminator that selects the concrete field). The fully-qualified ''Immutable*'' class name and the bare simple class name (e.g. ''TextField'') are also still accepted, but the short names below are the preferred form. Example: "TEXT".'
+          example: TEXT
+          enum:
+          - TEXT
+          - TEXT_AREA
+          - STORY_BLOCK_FIELD
+          - WYSIWYG
+          - CONSTANT
+          - HIDDEN
+          - CUSTOM_FIELD
+          - JSON_FIELD
+          - BINARY
+          - IMAGE
+          - FILE
+          - TAG
+          - CATEGORY
+          - CHECKBOX
+          - RADIO
+          - SELECT
+          - MULTI_SELECT
+          - DATE
+          - TIME
+          - DATE_TIME
+          - KEY_VALUE
+          - HOST_OR_FOLDER
+          - RELATIONSHIP
+          - RELATIONSHIPS_TAB
+          - PERMISSIONS_TAB
+          - LINE_DIVIDER
+          - TAB_DIVIDER
+          - ROW_FIELD
+          - COLUMN_FIELD
+        name:
+          type: string
+          description: Display name of the field.
+        variable:
+          type: string
+          description: Velocity variable name of the field (unique within the content type; auto-generated from 'name' if omitted).
+        dataType:
+          type: string
+          description: Storage/column data type backing the field. This is the **storage** type, which often differs from the field's UI class. In particular, fields that store their payload elsewhere — such as 'ImmutableImageField', 'ImmutableFileField', and 'ImmutableBinaryField' — use dataType 'TEXT' (they keep an asset reference in a text column), **not** 'SYSTEM'. Reserve 'SYSTEM' for true layout/tab/relationship system fields. Use 'LONG_TEXT' for text-area/story-block/WYSIWYG content.
+          enum:
+          - TEXT
+          - LONG_TEXT
+          - SYSTEM
+          - BOOL
+          - INTEGER
+          - FLOAT
+          - DATE
+        required:
+          type: boolean
+          description: Whether a value is required to save content.
+        indexed:
+          type: boolean
+          description: Whether the field is added to the search index.
+        listed:
+          type: boolean
+          description: Whether the field appears in content list/table views.
+        unique:
+          type: boolean
+          description: Whether the field is unique across content of this type.
+        sortOrder:
+          type: integer
+          description: Position of the field within the 'fields[]' array (also drives row/column layout order).
+          format: int32
+        values:
+          type: string
+          description: 'Options for Radio/Select/Checkbox/Multi-Select fields: newline-separated ''Display|value'' pairs. For a boolean choice use ImmutableRadioField + dataType ''BOOL'' + values ''True|true\r\nFalse|false'' (there is no dedicated boolean field class).'
+        defaultValue:
+          type: string
+          description: Default value applied when content is created.
+        hint:
+          type: string
+          description: Help text shown beneath the field in the editor.
+        regexCheck:
+          type: string
+          description: Regular expression used to validate the field value.
+      description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityContentTypeDetailView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContentTypeJsonView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListContentTypeView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentType'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBaseContentTypesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseContentTypesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    BaseContentTypesView:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentTypeView'
+        index:
+          type: integer
+          format: int32
+    CopyContentTypeForm:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        variable:
+          type: string
+        folder:
+          type: string
+        host:
+          type: string
+        icon:
+          type: string
+    ResponseEntityContentTypeOperationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContentTypeRequestView:
+      required:
+      - clazz
+      - name
+      type: object
+      properties:
+        clazz:
+          type: string
+          description: 'Base type of the content type, as a case-insensitive base-type name: `CONTENT`, `WIDGET`, `FORM`, `FILEASSET`, `HTMLPAGE`, `PERSONA`, `VANITY_URL`, `KEY_VALUE`, or `DOTASSET`. Example: `"WIDGET"`.'
+          example: WIDGET
+          enum:
+          - CONTENT
+          - WIDGET
+          - FORM
+          - FILEASSET
+          - HTMLPAGE
+          - PERSONA
+          - VANITY_URL
+          - KEY_VALUE
+          - DOTASSET
+        name:
+          type: string
+          description: Display name of the content type.
+        variable:
+          type: string
+          description: Velocity variable name (unique, alphanumeric, starts with a letter; auto-generated from 'name' if omitted).
+        host:
+          type: string
+          description: Site identifier UUID this content type lives on, or the literal 'SYSTEM_HOST' (defaults to the default site).
+        folder:
+          type: string
+          description: Folder identifier UUID, or the literal 'SYSTEM_FOLDER' (the default).
+        description:
+          type: string
+          description: Description of the content type.
+        defaultType:
+          type: boolean
+          description: Whether this is the default content type.
+        fixed:
+          type: boolean
+          description: Whether the content type is fixed (system-managed).
+        system:
+          type: boolean
+          description: Whether the content type is a system type.
+        workflow:
+          type: array
+          description: 'Workflow scheme identifiers to associate with the content type, e.g. ["d61a59e1-a49c-46f2-a929-db2b4bfa88b2"] for the System Workflow. NOTE: this key is ''workflow'' (singular) in the REQUEST; GET responses return ''workflows'' (plural, array of objects) — rename the key when round-tripping.'
+          items:
+            type: string
+        fields:
+          type: array
+          description: 'Fields that make up the content type, in order. Rows and columns are regular entries: ''ImmutableRowField'' begins a row, ''ImmutableColumnField'' begins a column, and subsequent content fields belong to the most-recent column.'
+          items:
+            $ref: '#/components/schemas/ContentTypeFieldView'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+            description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
+          description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
+        systemActionMappings:
+          type: object
+          additionalProperties:
+            type: string
+            description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
+          description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
+      description: 'A content-type object, posted directly (NOT wrapped in a ''contentType'' envelope). The endpoint also accepts an array of these objects to create several types in one call. Creating clazz `WIDGET` automatically adds `widgetTitle`, `widgetUsage`, `widgetCode`, and `widgetPreexecute`. `widgetCode` is an ImmutableConstantField: its shared code belongs in the field''s `values` property, not in individual widget contentlets.'
+    ContentTypeView:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        inode:
+          type: string
+        action:
+          type: string
+        variable:
+          type: string
+    FilteredContentTypesForm:
+      type: object
+      properties:
+        filter:
+          type: object
+          additionalProperties:
+            type: object
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        orderBy:
+          type: string
+        direction:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

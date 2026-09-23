@@ -1,0 +1,173 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Accessibility Agent API
+  version: '3'
+  description: Streaming a11y-fix agent proxy
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Accessibility Agent
+  description: Streaming a11y-fix agent proxy
+paths:
+  /api/v1/agents/a11y/fix:
+    post:
+      tags:
+      - Accessibility Agent
+      summary: Run the accessibility fix agent on a page
+      description: Resolves the page identifier to a live URL, URI and host id, mints a short-lived token for the calling user, and forwards the request to the configured a11y agent service. Returns the agent's report once the run completes. This call is synchronous and a full run can take minutes - use /fix/stream to receive progress as it happens. Requires the dotPageScanner-config App to carry the agent url and auth token.
+      operationId: runA11yAgentFix
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/A11yAgentFixForm'
+      responses:
+        '200':
+          description: The agent's fix report, relayed verbatim from the agent service
+          content:
+            application/json: {}
+        '400':
+          description: identifier is missing, or the page could not be resolved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '500':
+          description: The agent App is not configured, or the agent service failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+  /api/v1/agents/a11y/fix/stream:
+    post:
+      tags:
+      - Accessibility Agent
+      summary: Run the accessibility fix agent, streaming progress over SSE
+      description: Same as /fix, but relays the agent's Server-Sent Events as they arrive rather than waiting for the run to finish. Frames carry the run id, phase steps, progress counts, heartbeats, and a terminal done, aborted or error event. A configuration failure is reported as an SSE error frame rather than an HTTP status, because the response has already begun.
+      operationId: streamA11yAgentFix
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/A11yAgentFixForm'
+      responses:
+        '200':
+          description: SSE stream of agent events (text/event-stream)
+          content:
+            text/event-stream: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/v1/agents/a11y/stop:
+    post:
+      tags:
+      - Accessibility Agent
+      summary: Stop an in-flight accessibility fix run
+      description: Cooperatively stops the run identified by runId. The agent stops at its next safe checkpoint and the open /fix/stream connection receives a terminal aborted event carrying a partial report - fixes already applied are kept. Runs are addressed by runId rather than by caller identity, because the proxy mints a fresh token per request.
+      operationId: stopA11yAgentRun
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/A11yAgentStopForm'
+      responses:
+        '202':
+          description: Stop signalled, or no such run was active - both are success
+          content:
+            application/json: {}
+        '400':
+          description: runId is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    A11yAgentFixForm:
+      required:
+      - identifier
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: dotCMS content identifier of the page to fix
+          example: a9f30020-54ef-494e-92ed-645e757171c2
+        languageId:
+          type: integer
+          description: Language id of the page version to fix
+          format: int32
+          example: 1
+          default: 1
+        skipCss:
+          type: boolean
+          description: When true the agent fixes only VTL and reports CSS contrast issues instead of editing stylesheets
+          example: false
+          default: false
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    A11yAgentStopForm:
+      required:
+      - runId
+      type: object
+      properties:
+        runId:
+          type: string
+          description: Run id returned by /fix (report) or /fix/stream (the `run` event)
+          example: r_1f0c2b7d9a4e4c1fb0d5e6a7c8b9d0e1
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

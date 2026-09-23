@@ -1,0 +1,1121 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Tags API
+  version: '3'
+  description: Content tagging and labeling
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Tags
+  description: Content tagging and labeling
+paths:
+  /api/v2/tags:
+    get:
+      tags:
+      - Tags
+      summary: List/Search Tags
+      description: Searches and lists tags with filtering, pagination, and sorting. The filter parameter performs a case-insensitive search with wildcards on both sides (e.g., "market" matches "Marketing", "marketplace", "supermarket"). When using the filter, results are ordered by match length (shortest first) to prioritize exact matches. The site parameter accepts either a site ID or site name for filtering by specific sites.
+      operationId: listTags
+      parameters:
+      - name: filter
+        in: query
+        description: Tag name filter (LIKE search)
+        schema:
+          type: string
+        example: market
+      - name: global
+        in: query
+        description: Include system/global tags
+        schema:
+          type: boolean
+          default: false
+        example: true
+      - name: site
+        in: query
+        description: Filter by site (ID, name, or SYSTEM_HOST)
+        schema:
+          type: string
+        example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+      - name: page
+        in: query
+        description: Page number
+        schema:
+          type: integer
+          format: int32
+          default: 1
+        example: 1
+      - name: per_page
+        in: query
+        description: Items per page
+        schema:
+          type: integer
+          format: int32
+        example: 25
+      - name: orderBy
+        in: query
+        description: Sort field
+        schema:
+          type: string
+          default: tagname
+        example: tagname
+      - name: direction
+        in: query
+        description: Sort direction
+        schema:
+          type: string
+          default: ASC
+        example: ASC
+      responses:
+        '200':
+          description: Tags retrieved successfully with pagination metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedDataView'
+        '400':
+          description: Bad Request - Invalid parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Tags
+      summary: Create tags
+      description: Creates one or more tags. Single tag = list with one element, multiple tags = list with multiple elements. This operation is idempotent - existing tags are returned without error.
+      operationId: createTags
+      requestBody:
+        description: List of tag data to create. Single tag = list with one element, multiple tags = list with multiple elements.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TagForm'
+        required: true
+      responses:
+        '200':
+          description: All submitted tags already existed. Response contains an empty 'created' list and all tags in 'duplicates'.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagCreateView'
+        '201':
+          description: At least one new tag was created. New tags appear in 'created', pre-existing ones in 'duplicates'.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagCreateView'
+        '400':
+          description: Bad Request - Invalid tag data with field-level error details
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - User does not have access to Tags portlet
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error - Database or system error
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Tags
+      summary: Bulk delete tags
+      description: Deletes one or more tags by ID. Missing IDs are silently skipped — the operation is idempotent.
+      operationId: bulkDeleteTags
+      requestBody:
+        description: List of tag IDs to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk delete completed. Check successCount, skippedCount, and fails for details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Bad Request - invalid input
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to delete tags
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/{tagId}:
+    delete:
+      tags:
+      - Tags
+      summary: Delete tag
+      description: Deletes a tag based on its ID. The tag must exist and the user must have appropriate permissions.
+      operationId: deleteTag
+      parameters:
+      - name: tagId
+        in: path
+        description: ID of the tag to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tag deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to delete tags
+          content:
+            application/json: {}
+        '404':
+          description: Tag not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/inode/{inode}:
+    get:
+      tags:
+      - Tags
+      summary: Get tags by inode
+      description: Retrieves all tags associated with a given inode. Returns tag-inode relationships for the specified content.
+      operationId: getTagsByInode
+      parameters:
+      - name: inode
+        in: path
+        description: Inode to retrieve tags for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagInodesMapView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to access tags
+          content:
+            application/json: {}
+        '404':
+          description: No tags found for the specified inode
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Tags
+      summary: Delete tag-inode associations
+      description: Breaks the link between an inode and all its associated tags. Removes all tag associations for the specified content but does not delete the tags themselves.
+      operationId: deleteTagInodeAssociations
+      parameters:
+      - name: inode
+        in: path
+        description: Inode to remove tag associations from
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tag-inode associations deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to modify tag associations
+          content:
+            application/json: {}
+        '404':
+          description: No tag associations found for the specified inode
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/export/template:
+    get:
+      tags:
+      - Tags
+      summary: Download tag import template
+      description: Download a CSV template file with headers and example data for tag imports. No parameters required.
+      operationId: downloadTagImportTemplate
+      responses:
+        '200':
+          description: CSV template file download
+          content:
+            text/csv: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Template generation error
+          content:
+            application/json: {}
+  /api/v2/tags/export:
+    get:
+      tags:
+      - Tags
+      summary: Export tags
+      description: Export tags to CSV or JSON format. Supports the same filtering as list/search endpoint with configurable export format.
+      operationId: exportTags
+      parameters:
+      - name: format
+        in: query
+        description: Export format
+        schema:
+          type: string
+          enum:
+          - csv
+          - json
+          default: csv
+        example: csv
+      - name: global
+        in: query
+        description: Include global tags
+        schema:
+          type: boolean
+          default: false
+        example: false
+      - name: siteId
+        in: query
+        description: Filter by specific host/site
+        schema:
+          type: string
+        example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+      - name: filter
+        in: query
+        description: Tag name filter (LIKE search)
+        schema:
+          type: string
+        example: market
+      responses:
+        '200':
+          description: File download initiated with appropriate content type
+          content:
+            text/csv: {}
+            application/json: {}
+        '400':
+          description: Invalid parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/{nameOrId}:
+    get:
+      tags:
+      - Tags
+      summary: Get tag by name or ID
+      description: Retrieves a single tag by its name or UUID. For name-based searches, uses site context for disambiguation.
+      operationId: getTagByNameOrId
+      parameters:
+      - name: nameOrId
+        in: path
+        description: Tag name or UUID
+        required: true
+        schema:
+          type: string
+      - name: siteId
+        in: query
+        description: Site ID for name-based searches. If not provided, uses current site context with SYSTEM_HOST fallback
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tag found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRestTagView'
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - User does not have access to Tags portlet
+          content:
+            application/json: {}
+        '404':
+          description: Tag not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json: {}
+  /api/v2/tags/user/{userId}:
+    get:
+      tags:
+      - Tags
+      summary: Get tags by user ID
+      description: Retrieves all tags owned by a specific user. Returns tags that were explicitly linked to the user during creation.
+      operationId: getTagsByUserId
+      parameters:
+      - name: userId
+        in: path
+        description: User ID to retrieve tags for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagMapView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to access tags
+          content:
+            application/json: {}
+        '404':
+          description: No tags found for the specified user
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/import:
+    post:
+      tags:
+      - Tags
+      summary: Import tags from CSV file
+      description: Imports tags from a CSV file with row-level error reporting. Returns detailed statistics and error information for each failed row.
+      operationId: importTags
+      requestBody:
+        description: 'CSV file with tag data in format: tag_name,host_id'
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+        required: true
+      responses:
+        '200':
+          description: Import completed with detailed results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagOperationView'
+        '400':
+          description: Bad Request - Invalid file format or content
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - User does not have access to Tags portlet
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error - Database or system error
+          content:
+            application/json: {}
+  /api/v2/tags/tag/{nameOrId}/inode/{inode}:
+    put:
+      tags:
+      - Tags
+      summary: Link tags to inode
+      description: Binds tags with a given inode. Lookup can be done via tag name or ID. If tag name matches multiple tags, all matching tags will be bound. Use tag ID for specific binding.
+      operationId: linkTagsToInode
+      parameters:
+      - name: nameOrId
+        in: path
+        description: Name or UUID of the tag to link
+        required: true
+        schema:
+          type: string
+      - name: inode
+        in: path
+        description: Inode to link the tag(s) to
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tags linked to inode successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTagInodesMapView'
+        '400':
+          description: Bad request - invalid tag name/ID or inode
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to link tags
+          content:
+            application/json: {}
+        '404':
+          description: Tag not found by the specified name or ID
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v2/tags/{idOrName}:
+    put:
+      tags:
+      - Tags
+      summary: Update tag
+      description: Updates a tag's name and site assignment. You can identify the tag by its UUID or by its name. When using a tag name, you must specify which site's tag you want to update via the siteId query parameter.
+      operationId: updateTag
+      parameters:
+      - name: idOrName
+        in: path
+        description: Tag UUID or tag name
+        required: true
+        schema:
+          type: string
+      - name: siteId
+        in: query
+        description: Site ID for name-based lookups. Required when idOrName is a tag name
+        schema:
+          type: string
+      requestBody:
+        description: Updated tag data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTagForm'
+        required: true
+      responses:
+        '200':
+          description: Tag updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRestTagView'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - User does not have access to Tags portlet
+          content:
+            application/json: {}
+        '404':
+          description: Tag not found
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - Tag name already exists on target site
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error - Database or system error
+          content:
+            application/json: {}
+components:
+  schemas:
+    RestTag:
+      type: object
+      properties:
+        label:
+          type: string
+        siteId:
+          type: string
+        siteName:
+          type: string
+        persona:
+          type: boolean
+        id:
+          type: string
+    MessageBodyWorkers:
+      type: object
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    ResponseEntityPaginatedDataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ResponseEntityTagOperationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    TagForm:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        siteId:
+          type: string
+        ownerId:
+          type: string
+        persona:
+          type: boolean
+    UpdateTagForm:
+      required:
+      - siteId
+      - tagName
+      type: object
+      properties:
+        siteId:
+          type: string
+        tagName:
+          type: string
+        tagId:
+          type: string
+        name:
+          type: string
+    ResponseEntityRestTagView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RestTag'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityTagInodesMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagInode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityTagCreateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/RestTag'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TagInode:
+      type: object
+      properties:
+        inode:
+          type: string
+        tagId:
+          type: string
+        fieldVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ResponseEntityTagMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestTag'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

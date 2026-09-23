@@ -1,0 +1,99 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Cluster Management API
+  version: '3'
+  description: Cluster nodes and distributed system management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Cluster Management
+  description: Cluster nodes and distributed system management
+paths:
+  /api/cluster/getESConfigProperties/{params}:
+    get:
+      tags:
+      - Cluster Management
+      operationId: getESConfigProperties
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get ES config properties
+      x-summary-source: derived
+  /api/cluster/licenseRepoStatus:
+    get:
+      tags:
+      - Cluster Management
+      operationId: getLicenseRepoStatus
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get license repo status
+      x-summary-source: derived
+  /api/cluster/getNodesStatus/{params}:
+    get:
+      tags:
+      - Cluster Management
+      operationId: getNodesInfo
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get nodes info
+      x-summary-source: derived
+  /api/cluster/remove/{params}:
+    post:
+      tags:
+      - Cluster Management
+      operationId: removeFromCluster
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Remove from cluster
+      x-summary-source: derived
+  /api/cluster/test:
+    get:
+      tags:
+      - Cluster Management
+      operationId: testCluster
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Test cluster
+      x-summary-source: derived

@@ -1,0 +1,119 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Announcements API
+  version: '3'
+  description: System announcements and notifications
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Announcements
+  description: System announcements and notifications
+paths:
+  /api/v1/announcements:
+    get:
+      tags:
+      - Announcements
+      operationId: announcements
+      parameters:
+      - name: refreshCache
+        in: query
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewListAnnouncement'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewListAnnouncement'
+      summary: Announcements
+      x-summary-source: derived
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityViewListAnnouncement:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Announcement'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Announcement:
+      type: object
+      properties:
+        identifier:
+          type: string
+        inode:
+          type: string
+        languageId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        announcementDate:
+          type: string
+          format: date-time
+        announcementDateAsISO8601:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modDateAsISO8601:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

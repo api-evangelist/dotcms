@@ -1,0 +1,189 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content Report API
+  version: '3'
+  description: Content reporting and analytics
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content Report
+  description: Content reporting and analytics
+paths:
+  /api/v1/contentreport/folder/{folder}:
+    get:
+      tags:
+      - Content Report
+      summary: Generate folder content report
+      description: Generates a detailed report of the different Content Types living under a Folder and the number of content items for each type. Supports both folder ID and folder path (requires site parameter).
+      operationId: getFolderContentReport
+      parameters:
+      - name: folder
+        in: path
+        description: Folder ID or path to generate the report for
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: site
+        in: query
+        description: Site ID or key (required when using folder path)
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: Field to order results by
+        schema:
+          type: string
+          default: upper(name)
+      - name: direction
+        in: query
+        description: Sort direction (ASC or DESC)
+        schema:
+          type: string
+          default: ASC
+      responses:
+        '200':
+          description: Content Report for the specified Folder ID/path, or an empty list if either the Folder doesn't exist, or no content is found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentReportView'
+  /api/v1/contentreport/site/{site}:
+    get:
+      tags:
+      - Content Report
+      summary: Generate site content report
+      description: Generates a detailed report of the different Content Types living under a Site and the number of content items for each type. Useful for data analysis and deletion planning.
+      operationId: getSiteContentReport
+      parameters:
+      - name: site
+        in: path
+        description: Site ID or key to generate the report for
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: Field to order results by
+        schema:
+          type: string
+          default: upper(name)
+      - name: direction
+        in: query
+        description: Sort direction (ASC or DESC)
+        schema:
+          type: string
+          default: ASC
+      responses:
+        '200':
+          description: Content Report for the specified Site ID/Key, or an empty list if either the Site doesn't exist, or no content is found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseSiteVariablesEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteVariableView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ContentReportView:
+      type: object
+      properties:
+        contentTypeName:
+          type: string
+        entries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    SiteVariableView:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+        lastModifierFullName:
+          type: string

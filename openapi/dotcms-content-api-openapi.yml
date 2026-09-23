@@ -1,0 +1,2184 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content API
+  version: '3'
+  description: Endpoints for managing content and contentlets - the core data objects in dotCMS
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content
+  description: Endpoints for managing content and contentlets - the core data objects in dotCMS
+paths:
+  /api/v1/contentrelationships/{params}:
+    get:
+      tags:
+      - Content
+      summary: Get content with relationships (deprecated)
+      description: Retrieves content with relationships based on query parameters, identifier, or inode. This endpoint is deprecated - use /v1/content with depth parameter instead.
+      operationId: getContentRelationships
+      parameters:
+      - name: params
+        in: path
+        description: Query parameters, identifier, or inode for content lookup
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: Content with relationships retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Content with relationships in JSON format including contentlets and their related content
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/content/_canlock/{inodeOrIdentifier}:
+    get:
+      tags:
+      - Content
+      summary: Check if a contentlet can be locked
+      description: Checks if the contentlet specified by its inode or identifier can be locked by the current user.
+      operationId: canLockContent
+      parameters:
+      - name: inodeOrIdentifier
+        in: path
+        description: Contentlet inode or identifier
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: '-1'
+      responses:
+        '200':
+          description: Successfully retrieved lock status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid User
+        '403':
+          description: Forbidden
+        '404':
+          description: Content not found
+        '500':
+          description: Internal Server Error
+  /api/v1/content/{identifier}/languages:
+    get:
+      tags:
+      - Content
+      summary: Check content language versions
+      description: Retrieves all available languages for a contentlet and indicates which languages have content versions
+      operationId: checkContentLanguageVersions
+      parameters:
+      - name: identifier
+        in: path
+        description: Identifier of contentlet whose language status to display.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Language versions retrieved successfully
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Not found - contentlet identifier not found
+          content:
+            application/json: {}
+  /api/v1/content/{identifier}/references/count:
+    get:
+      tags:
+      - Content
+      summary: Get contentlet references count
+      description: Retrieves the total number of references to a specific contentlet by its identifier
+      operationId: getContentletReferencesCount
+      parameters:
+      - name: identifier
+        in: path
+        description: Content identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: References count retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCountView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Not found - contentlet with identifier not found
+          content:
+            application/json: {}
+  /api/v1/content/{inodeOrIdentifier}:
+    get:
+      tags:
+      - Content
+      summary: Retrieves a contentlet by identifier or inode
+      description: Returns a single contentlet based on its identifier or inode. This is the primary endpoint for fetching content data with support for language, variants, and relationship depth.
+      operationId: getContent
+      parameters:
+      - name: inodeOrIdentifier
+        in: path
+        description: Contentlet identifier or inode
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: ''
+      - name: variantName
+        in: query
+        description: Variant name for A/B testing
+        schema:
+          type: string
+          default: DEFAULT
+      - name: depth
+        in: query
+        description: Relationship depth to include (-1 for no relationships)
+        schema:
+          type: integer
+          format: int32
+          default: -1
+      responses:
+        '200':
+          description: Contentlet retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request - Invalid identifier format
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks read permissions
+        '404':
+          description: Contentlet not found
+        '500':
+          description: Internal server error
+  /api/v1/content/{inodeOrIdentifier}/references:
+    get:
+      tags:
+      - Content
+      summary: Get contentlet references
+      description: Retrieves all references to a specific contentlet, including pages, containers, and personas that reference it
+      operationId: getContentletReferences
+      parameters:
+      - name: inodeOrIdentifier
+        in: path
+        description: Content inode or identifier
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: ''
+        example: 1
+      responses:
+        '200':
+          description: References retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentReferenceListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - user lacks read permission on the contentlet
+          content:
+            application/json: {}
+        '404':
+          description: Not found - contentlet not found
+          content:
+            application/json: {}
+  /api/v1/content/{identifier}/push/history:
+    get:
+      tags:
+      - Content
+      summary: Contentlet Push History
+      description: Returns the push history of a contentlet
+      operationId: getContentletPushHistory
+      parameters:
+      - name: identifier
+        in: path
+        description: ID of the Contentlet whose push history will be retrieved.
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number or results being returned, for pagination purposes.
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Page number of the results being returned, for pagination purposes.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: History data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedDataView'
+        '401':
+          description: Authentication required.
+          content:
+            application/json: {}
+        '404':
+          description: The specified identifier does not match any contentlet.
+          content:
+            application/json: {}
+        '500':
+          description: An internal dotCMS error has occurred.
+          content:
+            application/json: {}
+  /api/v1/content/_lock/{inodeOrIdentifier}:
+    put:
+      tags:
+      - Content
+      summary: Lock a given contentlet by the current user
+      description: If the user is allowed to lock the contentlet specified by its inode or identifier, the contentlet will be locked.
+      operationId: lockContent
+      parameters:
+      - name: inodeOrIdentifier
+        in: path
+        description: Contentlet inode or identifier
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: '-1'
+      responses:
+        '200':
+          description: Successfully locked contentlet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid User
+        '403':
+          description: Forbidden
+        '404':
+          description: Content not found
+        '500':
+          description: Internal Server Error
+  /api/v1/content/related:
+    post:
+      tags:
+      - Content
+      summary: Pull Related Content
+      description: Retrieves related content for a contentlet based on relationship field configuration and query conditions
+      operationId: pullRelatedContent
+      requestBody:
+        description: Pull related content request parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PullRelatedForm'
+        required: true
+      responses:
+        '200':
+          description: Related content retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+        '400':
+          description: Bad request - contentlet does not have a relationship field
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Not found - contentlet not found
+          content:
+            application/json: {}
+  /api/v1/content/_refresh/{identifierOrInode}:
+    put:
+      tags:
+      - Content
+      summary: Refresh a contentlet
+      description: Reindexes and clears cache for the contentlet specified by its identifier or inode. This operation forces the content to be refreshed in both the search index and application cache.
+      operationId: refreshContent
+      parameters:
+      - name: identifierOrInode
+        in: path
+        description: Contentlet identifier or inode
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: '-1'
+      responses:
+        '200':
+          description: Successfully refreshed contentlet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '400':
+          description: Bad request - Invalid identifier format
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks write permissions
+        '404':
+          description: Content not found
+        '500':
+          description: Internal Server Error
+  /api/v1/content/_draft:
+    put:
+      tags:
+      - Content
+      summary: Saves a content draft
+      description: 'Creates or updates a draft version of a contentlet without triggering workflow. Drafts allow content editors to save work in progress without publishing.
+
+
+        **Block Editor (Story Block) fields:** send the value as a **Markdown or HTML** string — you do not need to hand-author the underlying ProseMirror/JSON document. dotCMS converts it to the Block Editor (ProseMirror JSON) structure automatically on save, so the field reads back as structured content with no editor round-trip required. A value that is already a valid Tiptap/ProseMirror JSON document is detected and stored unchanged. Example: `"body": "## Intro\n\nHello **world**."`.
+
+
+        **Rich blocks in Markdown:** blocks that plain Markdown cannot express are written as fenced code blocks whose info string is a `dotcms-*` label and whose body is a small JSON object. Example — embed a contentlet:
+
+
+        ```dotcms-content\n{"identifier": "", "languageId": 1}\n```
+
+
+        Supported labels and payload fields (**bold** = required):
+
+        - `dotcms-content` → embedded contentlet: **`identifier`**, `languageId` (default 1). The server rebuilds the full embed data from the identifier on every read.
+
+        - `dotcms-image` → dotCMS-bound or decorated image: **`identifier` or `src`**; optional `alt`, `title`, `href`, `target`, `textWrap`, `textAlign`, `languageId`. Plain external images need no fence — standard `!alt` works.
+
+        - `dotcms-video` → video: **`identifier` or `src`**; optional `mimeType`, `width`, `height`, `languageId`.
+
+        - `dotcms-youtube` → YouTube embed: **`src`**; optional `start` (seconds), `width`, `height`.
+
+        - `dotcms-grid` → layout grid: the verbatim `gridBlock` node JSON (`{"type":"gridBlock","attrs":{"columns":[n,n]},"content":[…two gridColumn nodes…]}`).
+
+        - `dotcms-node` → any other node type verbatim (`{"type": "", …}`) — the fallback for custom blocks.
+
+
+        **Rich blocks in HTML:** the same labels are namespaced custom elements. Scalar payloads ride as attributes with **hyphenated names** (HTML lowercases attribute names, so `languageId` is spelled `language-id`, `mimeType` is `mime-type`): `" language-id="1">`. `dotcms-ai`, `dotcms-grid` and `dotcms-node` take the same JSON object as the element''s text body instead (HTML-escape `` and would swallow the content after it. Both carriers produce identical stored documents.
+
+
+        Block styling (e.g. text alignment) is set by an HTML comment on its own line immediately before the block it decorates, in Markdown and HTML alike: ``.
+
+
+        A Markdown/HTML write **fully replaces** the stored document; when stored rich blocks are not carried over in the submitted value, the save still succeeds and an advisory warning listing the replaced blocks is returned in the response `messages` field — carry the blocks over as fences or elements to preserve them. An invalid payload degrades to an ordinary code block (or is dropped when it carries no text to keep), never an error.'
+      operationId: saveDraft
+      parameters:
+      - name: inode
+        in: query
+        description: Content inode for existing content
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        description: Content identifier for existing content
+        schema:
+          type: string
+      - name: indexPolicy
+        in: query
+        description: Index policy (DEFER_UNTIL_PUBLISH, FORCE, WAIT_FOR)
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: '-1'
+      requestBody:
+        description: Content data and field values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentForm'
+        required: true
+      responses:
+        '200':
+          description: Draft saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentletView'
+        '400':
+          description: Bad request - Invalid content data
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks write permissions
+        '404':
+          description: Content not found
+        '500':
+          description: Internal server error
+  /api/v1/content/search:
+    post:
+      tags:
+      - Content
+      summary: Retrieves content from the dotCMS repository
+      description: 'Abstracts the generation of the required Lucene query to look for user searchable fields in a Content Type, and returns the expected results. Payload info:
+
+
+        | Property | Type | Description |
+
+        |---------------------------------|---------|-------------------------------------------------------|
+
+        | `globalSearch` | String | Global search term (like the main search box) |
+
+        | `searchableFieldsByContentType` | Object | Content-type specific field searches. Value object consists of content type variables as keys, and objects as values, the latter consisting of the system variables of fields as keys, and query strings as values. See table below for how to interact with different field types, and the example request for how to structure the payload. |
+
+        | `systemSearchableFields` | Object | System-level filters: `siteid`, `languageId`, `folderId`, `workflowSchemeId`, `workflowStepId`, and `variantName` (defaults to "DEFAULT"). `systemHostContent` determines whether to include content from the SYSTEM_HOST (defaults to "true"). |
+
+        | `archivedContent` | Boolean String | Include archived content ("true"/"false") |
+
+        | `unpublishedContent` | Boolean String | Include unpublished content ("true"/"false") |
+
+        | `lockedContent` | Boolean String | Include locked content ("true"/"false") |
+
+        | `orderBy` | String | Sort criteria (defaults to "score,modDate desc") |
+
+        | `page` | Integer | Page number for pagination |
+
+        | `perPage` | Integer | Results per page |
+
+
+        When using `searchableFieldsByContentType`, different fields may require different string types:
+
+
+        | Field Type | Description |
+
+        |-----------------------------|---------------------------------------------|
+
+        | title, textArea, wysiwyg | Text search |
+
+        | category | Comma-separated category IDs |
+
+        | checkbox, multiSelect | Comma-separated values (not labels) |
+
+        | radio, select | Values (not labels) |
+
+        | date, dateAndTime | Date or range: "2023-01-01 TO 2023-12-31" |
+
+        | time | Time or range with TO |
+
+        | tag | Comma-separated tag names |
+
+        | relationships | Child contentlet ID |
+
+        | json, keyValue | Matches any string in JSON |
+
+        | binary, blockEditor, custom | Text search'
+      operationId: search
+      requestBody:
+        description: Content search parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentSearchForm'
+            example:
+              globalSearch: test
+              searchableFieldsByContentType:
+                Blog:
+                  title: test
+                  tags: tag1
+              systemSearchableFields:
+                siteId: 173aff42881a55a562cec436180999cf
+                languageId: 1
+              orderBy: modDate desc
+              perPage: 20
+              page: 1
+        required: true
+      responses:
+        '200':
+          description: The query has been executed. It's possible that no contents matched the search criteria.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchView'
+        '400':
+          description: Bad request. Malformed JSON body
+        '401':
+          description: Invalid User, or not logged in
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+  /api/v1/content/_unlock/{inodeOrIdentifier}:
+    put:
+      tags:
+      - Content
+      summary: Unlock a given contentlet by the current user
+      description: If the user is allowed to unlock the contentlet specified by its inode or identifier, the contentlet will be unlocked.
+      operationId: unlockContent
+      parameters:
+      - name: inodeOrIdentifier
+        in: path
+        description: Contentlet inode or identifier
+        required: true
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID for content localization
+        schema:
+          type: string
+          default: '-1'
+      responses:
+        '200':
+          description: Successfully unlocked contentlet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid User
+        '403':
+          description: Forbidden
+        '404':
+          description: Content not found
+        '500':
+          description: Internal Server Error
+  /api/v1/content/_search:
+    post:
+      tags:
+      - Content
+      summary: Search content with Lucene syntax
+      description: 'Performs a comprehensive content search using Lucene query syntax. Supports filtering, sorting, pagination, and depth-based relationship loading. Returns structured JSON with search metadata and contentlet results.
+
+
+        > **Note:** This is a wrapper around the former `api/content/_search`. Both paths remain valid for backwards compatibility, but the `v1` path is preferred.'
+      operationId: wrapperLuceneSearch
+      parameters:
+      - name: rememberQuery
+        in: query
+        description: Store query in session for Query Tool portlet
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: Search criteria including query, sort, pagination and filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchForm'
+            example:
+              query: +systemType:false +languageId:1 +deleted:false +working:true +variant:default
+              sort: modDate desc
+              limit: 20
+              offset: 0
+        required: true
+      responses:
+        '200':
+          description: Search completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySearchView'
+        '400':
+          description: Invalid search parameters or malformed query
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Insufficient permissions to access content
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error during search
+          content:
+            application/json: {}
+  /api/v1/content/versions/{inode}:
+    get:
+      tags:
+      - Content
+      summary: Find content by inode
+      description: Retrieves a specific content version by its inode
+      operationId: findByInode
+      parameters:
+      - name: inode
+        in: path
+        description: Content inode
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request - invalid inode format
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Not found - content with inode not found
+          content:
+            application/json: {}
+  /api/v1/content/versions:
+    get:
+      tags:
+      - Content
+      summary: Find content versions
+      description: Retrieves all versions for content by identifier or inodes, with optional grouping by language
+      operationId: findVersions
+      parameters:
+      - name: inodes
+        in: query
+        description: Comma-separated list of content inodes
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        description: Content identifier (takes precedence over inodes)
+        schema:
+          type: string
+      - name: groupByLang
+        in: query
+        description: Group results by language (true/1 or false/0)
+        schema:
+          type: string
+        example: false
+      - name: limit
+        in: query
+        description: 'Maximum number of results (min: 20, max: 100)'
+        schema:
+          type: integer
+          format: int32
+        example: 20
+      responses:
+        '200':
+          description: Content versions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request - missing identifier/inodes or invalid parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Not found - content not found
+          content:
+            application/json: {}
+  /api/v1/content/versions/id/{identifier}/history:
+    get:
+      tags:
+      - Content
+      summary: Contentlet History
+      description: Returns the history of a contentlet with the minimum expected information, as seen in the History tab in the Content Edition page.
+      operationId: history
+      parameters:
+      - name: identifier
+        in: path
+        description: The Identifier of the Contentlet whose history will be retrieved
+        required: true
+        schema:
+          type: string
+      - name: languageId
+        in: query
+        description: The Language ID that the history will be filtered by
+        required: true
+        schema:
+          type: string
+      - name: groupByLang
+        in: query
+        description: Specified whether the history must be grouped by language or not
+        schema:
+          type: boolean
+          default: false
+      - name: bringOldVersions
+        in: query
+        description: Specified whether the history must include old versions or not
+        schema:
+          type: boolean
+          default: true
+      - name: direction
+        in: query
+        description: 'Sort direction: Choose between ascending or descending.'
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+          default: DESC
+      - name: limit
+        in: query
+        description: Maximum number or results being returned, for pagination purposes.
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Page number of the results being returned, for pagination purposes.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: History data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedDataView'
+        '400':
+          description: The identifier path parameter was not specified, or one of the specified parameters is invalid.
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required.
+          content:
+            application/json: {}
+        '404':
+          description: The specified identifier does not match any contentlet.
+          content:
+            application/json: {}
+        '500':
+          description: An internal dotCMS error has occurred.
+          content:
+            application/json: {}
+  /api/v1/content/resourcelinks/field/{field}:
+    get:
+      tags:
+      - Content
+      summary: Get resource link for specific field
+      description: Retrieves a resource link for a specific field of a contentlet identified by inode or identifier
+      operationId: findResourceLink
+      parameters:
+      - name: field
+        in: path
+        description: Field variable name
+        required: true
+        schema:
+          type: string
+      - name: inode
+        in: query
+        description: Content inode
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        description: Content identifier
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID
+        schema:
+          type: string
+          default: '-1'
+        example: 1
+      responses:
+        '200':
+          description: Resource link retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '400':
+          description: Bad request - missing inode/identifier parameter
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - download restricted
+          content:
+            application/json: {}
+        '404':
+          description: Not found - contentlet or field not found
+          content:
+            application/json: {}
+  /api/v1/content/resourcelinks:
+    get:
+      tags:
+      - Content
+      summary: Get all resource links for contentlet
+      description: Retrieves resource links for all binary fields of a contentlet identified by inode or identifier
+      operationId: findResourceLinks
+      parameters:
+      - name: inode
+        in: query
+        description: Content inode
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        description: Content identifier
+        schema:
+          type: string
+      - name: language
+        in: query
+        description: Language ID
+        schema:
+          type: string
+          default: '-1'
+        example: 1
+      responses:
+        '200':
+          description: Resource links retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '400':
+          description: Bad request - missing inode/identifier parameter
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - download restricted
+          content:
+            application/json: {}
+  /api/v1/content/_bulkrefresh:
+    post:
+      tags:
+      - Content
+      summary: Reindex a selection of contentlets
+      description: 'Clears the contentlet cache and reindexes every selected contentlet, all versions of each. Returns a job id. This is accepted work, not finished work: completion is pushed to the submitting user over the websocket. Not a full index rebuild.'
+      operationId: bulkRefreshContent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkRefreshForm'
+      responses:
+        '202':
+          description: Accepted - reindex job enqueued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkRefreshSubmitView'
+        '400':
+          description: Bad request - empty selection or over the configured item cap
+        '401':
+          description: Unauthorized - no backend user session
+        '403':
+          description: Forbidden - not a CMS Power User or CMS Administrator
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error - the job could not be created
+  /api/v1/content/_import/abandoned:
+    get:
+      tags:
+      - Content
+      summary: Retrieves abandoned content import jobs
+      description: Fetches a paginated list of abandoned content import jobs (jobs with state ABANDONED). Results can be paginated using query parameters.
+      operationId: getAbandonedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of abandoned content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/active:
+    get:
+      tags:
+      - Content
+      summary: Retrieves active content import jobs
+      description: Fetches a paginated list of active content import jobs (jobs with state NEW, PROCESSING, or WAITING). Results can be paginated using query parameters.
+      operationId: getActiveContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of active content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/{jobId}/cancel:
+    post:
+      tags:
+      - Content
+      summary: Cancel a content import job
+      description: Requests cancellation of a specific content import job identified by its ID. Note that cancellation is asynchronous and may not be immediate.
+      operationId: cancelContentImportJob
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job to be cancelled.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Cancellation request successfully sent to the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+              example:
+                entity: Cancellation request successfully sent to job e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to cancel the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found or is already completed/cancelled.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while attempting to cancel the job.'
+  /api/v1/content/_import/canceled:
+    get:
+      tags:
+      - Content
+      summary: Retrieves canceled content import jobs
+      description: Fetches a paginated list of canceled content import jobs (jobs with state CANCELED). Results can be paginated using query parameters.
+      operationId: getCanceledContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of canceled content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/completed:
+    get:
+      tags:
+      - Content
+      summary: Retrieves completed content import jobs
+      description: Fetches a paginated list of completed content import jobs (jobs with state COMPLETED). Results can be paginated using query parameters.
+      operationId: getCompletedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of completed content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/failed:
+    get:
+      tags:
+      - Content
+      summary: Retrieves failed content import jobs
+      description: Fetches a paginated list of failed content import jobs (jobs with state FAILED). Results can be paginated using query parameters.
+      operationId: getFailedContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of failed content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/{jobId}:
+    get:
+      tags:
+      - Content
+      summary: Retrieves the status of a content import job
+      description: Fetches the detailed current status of a specific content import job identified by its ID.
+      operationId: getJobStatus
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job whose status is to be retrieved.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Successfully retrieved job status. The entity contains detailed information about the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to view the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving the job status.'
+  /api/v1/content/_import:
+    get:
+      tags:
+      - Content
+      summary: Retrieves content import jobs
+      description: Fetches a paginated list of all content import jobs regardless of state. Results can be paginated using query parameters.
+      operationId: getContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+    post:
+      tags:
+      - Content
+      summary: Imports content from a CSV file
+      description: Creates and enqueues a new content import job. Requires a CSV file and a JSON string representing import parameters.
+      operationId: importContent
+      requestBody:
+        description: "This endpoint accepts a `multipart/form-data` request with two fields:\n\n| **Field** | **Type** | **Required** | **Description** |\n|-----------|----------|--------------|-----------------|\n| `file`    | File     | ✅ Yes        | The CSV file to import. Must contain content rows and match the expected structure for the content type. |\n| `form`    | String   | ✅ Yes        | A JSON string containing the import parameters. See structure below. |\n\n**`form` field structure:**\n\n| **Property**         | **Type**   | **Required** | **Default** | **Description** |\n|----------------------|------------|--------------|-------------|-----------------|\n| `contentType`        | String     | ✅ Yes        | –           | Content Type variable or ID to import data into. |\n| `language`           | String     | ❌ No         | Default language | Language code (e.g., `en-US`) or language ID. |\n| `workflowActionId`   | String     | ✅ Yes        | –           | Workflow Action UUID to apply to imported content. |\n| `fields`             | String[]   | ❌ No         | –           | List of field variables or IDs used as keys for content updates. |\n| `stopOnError`        | Boolean    | ❌ No         | `false`     | Whether to stop import on first validation error. |\n| `commitGranularity`  | Integer    | ❌ No         | `100`       | Number of rows to commit in each transaction batch. |\n\n**Example `form` value:**\n\n```json\n{\n  \"contentType\": \"webPageContent\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"],\n  \"stopOnError\": false,\n  \"commitGranularity\": 100\n}\n```"
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentImportParamsSchema'
+        required: true
+      responses:
+        '200':
+          description: Content import job successfully created and enqueued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+        '400':
+          description: 'Bad Request: Invalid parameters or malformed request (e.g., missing file, invalid JSON in ''form'', file not CSV).'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions for content import or workflow action.'
+        '404':
+          description: 'Not Found: Specified Content Type or Language could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred during job creation or processing.'
+  /api/v1/content/_import/{jobId}/monitor:
+    get:
+      tags:
+      - Content
+      summary: Monitor a content import job in real-time
+      description: Establishes a Server-Sent Events (SSE) connection to monitor the progress of a specific content import job in real-time. This endpoint will continuously send updates as the job progresses, including status changes and completion information.
+      operationId: monitorContentImportJobs
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job whose status is to be retrieved.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Server-Sent Events stream established successfully. Events will be sent as the job progresses.
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/EventOutput'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to monitor the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while establishing the monitoring connection.'
+  /api/v1/content/_import/successful:
+    get:
+      tags:
+      - Content
+      summary: Retrieves successful content import jobs
+      description: Fetches a paginated list of successful content import jobs (jobs with state COMPLETED and successful result). Results can be paginated using query parameters.
+      operationId: getSuccessfulContentImportJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of successful content import jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/content/_import/_validate:
+    post:
+      tags:
+      - Content
+      summary: Validates content import from a CSV file
+      description: Creates and enqueues a content import job in preview mode. This validates the CSV data against the specified Content Type, language, and workflow action without actually importing content.
+      operationId: validateContentImport
+      requestBody:
+        description: "This endpoint accepts a `multipart/form-data` request with two fields:\n\n| **Field** | **Type** | **Required** | **Description** |\n|-----------|----------|--------------|-----------------|\n| `file`    | File     | ✅ Yes        | The CSV file to import. Must contain content rows and match the expected structure for the content type. |\n| `form`    | String   | ✅ Yes        | A JSON string containing the import parameters. See structure below. |\n\n**`form` field structure:**\n\n| **Property**         | **Type**   | **Required** | **Default** | **Description** |\n|----------------------|------------|--------------|-------------|-----------------|\n| `contentType`        | String     | ✅ Yes        | –           | Content Type variable or ID to import data into. |\n| `language`           | String     | ❌ No         | Default language | Language code (e.g., `en-US`) or language ID. |\n| `workflowActionId`   | String     | ✅ Yes        | –           | Workflow Action UUID to apply to imported content. |\n| `fields`             | String[]   | ❌ No         | –           | List of field variables or IDs used as keys for content updates. |\n| `stopOnError`        | Boolean    | ❌ No         | `false`     | Whether to stop import on first validation error. |\n| `commitGranularity`  | Integer    | ❌ No         | `100`       | Number of rows to commit in each transaction batch. |\n\n**Example `form` value:**\n\n```json\n{\n  \"contentType\": \"webPageContent\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"],\n  \"stopOnError\": false,\n  \"commitGranularity\": 100\n}\n```"
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentImportParamsSchema'
+        required: true
+      responses:
+        '200':
+          description: Content import validation job successfully created and enqueued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+              example:
+                entity:
+                  jobId: e6d9bae8-657b-4e2f-8524-c0222db66355
+                  statusUrl: http://localhost:8080/api/v1/_import/e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: 'Bad Request: Invalid parameters or malformed request (e.g., missing file, invalid JSON in ''form'', file not CSV).'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions for validation or workflow action.'
+        '404':
+          description: 'Not Found: Specified Content Type or Language could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred during job creation or processing.'
+components:
+  schemas:
+    JobResult:
+      type: object
+      properties:
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    ContentImportParamsSchema:
+      required:
+      - file
+      - form
+      type: object
+      properties:
+        file:
+          type: string
+          description: The CSV file to import.
+          format: binary
+        form:
+          type: string
+          description: JSON string representing import settings.
+          example: "{\n  \"contentType\": \"activity\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"]\n  \"stopOnError\":false \n  \"commitGranularity\": 100\n}"
+      description: Schema for content import parameters.
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobPaginatedResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        jobs:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/Job'
+            last:
+              $ref: '#/components/schemas/Job'
+          items:
+            $ref: '#/components/schemas/Job'
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        queueName:
+          type: string
+        state:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - SUCCESS
+          - FAILED
+          - FAILED_PERMANENTLY
+          - ABANDONED
+          - ABANDONED_PERMANENTLY
+          - CANCEL_REQUESTED
+          - CANCELLING
+          - CANCELED
+        executionNode:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        result:
+          $ref: '#/components/schemas/JobResult'
+        parameters:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        retryCount:
+          type: integer
+          format: int32
+        progress:
+          type: number
+          format: float
+    ResponseEntityMapStringObjectView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    SearchForm:
+      type: object
+      properties:
+        query:
+          type: string
+          description: "Lucene query. IMPORTANT: custom (user-defined) fields MUST be qualified with the content type's variable name — `ContentTypeVar.fieldVar`. A BARE field name matches nothing and returns zero results with NO error (a common silent failure). For example, to find featured Books use `+AwazonBook.featured:true`, not `+featured:true`; to match a slug use `+AwazonBook.slug:my-slug`. Restrict the type with `+contentType:AwazonBook` (contentType is a system field, unqualified). \n\nResults are also HOST-scoped: unless you add a host clause, the search resolves against the current request's site and will NOT return content that lives on a different host (e.g. content saved to `SYSTEM_HOST`/default while you query as another site). Constrain the host explicitly with `+conHost:<siteIdentifier>` (or `+conHost:SYSTEM_HOST`), and add `+live:true` / `+working:true` and `+deleted:false` as needed. See the Lucene content-search syntax docs."
+          example: +contentType:AwazonBook +AwazonBook.featured:true +live:true +deleted:false
+        sort:
+          type: string
+          description: Sort clause, e.g. `AwazonBook.title asc` or `modDate desc`. Custom fields are qualified the same way as in `query`.
+          example: modDate desc
+        limit:
+          type: integer
+          description: Maximum number of contentlets to return (page size).
+          format: int32
+          example: 20
+          default: 20
+        offset:
+          type: integer
+          description: Zero-based result offset for paging.
+          format: int32
+          example: 0
+          default: 0
+        userId:
+          type: string
+          description: Optional user id to run the search as (permissions are applied for this user). Defaults to the authenticated caller when omitted.
+        render:
+          type: string
+          description: When set to `true`, each matching contentlet's `htmlpageasset`/widget content is rendered and included in the response. Omit for raw field data only.
+        depth:
+          type: integer
+          description: 'Relationship-loading depth (0-3): how many levels of related content to inline. `-1` (default) loads none.'
+          format: int32
+          example: 1
+          default: -1
+        languageId:
+          type: integer
+          description: Language id to search in. Defaults to the system default language when omitted.
+          format: int64
+          example: 1
+        allCategoriesInfo:
+          type: boolean
+          description: When `true`, include full category metadata for category fields in the results.
+      description: Content search request. `query` is a Lucene expression; the remaining fields control paging, sorting, language, and how results are rendered.
+    ResponseEntityPaginatedDataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Permissionable:
+      type: object
+      properties:
+        parentPermissionable:
+          $ref: '#/components/schemas/Permissionable'
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BulkRefreshForm:
+      required:
+      - contentletIds
+      type: object
+      properties:
+        contentletIds:
+          maxItems: 2147483647
+          minItems: 1
+          type: array
+          items:
+            type: string
+        includeDependencies:
+          type: boolean
+        includeItemResults:
+          type: boolean
+    ResponseEntityJobPaginatedResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobPaginatedResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CountView:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+    PullRelatedForm:
+      required:
+      - fieldVariable
+      - identifier
+      - limit
+      - offset
+      - orderBy
+      type: object
+      properties:
+        fieldVariable:
+          type: string
+        identifier:
+          type: string
+        condition:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        orderBy:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityContentletView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContentReferenceListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentReferenceView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    ContentSearchForm:
+      type: object
+      properties:
+        globalSearch:
+          type: string
+        systemSearchableFields:
+          type: object
+          additionalProperties:
+            type: object
+        archivedContent:
+          type: string
+        unpublishedContent:
+          type: string
+        lockedContent:
+          type: string
+        orderBy:
+          type: string
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        searchableFieldsByContentType:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+      description: Form for searching content with support for global search, content type specific fields, and system filters
+    ContentReferenceView:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/IHTMLPage'
+        container:
+          $ref: '#/components/schemas/ContainerView'
+        personaName:
+          type: string
+    SearchView:
+      type: object
+      properties:
+        resultsSize:
+          type: integer
+          format: int64
+        queryTook:
+          type: integer
+          format: int64
+        contentTook:
+          type: integer
+          format: int64
+        jsonObjectView:
+          $ref: '#/components/schemas/JsonObjectView'
+    ResponseEntitySearchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SearchView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    IHTMLPage:
+      type: object
+      properties:
+        pageUrl:
+          type: string
+        httpsRequired:
+          type: boolean
+        redirect:
+          type: string
+        cacheTTL:
+          type: integer
+          format: int64
+        seoKeywords:
+          type: string
+        seoDescription:
+          type: string
+        templateId:
+          type: string
+        menuOrder:
+          type: integer
+          format: int32
+        metadata:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        inode:
+          type: string
+        identifier:
+          type: string
+        friendlyName:
+          type: string
+        showOnMenu:
+          type: boolean
+        title:
+          type: string
+        content:
+          type: boolean
+        host:
+          type: string
+        uri:
+          type: string
+        map:
+          type: object
+          additionalProperties:
+            type: object
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        working:
+          type: boolean
+        versionId:
+          type: string
+        modUser:
+          type: string
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        parentPermissionable:
+          $ref: '#/components/schemas/Permissionable'
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+    ResponseEntityJobView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Job'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBulkRefreshSubmitView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkRefreshSubmitResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityCountView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CountView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    JsonObjectView:
+      type: object
+      properties:
+        jsonObject:
+          type: object
+          properties:
+            asMap:
+              type: object
+              additionalProperties:
+                type: object
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+    ContentForm:
+      type: object
+      properties:
+        contentlet:
+          type: object
+          additionalProperties:
+            type: object
+    Container:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        code:
+          type: string
+        maxContentlets:
+          type: integer
+          format: int32
+        useDiv:
+          type: boolean
+        preLoop:
+          type: string
+        postLoop:
+          type: string
+        notes:
+          type: string
+        hostName:
+          type: string
+        hostId:
+          type: string
+        variant:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    BulkRefreshSubmitResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        submitted:
+          type: integer
+          format: int32
+    ErrorDetail:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptionClass:
+          type: string
+        stackTrace:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        processingStage:
+          type: string

@@ -1,0 +1,985 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST AI API
+  version: '3'
+  description: AI-powered content generation and analysis endpoints
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: AI
+  description: AI-powered content generation and analysis endpoints
+paths:
+  /api/v1/ai/providers:
+    get:
+      tags:
+      - AI
+      summary: List dotAI provider configuration metadata
+      description: Returns, for every registered dotAI provider, the capabilities it supports (chat/embeddings/image) and the providerConfig fields each supported capability requires or accepts.
+      operationId: listAiProviders
+      responses:
+        '200':
+          description: Provider metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityAiProviderListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+  /api/v1/ai/providers/test/{capability}:
+    post:
+      tags:
+      - AI
+      summary: Test a dotAI provider connection
+      description: Builds the provider client for the given capability from the posted configuration and issues one minimal real request against the provider (a short chat reply, a one-line embedding, or a single test image). Masked credential fields ("*****") in the posted config are resolved against the real value already stored for siteId before testing. Returns success=false with a message on any validation or provider error rather than an HTTP error status, so the caller can always render the result.
+      operationId: testAiProviderConnection
+      parameters:
+      - name: capability
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: siteId
+        in: query
+        schema:
+          type: string
+      requestBody:
+        description: Provider config section to test
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Test executed — check the success field for the outcome
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityAiTestConnectionView'
+        '400':
+          description: Unknown capability or malformed request body
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - requires CMS admin, or access denied to site
+          content:
+            application/json: {}
+  /api/v1/ai/completions/config:
+    get:
+      tags:
+      - AI
+      summary: Get AI service configuration
+      description: Retrieves the current AI service configuration. Accepts an optional siteId query parameter (site identifier / UUID, or the literal SYSTEM_HOST). Hostname values are not supported — use the site identifier. When siteId is omitted or cannot be resolved, falls back to the site derived from the HTTP Host header.
+      operationId: getAiConfig
+      parameters:
+      - name: siteId
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks permission for the requested site
+        '500':
+          description: Internal server error
+    put:
+      tags:
+      - AI
+      summary: Save AI provider configuration
+      description: Saves the providerConfig JSON for the target site. Accepts an optional siteId query parameter (site identifier / UUID, or the literal SYSTEM_HOST). Hostname values are not supported — use the site identifier. When siteId is omitted, saves to the site derived from the HTTP Host header. An unresolvable siteId returns 400. Credential fields set to "*****" are preserved from the existing stored configuration. Requires CMS admin.
+      operationId: saveAiConfig
+      parameters:
+      - name: siteId
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Configuration saved successfully
+        '400':
+          description: Missing or invalid request body, or site not found
+        '403':
+          description: Forbidden - requires CMS admin or access denied to site
+        '500':
+          description: Internal server error
+  /api/v1/ai/completions/rawPrompt:
+    post:
+      tags:
+      - AI
+      summary: Generate AI completions from raw prompt
+      description: Processes raw prompts directly through the AI service without content preprocessing. Supports both streaming and non-streaming responses.
+      operationId: rawPrompt
+      requestBody:
+        description: Completion form with raw prompt and configuration
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompletionsForm'
+      responses:
+        '200':
+          description: Raw completion generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request - Missing or invalid prompt
+        '401':
+          description: Unauthorized - User not authenticated
+        '500':
+          description: Internal server error
+  /api/v1/ai/completions:
+    post:
+      tags:
+      - AI
+      summary: Generate AI completions from content
+      description: Creates AI-powered content summaries and completions based on provided prompts. Supports both streaming and non-streaming responses.
+      operationId: summarizeFromContent
+      requestBody:
+        description: Completion form with prompt and configuration
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompletionsForm'
+      responses:
+        '200':
+          description: Completion generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request - Missing or invalid prompt
+        '401':
+          description: Unauthorized - User not authenticated
+        '500':
+          description: Internal server error
+  /api/v1/ai/embeddings/count:
+    get:
+      tags:
+      - AI
+      operationId: count_1
+      parameters:
+      - name: site
+        in: query
+        schema:
+          type: string
+      - name: contentType
+        in: query
+        schema:
+          type: string
+      - name: indexName
+        in: query
+        schema:
+          type: string
+      - name: language
+        in: query
+        schema:
+          type: string
+      - name: identifier
+        in: query
+        schema:
+          type: string
+      - name: inode
+        in: query
+        schema:
+          type: string
+      - name: fieldVar
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Count 1
+      x-summary-source: derived
+    post:
+      tags:
+      - AI
+      operationId: count
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompletionsForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Count
+      x-summary-source: derived
+  /api/v1/ai/embeddings:
+    post:
+      tags:
+      - AI
+      operationId: embed
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/EmbeddingsForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Embed
+      x-summary-source: derived
+    delete:
+      tags:
+      - AI
+      operationId: delete
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                asMap:
+                  type: object
+                  additionalProperties:
+                    type: object
+                empty:
+                  type: boolean
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete
+      x-summary-source: derived
+  /api/v1/ai/embeddings/db:
+    delete:
+      tags:
+      - AI
+      operationId: dropAndRecreateTables
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                asMap:
+                  type: object
+                  additionalProperties:
+                    type: object
+                empty:
+                  type: boolean
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Drop and recreate tables
+      x-summary-source: derived
+  /api/v1/ai/embeddings/indexCount:
+    get:
+      tags:
+      - AI
+      operationId: indexCount
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Index count
+      x-summary-source: derived
+  /api/v1/ai/embeddings/test:
+    get:
+      tags:
+      - AI
+      operationId: textResource
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Text resource
+      x-summary-source: derived
+  /api/v1/ai/image/generate:
+    get:
+      tags:
+      - AI
+      operationId: indexByInode_1
+      parameters:
+      - name: prompt
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Index by inode 1
+      x-summary-source: derived
+    post:
+      tags:
+      - AI
+      operationId: handleImageRequest
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/AIImageRequestDTO'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Handle image request
+      x-summary-source: derived
+  /api/v1/ai/image/test:
+    get:
+      tags:
+      - AI
+      operationId: indexByInode
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Index by inode
+      x-summary-source: derived
+  /api/v1/ai/search/related:
+    get:
+      tags:
+      - AI
+      operationId: relatedByGet
+      parameters:
+      - name: language
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: identifier
+        in: query
+        schema:
+          type: string
+      - name: inode
+        in: query
+        schema:
+          type: string
+      - name: indexName
+        in: query
+        schema:
+          type: string
+      - name: fieldVar
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Related by get
+      x-summary-source: derived
+    post:
+      tags:
+      - AI
+      operationId: relatedByPost
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                asMap:
+                  type: object
+                  additionalProperties:
+                    type: object
+                empty:
+                  type: boolean
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Related by post
+      x-summary-source: derived
+  /api/v1/ai/search:
+    get:
+      tags:
+      - AI
+      operationId: searchByGet
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+      - name: searchLimit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+      - name: searchOffset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: site
+        in: query
+        schema:
+          type: string
+      - name: contentType
+        in: query
+        schema:
+          type: string
+      - name: indexName
+        in: query
+        schema:
+          type: string
+          default: default
+      - name: threshold
+        in: query
+        schema:
+          type: number
+          format: float
+          default: 0.25
+      - name: stream
+        in: query
+        schema:
+          type: boolean
+          default: false
+      - name: responseLength
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1024
+      - name: operator
+        in: query
+        schema:
+          type: string
+          default: <=>
+      - name: language
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Search by get
+      x-summary-source: derived
+    post:
+      tags:
+      - AI
+      operationId: searchByPost
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompletionsForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Search by post
+      x-summary-source: derived
+  /api/v1/ai/search/test:
+    get:
+      tags:
+      - AI
+      operationId: testResponse
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Test response
+      x-summary-source: derived
+  /api/v1/ai/text/generate:
+    get:
+      tags:
+      - AI
+      operationId: doGet
+      parameters:
+      - name: prompt
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Do get
+      x-summary-source: derived
+    post:
+      tags:
+      - AI
+      operationId: doPost
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompletionsForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Do post
+      x-summary-source: derived
+components:
+  schemas:
+    AIImageRequestDTO:
+      type: object
+      properties:
+        prompt:
+          type: string
+        numberOfImages:
+          type: integer
+          format: int32
+        size:
+          type: string
+        model:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityAiProviderListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderMetadata'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    TestConnectionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    EmbeddingsForm:
+      type: object
+      properties:
+        query:
+          type: string
+        limit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+        offset:
+          minimum: 0
+          type: integer
+          format: int32
+        indexName:
+          type: string
+        model:
+          type: string
+        velocityTemplate:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+        userId:
+          type: string
+        requestHostId:
+          type: string
+    ProviderMetadata:
+      type: object
+      properties:
+        provider:
+          type: string
+        supportedCapabilities:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - CHAT
+            - EMBEDDINGS
+            - IMAGE
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProviderField'
+    ResponseEntityAiTestConnectionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TestConnectionResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CompletionsForm:
+      type: object
+      properties:
+        prompt:
+          type: string
+        searchLimit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+        searchOffset:
+          minimum: 0
+          type: integer
+          format: int32
+        responseLengthTokens:
+          minimum: 128
+          type: integer
+          format: int32
+        language:
+          type: integer
+          format: int64
+        stream:
+          type: boolean
+        fieldVar:
+          type: string
+        indexName:
+          type: string
+        contentType:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: number
+          format: float
+        temperature:
+          maximum: 2
+          minimum: 0
+          type: number
+          format: float
+        model:
+          type: string
+        operator:
+          type: string
+        site:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        responseFormat:
+          type: object
+          additionalProperties:
+            type: object
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean
+    ProviderField:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - STRING
+          - NUMBER
+          - SECRET
+        required:
+          type: boolean
+        hint:
+          type: string
+        requiredUnless:
+          type: string

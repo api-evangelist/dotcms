@@ -1,0 +1,1305 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Roles API
+  version: '3'
+  description: User role and permission management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Roles
+  description: User role and permission management
+paths:
+  /api/role/loadbyid/{params}:
+    get:
+      tags:
+      - Roles
+      summary: Load role by ID (deprecated)
+      description: Returns detailed role information including all role properties. Used for loading complete role details in admin UI. This endpoint is deprecated.
+      operationId: loadRoleByIdLegacy
+      parameters:
+      - name: params
+        in: path
+        description: URL parameters including role ID (id=roleId)
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: Role loaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Role details including DBFQN, FQN, description, permissions, id, name, and other role properties
+        '401':
+          description: Unauthorized - backend user authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/role/loadbyname/{params}:
+    get:
+      tags:
+      - Roles
+      summary: Load roles by name filter (deprecated)
+      description: Returns a filtered role tree structure where leaf nodes contain the specified name. Used for role filtering in admin UI. This endpoint is deprecated.
+      operationId: loadRolesByNameLegacy
+      parameters:
+      - name: params
+        in: path
+        description: URL parameters including name filter (name=filterText)
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: Filtered roles loaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Filtered role tree structure with identifier, label, and items containing matching roles
+        '401':
+          description: Unauthorized - backend user authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/role/loadchildren/{params}:
+    get:
+      tags:
+      - Roles
+      summary: Load role children (deprecated)
+      description: Returns role hierarchy with first-level children for lazy-loading role tree in admin UI. If no ID provided, returns root roles. This endpoint is deprecated.
+      operationId: loadRoleChildrenLegacy
+      parameters:
+      - name: params
+        in: path
+        description: URL parameters including role ID (id=roleId or empty for root roles)
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: Role children loaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Role hierarchy tree with child roles containing id, name, locked, and children properties
+        '401':
+          description: Unauthorized - backend user authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/roles:
+    get:
+      tags:
+      - Roles
+      summary: Load root roles
+      description: Loads the root roles with optional children roles
+      operationId: loadRootRoles
+      parameters:
+      - name: loadChildrenRoles
+        in: query
+        description: Load children roles
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Root roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleViewListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - backend user required
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Roles
+      summary: Create new role
+      description: Creates a new role in the system. Only admins can add roles.
+      operationId: createRole
+      requestBody:
+        description: Role information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleForm'
+        required: true
+      responses:
+        '200':
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponseEntityView'
+        '400':
+          description: Bad request - invalid role data or role name failed
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required
+          content:
+            application/json: {}
+  /api/v1/roles/{roleid}/users/{userId}:
+    post:
+      tags:
+      - Roles
+      summary: Grant a role to a user
+      description: 'Grants the role to the user as a DIRECT membership. The operation is IDEMPOTENT: granting a role the user already holds returns 200 and changes nothing — no duplicate membership is created and retries are safe, even when the role''s editUsers flag has since been turned off. Note the inherited-membership behavior (legacy parity): role membership is inherited DOWN the role tree, so a user holding a parent role implicitly holds every child role. Granting a role the user already INHERITS this way also returns 200 but does NOT create a direct membership — the user will not appear in the role''s direct-users list afterwards. Roles whose editUsers flag is false cannot be granted (403); workflow and system roles are non-grantable because that flag is false on them.'
+      operationId: addUserToRole
+      parameters:
+      - name: roleid
+        in: path
+        description: Id of the role to grant
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: Id of the user to grant the role to
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User holds the role after the call; the response carries the granted roleId and a minimal user payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleUserGrantView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required, or the role's editUsers flag is false
+          content:
+            application/json: {}
+        '404':
+          description: Role or user not found
+          content:
+            application/json: {}
+  /api/v1/roles/checkuserroles/userid/{userId}/roleids/{roleIds}:
+    get:
+      tags:
+      - Roles
+      summary: Check user roles
+      description: Verifies that a user is assigned to one of the specified role IDs
+      operationId: checkUserRoles
+      parameters:
+      - name: userId
+        in: path
+        description: User ID to check
+        required: true
+        schema:
+          type: string
+      - name: roleIds
+        in: path
+        description: Comma-separated list of role IDs
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Role check completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleOperationView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/roles/{roleid}:
+    get:
+      tags:
+      - Roles
+      summary: Load role by role ID
+      description: Load role based on the role id with optional children roles
+      operationId: loadRoleByRoleId
+      parameters:
+      - name: roleid
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      - name: loadChildrenRoles
+        in: query
+        description: Load children roles
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Role retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleDetailView'
+        '400':
+          description: Bad request - invalid role ID
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - backend user required
+          content:
+            application/json: {}
+        '404':
+          description: Role not found
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Roles
+      summary: Update a role
+      description: 'Updates an existing role''s name, key, description, can-grant flags and parent. PUT is a full replace: every field of the role is overwritten from the request body, so clients must send the complete role representation — omitted fields are reset (booleans default to false, omitted roleKey/description are cleared, omitted parentRoleId reparents to root). A null parentRoleId turns the role into a root role. Reparenting under the role''s own descendant is rejected. System and locked roles cannot be updated. Note: the role is updated in place — grants and permissions attached to the role are preserved.'
+      operationId: updateRole
+      parameters:
+      - name: roleid
+        in: path
+        description: Id of the role to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Role information — same shape as POST /v1/roles
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleForm'
+        required: true
+      responses:
+        '200':
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleDetailView'
+        '400':
+          description: Bad request - invalid role name, or the reparent would create a hierarchy cycle
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required, or the role is a system or locked role
+          content:
+            application/json: {}
+        '404':
+          description: Role or parent role not found
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - duplicate role key, or duplicate role name under the same parent
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Roles
+      summary: Delete a role
+      description: 'Deletes a role. The deletion CASCADES and is not reversible: the role is removed from all users that have it, all permissions granted to the role are deleted, and its layout (tool-group) assignments are detached. The response reports how many users were affected. Deletion is rejected when the role has child roles or is referenced by a workflow action''s Assign To (409), and for system or locked roles (403).'
+      operationId: deleteRole
+      parameters:
+      - name: roleid
+        in: path
+        description: Id of the role to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Role deleted successfully; usersAffected reports the cascade blast radius
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleDeletionView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required, or the role is a system or locked role
+          content:
+            application/json: {}
+        '404':
+          description: Role not found
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - the role has child roles, or a workflow action references it
+          content:
+            application/json: {}
+  /api/v1/roles/layouts:
+    get:
+      tags:
+      - Roles
+      summary: Get all layouts
+      description: Get all layouts (tool groups) in the system. Requires an authenticated back-end user with access to the Roles portlet.
+      operationId: getAllLayouts
+      responses:
+        '200':
+          description: Layouts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LayoutMapResponseEntityView'
+        '401':
+          description: Unauthorized - authentication required, or the caller is not a backend user with access to the Roles portlet
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Roles
+      summary: Save role layouts
+      description: Saves a set of layouts to a role
+      operationId: saveRoleLayouts
+      requestBody:
+        description: Role and layout information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleLayoutForm'
+        required: true
+      responses:
+        '200':
+          description: Layouts saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleOperationView'
+        '400':
+          description: Bad request - invalid role or layout data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Roles
+      summary: Delete role layouts
+      description: Deletes a set of layouts from a role
+      operationId: deleteRoleLayouts
+      requestBody:
+        description: Role and layout information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleLayoutForm'
+        required: true
+      responses:
+        '200':
+          description: Layouts deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleOperationView'
+        '400':
+          description: Bad request - invalid role or layout data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required
+          content:
+            application/json: {}
+  /api/v1/roles/{roleId}/layouts:
+    get:
+      tags:
+      - Roles
+      summary: Find role layouts
+      description: Returns a collection of layouts associated to a role
+      operationId: findRoleLayouts
+      parameters:
+      - name: roleId
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Role layouts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityLayoutList'
+        '400':
+          description: Bad request - invalid role ID
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - roles portlet access required
+          content:
+            application/json: {}
+  /api/v1/roles/users/{userIdOrEmail}:
+    get:
+      tags:
+      - Roles
+      summary: Load user roles
+      description: Loads the user roles
+      operationId: loadUserRoles
+      parameters:
+      - name: userIdOrEmail
+        in: path
+        description: User id or email
+        required: true
+        schema:
+          type: string
+          default: 'true'
+      responses:
+        '200':
+          description: User roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleViewListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - backend user required
+          content:
+            application/json: {}
+  /api/v1/roles/{roleid}/rolehierarchyanduserroles:
+    get:
+      tags:
+      - Roles
+      summary: Load users and roles by role ID
+      description: Load the user and roles by role id with optional hierarchy and filtering
+      operationId: loadUsersAndRolesByRoleId
+      parameters:
+      - name: roleid
+        in: path
+        description: Role ID
+        required: true
+        schema:
+          type: string
+      - name: roleHierarchyForAssign
+        in: query
+        description: Include role hierarchy
+        schema:
+          type: boolean
+          default: false
+      - name: name
+        in: query
+        description: Role name filter prefix
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Users and roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleListView'
+        '400':
+          description: Bad request - invalid role ID
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - backend user required
+          content:
+            application/json: {}
+        '404':
+          description: Role not found
+          content:
+            application/json: {}
+  /api/v1/roles/{roleid}/users:
+    get:
+      tags:
+      - Roles
+      summary: Get the users directly granted a role
+      description: Returns the paginated list of users directly granted the given role, using the standard user serialization (email address included). Grants inherited through the role hierarchy are not included.
+      operationId: loadUsersByRoleId
+      parameters:
+      - name: roleid
+        in: path
+        description: Id of the role to list users for
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        description: Filter matching user id, first name, last name, email or full name
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: orderby
+        in: query
+        description: Column name for sorting results
+        schema:
+          type: string
+      - name: direction
+        in: query
+        description: 'Sorting direction: ASC or DESC'
+        schema:
+          type: string
+          default: ASC
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedDataView'
+        '400':
+          description: Bad request - invalid pagination or sorting parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - roles portlet access required
+          content:
+            application/json: {}
+        '404':
+          description: Role not found
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Roles
+      summary: Remove users from a role
+      description: 'Bulk-removes the DIRECT membership of the given users from the role. The batch has PARTIAL-SUCCESS semantics: it never fails as a whole once the role resolves — every removable membership is removed and every other entry is reported in the skipped list with a reason: not_found (no user matches the id), inherited (the user is not a direct member — the membership is inherited through the role hierarchy, or the user is not a member at all; inherited membership can only be revoked by removing the user from the ancestor role that grants it), or error (unexpected per-user failure, logged server-side). Removals are committed per user, so entries already processed stay removed regardless of later entries. Only user-assignable roles (editUsers=true) accept membership changes: a role whose editUsers flag is false — e.g. a user''s individual role or a system role — is rejected with 403 for the whole request, mirroring the grant endpoint.'
+      operationId: removeUsersFromRole
+      parameters:
+      - name: roleid
+        in: path
+        description: Id of the role to remove users from
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Ids of the users to remove from the role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUsersForm'
+        required: true
+      responses:
+        '200':
+          description: Batch processed; removedUserIds and skipped report the per-user outcomes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityRoleUsersRemovalView'
+        '400':
+          description: Bad request - missing body, empty userIds, or null/blank entries
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - admin permissions required, or the role's editUsers flag is false
+          content:
+            application/json: {}
+        '404':
+          description: Role not found
+          content:
+            application/json: {}
+  /api/v1/roles/_search:
+    get:
+      tags:
+      - Roles
+      summary: Search Roles
+      description: Search and filter roles by name, key, or ID with pagination support. Includes options to filter by workflow roles.
+      operationId: searchRoles
+      parameters:
+      - name: searchName
+        in: query
+        description: Value to filter by role name
+        schema:
+          type: string
+          default: ''
+      - name: searchKey
+        in: query
+        description: Value to filter by role key
+        schema:
+          type: string
+          default: ''
+      - name: roleId
+        in: query
+        description: Value for specific role id
+        schema:
+          type: string
+          default: ''
+      - name: start
+        in: query
+        description: Offset on pagination
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: count
+        in: query
+        description: Size on pagination
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      - name: includeUserRoles
+        in: query
+        description: Set false if do not want to include user rules
+        schema:
+          type: boolean
+          default: true
+      - name: includeWorkflowRoles
+        in: query
+        description: Set to true if want to include the workflow roles
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySmallRoleView'
+components:
+  schemas:
+    Layout:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        tabOrder:
+          type: integer
+          format: int32
+        portletIds:
+          type: array
+          items:
+            type: string
+    ResponseEntityRoleViewListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    RoleDeletionView:
+      required:
+      - deleted
+      - roleId
+      - usersAffected
+      type: object
+      properties:
+        deleted:
+          type: boolean
+          description: Whether the role was deleted
+          example: true
+        roleId:
+          type: string
+          description: Id of the deleted role
+          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+        usersAffected:
+          type: integer
+          description: Number of users the role was removed from by the cascading deletion. Counts direct assignments only; users inheriting the role through the role hierarchy are not included
+          format: int32
+          example: 3
+    ResponseEntityPaginatedDataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleView:
+      required:
+      - childCount
+      - userCount
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleView'
+        childCount:
+          minimum: 0
+          type: integer
+          description: Number of direct child roles, independent of children hydration
+          format: int32
+          example: 3
+        userCount:
+          minimum: 0
+          type: integer
+          description: 'Number of users directly granted this role, matching the totals of the role users listing: inherited grants and hidden users (system, anonymous, default, flagged for deletion) are not included'
+          format: int32
+          example: 12
+        dbfqn:
+          type: string
+        fqn:
+          type: string
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    ResponseEntityRoleOperationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleLayoutForm:
+      type: object
+      properties:
+        roleId:
+          type: string
+        layoutIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+    RoleMemberUserView:
+      required:
+      - email
+      - fullName
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Id of the user
+          example: dotcms.org.2807
+        email:
+          type: string
+          description: Email address of the user
+          example: user@example.com
+        fullName:
+          type: string
+          description: Full name of the user
+          example: Jane Doe
+      description: The user the role was granted to
+    ResponseEntityLayoutList:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Layout'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleUsersForm:
+      required:
+      - userIds
+      type: object
+      properties:
+        userIds:
+          uniqueItems: true
+          type: array
+          description: Ids of the users to remove from the role
+          example:
+          - dotcms.org.2807
+          items:
+            type: string
+            description: Ids of the users to remove from the role
+            example: '["dotcms.org.2807"]'
+    ResponseEntityRoleListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityRoleDetailView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RoleView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityRoleUsersRemovalView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RoleUsersRemovalView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityRoleDeletionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RoleDeletionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySmallRoleView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SmallRoleView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleUsersRemovalView:
+      required:
+      - removedUserIds
+      - skipped
+      type: object
+      properties:
+        removedUserIds:
+          type: array
+          description: Ids of the users whose direct membership in the role was removed
+          items:
+            type: string
+            description: Ids of the users whose direct membership in the role was removed
+        skipped:
+          type: array
+          description: Users that could not be removed, each with a reason
+          items:
+            $ref: '#/components/schemas/SkippedUserView'
+    ResponseEntityRoleUserGrantView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RoleUserGrantView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    SmallRoleView:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        roleKey:
+          type: string
+        user:
+          type: boolean
+    RoleUserGrantView:
+      required:
+      - granted
+      - roleId
+      - user
+      type: object
+      properties:
+        granted:
+          type: boolean
+          description: Whether the user holds the role after the call. The grant is idempotent, so this is also true when the user already held the role and nothing changed
+          example: true
+        roleId:
+          type: string
+          description: Id of the granted role
+          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+        user:
+          $ref: '#/components/schemas/RoleMemberUserView'
+    RoleForm:
+      required:
+      - roleName
+      type: object
+      properties:
+        roleName:
+          type: string
+        roleKey:
+          type: string
+        parentRoleId:
+          type: string
+        canEditUsers:
+          type: boolean
+        canEditPermissions:
+          type: boolean
+        canEditLayouts:
+          type: boolean
+        description:
+          type: string
+    LayoutMapResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    SkippedUserView:
+      required:
+      - reason
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Id of the skipped user, as submitted in the request
+          example: dotcms.org.2807
+        reason:
+          type: string
+          description: Why the user was skipped
+          example: inherited
+          enum:
+          - not_found
+          - inherited
+          - error
+      description: Users that could not be removed, each with a reason

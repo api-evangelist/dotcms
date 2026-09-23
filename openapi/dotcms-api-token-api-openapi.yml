@@ -1,0 +1,600 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST API Token API
+  version: '3'
+  description: API token management and authentication
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: API Token
+  description: API token management and authentication
+  externalDocs:
+    description: Additional API token information
+    url: https://www.dotcms.com/docs/latest/rest-api-authentication#APIToken
+paths:
+  /api/v1/apitoken/{tokenId}:
+    delete:
+      tags:
+      - API Token
+      summary: Deletes an API token
+      description: 'Deletes an API token by identifier. May be performed on either active, expired, or revoked.
+
+
+        Returned entity contains the property `deleted`, the value of which is the deleted token object.'
+      operationId: deleteApiTokenByIdV1
+      parameters:
+      - name: tokenId
+        in: path
+        description: Identifier of API token to be deleted.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Token successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+              example:
+                entity:
+                  deleted:
+                    allowNetwork: null
+                    claims:
+                      label: string
+                    expired: false
+                    expiresDate: 1822623941000
+                    id: string
+                    issueDate: 1728061510000
+                    issuer: string
+                    modificationDate: 1728069870000
+                    notBeforeDate: false
+                    requestingIp: string
+                    requestingUserId: string
+                    revoked: true
+                    revokedDate: 1728069870000
+                    subject: string
+                    tokenType: string
+                    userId: string
+                    valid: false
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '404':
+          description: Token not found
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken/{userId}/tokens:
+    get:
+      tags:
+      - API Token
+      summary: Retrieves API tokens based on a user ID
+      description: 'Accepts a user identifier and returns a list of API tokens associated with that user.
+
+
+        The returned list may optionally include or exclude tokens that have been revoked.'
+      operationId: getApiTokensByUserIdV1
+      parameters:
+      - name: userId
+        in: path
+        description: Identifier of user to check for tokens.
+        required: true
+        schema:
+          type: string
+      - name: showRevoked
+        in: query
+        description: Determines whether revoked tokens are shown. Defaults to `false` if omitted.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: User's API tokens successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+              example:
+                entity:
+                  tokens:
+                  - allowNetwork: null
+                    claims:
+                      label: string
+                    expired: false
+                    expiresDate: 1822623941000
+                    id: string
+                    issueDate: 1728061510000
+                    issuer: string
+                    modificationDate: 1728061510000
+                    notBeforeDate: false
+                    requestingIp: string
+                    requestingUserId: string
+                    revoked: false
+                    revokedDate: null
+                    subject: string
+                    tokenType: string
+                    userId: string
+                    valid: true
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '404':
+          description: Invalid user
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken/expiring:
+    get:
+      tags:
+      - API Token
+      summary: Retrieves API tokens that are about to expire
+      description: 'Returns a list of API tokens that will expire within the configured number of days.
+
+
+        For admin users, returns all expiring tokens from all users.
+
+        For limited users, returns only their own expiring tokens.
+
+
+        The number of days to look ahead can be configured via the EXPIRING_TOKEN_LOOKAHEAD_DAYS property (default: 7).'
+      operationId: getExpiringApiTokensV1
+      responses:
+        '200':
+          description: Expiring API tokens successfully retrieved
+          content:
+            application/json:
+              example:
+                entity:
+                  tokens:
+                  - expiresDate: 1844834400000
+                    id: apie3362144-8906-460d-b16e-e46a5bf69aef
+                    issueDate: 1750183464000
+                    userId: dotcms.org.1
+                  - expiresDate: 1844835400000
+                    id: apie46a5bf69aef-8906-460d-asde-e46a5bf69aef
+                    issueDate: 1750183464000
+                    userId: dotcms.org.1
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken/{tokenId}/jwt:
+    get:
+      tags:
+      - API Token
+      summary: Generates a new JWT for an existing token
+      description: Returns a JSON web token. This overwrites the JWT value associated with the specified token object.
+      operationId: getJwtFromApiTokenV1
+      parameters:
+      - name: tokenId
+        in: path
+        description: Identifier of API token to receive a new JWT.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: JSON web token successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJwtView'
+              example:
+                entity:
+                  jwt: string
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '404':
+          description: Token not found
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken/remote:
+    put:
+      tags:
+      - API Token
+      summary: Generates a remote API token
+      description: 'This endpoint takes as part of its payload authentication credentials for a user account on a remote dotCMS instance. It returns a token object that can be used to permit remote operation according to the role and permissions of the authenticated account.
+
+
+        This is used, for example, in configuring a push publishing endpoint.
+
+
+        Usable only by administrators.'
+      operationId: putGetRemoteTokenV1
+      requestBody:
+        description: 'PUT body consists of a JSON object containing three properties: `token`, concerning the token''s direct properties; `remote`, defining the remote host, and `auth`, specifying remote user authentication.
+
+
+          Each of these three top-level properties is itself an object containing further properties, listed fully below:
+
+
+          | Properties                 | Value   | Description                                                            |
+
+          |----------------------------|---------|------------------------------------------------------------------------|
+
+          | `token.network`            | String  | Network mask in which the token is active.                             |
+
+          | `token.expirationSeconds`  | String  | Seconds until the token expires.                                       |
+
+          | `token.claims`             | Object  | Object containing the property `label`, defined below.                 |
+
+          | `token.claims.label`       | String  | The name of the token generated.                                       |
+
+          |             |   |  |
+
+          | `remote.host`              | String  | Remote host for which to generate a token.                             |
+
+          | `remote.port`              | String  | Port number for the remote host.                                       |
+
+          | `remote.protocol`          | String  | Web protocol used to connect to the remote host.                       |
+
+          |             |   |  |
+
+          | `auth.login`               | String  | Email of account from which the remote token will derive permissions.  |
+
+          | `auth.password`            | String  | A string representing a base64-encoded password.                       |
+
+          '
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteAPITokenForm'
+            example:
+              token:
+                network: 0.0.0.0/0
+                expirationSeconds: '1000'
+                claims:
+                  label: Example
+              remote:
+                host: dotcms-receiver.local
+                port: '8082'
+                protocol: http
+              auth:
+                login: admin@dotcms.com
+                password: YWRtaW4=
+        required: true
+      responses:
+        '200':
+          description: Remote token generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityApiTokenWithJwtView'
+              example:
+                entity:
+                  jwt: string
+                  token:
+                    allowNetwork: 0.0.0.0/0
+                    claims:
+                      label: string
+                    expired: false
+                    expiresDate: 0
+                    id: string
+                    issueDate: 0
+                    issuer: string
+                    modificationDate: 0
+                    notBeforeDate: false
+                    requestingIp: string
+                    requestingUserId: string
+                    revoked: false
+                    revokedDate: 0
+                    subject: string
+                    tokenType: string
+                    userId: string
+                    valid: true
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken:
+    post:
+      tags:
+      - API Token
+      summary: Issues an API token
+      description: 'Issues an API token to an authorized user account.
+
+
+        Returns an object representing the issued token.'
+      operationId: postIssueApiTokenV1
+      requestBody:
+        description: 'This method requires a POST body of a JSON object containing the following properties.
+
+
+          | Property        | Value     | Description                                   |
+
+          |-----------------|-----------|-----------------------------------------------|
+
+          | `userId`             | String    | **Required.** ID of user attempting receiving |
+
+          | `expirationSeconds`  | Integer    | **Required.** TTL of token in seconds. |
+
+          | `network`            | String    | Network mask in which token is valid. Defaults to `0.0.0.0/0`, or any local network.  |
+
+          | `claims`             | Object    | Contains `label` property. |
+
+          | `claims.label`       | String    | Sets a user-defined name for token. |
+
+          | `shouldBeAdmin`      | Boolean   | If `true`, the call only succeeds if the token is being issued to an admin account. Defaults to `false` if omitted. |
+
+          '
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiTokenForm'
+            example:
+              userId: string
+              expirationSeconds: 0
+              network: string
+              claims:
+                label: string
+              shouldBeAdmin: false
+        required: true
+      responses:
+        '200':
+          description: Token successfully issued to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityApiTokenWithJwtView'
+              example:
+                entity:
+                  jwt: string
+                  token:
+                    allowNetwork: 0.0.0.0/0
+                    claims:
+                      label: string
+                    expired: false
+                    expiresDate: 0
+                    id: string
+                    issueDate: 0
+                    issuer: string
+                    modificationDate: 0
+                    notBeforeDate: false
+                    requestingIp: string
+                    requestingUserId: string
+                    revoked: false
+                    revokedDate: 0
+                    subject: string
+                    tokenType: string
+                    userId: string
+                    valid: true
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Unexpected server error
+  /api/v1/apitoken/{tokenId}/revoke:
+    put:
+      tags:
+      - API Token
+      summary: Revokes an API token
+      description: 'Revokes a token by its identifier.
+
+
+        Returned entity contains the property `revoked`, whose value is an object representing the revoked token.'
+      operationId: putRevokeTokenByIdV1
+      parameters:
+      - name: tokenId
+        in: path
+        description: Identifier of API token to be revoked
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Token revoked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+              example:
+                entity:
+                  revoked:
+                    allowNetwork: null
+                    claims:
+                      label: string
+                    expired: false
+                    expiresDate: 1822623941000
+                    id: string
+                    issueDate: 1728061510000
+                    issuer: string
+                    modificationDate: 1728069870000
+                    notBeforeDate: false
+                    requestingIp: string
+                    requestingUserId: string
+                    revoked: true
+                    revokedDate: 1728069870000
+                    subject: string
+                    tokenType: string
+                    userId: string
+                    valid: false
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid user
+        '403':
+          description: Forbidden
+        '404':
+          description: Token not found
+        '500':
+          description: Unexpected server error
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityApiTokenWithJwtView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityJwtView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RemoteAPITokenForm:
+      type: object
+      properties:
+        tokenInfo:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ApiTokenForm:
+      type: object
+      properties:
+        userId:
+          type: string
+        expirationSeconds:
+          type: integer
+          format: int32
+        network:
+          type: string
+        claims:
+          type: object
+          additionalProperties:
+            type: object
+        shouldBeAdmin:
+          type: boolean

@@ -1,0 +1,3610 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Page API
+  version: '3'
+  description: Page rendering, layout management, and content operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Page
+  description: Page rendering, layout management, and content operations
+  externalDocs:
+    description: Additional Page API information
+    url: https://www.dotcms.com/docs/latest/page-rest-api-layout-as-a-service-laas
+paths:
+  /api/v1/page/{pageId}/content:
+    post:
+      tags:
+      - Page
+      summary: Replace the content mapping of a page
+      description: 'Replaces all container-to-contentlet assignments for the page (DEFAULT variant, or a named variant when ''variantName'' is provided). This is a full replacement, not a patch: omitting a container slot removes its content. The body is a bare JSON array of container entries; each entry maps one container instance to its ordered list of contentlets. Duplicate entries are merged automatically. To build the payload, fetch GET /api/v1/page/json/{uri} first (faster than /render — no Velocity execution): use ''page.containers'' for the path-based identifier and ''page.layout.body.rows[].columns[].containers[]'' for the uuid of each slot.'
+      operationId: addContentToPage
+      parameters:
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page to update
+        required: true
+        schema:
+          type: string
+      - name: variantName
+        in: query
+        description: Variant name for A/B testing (defaults to DEFAULT)
+        schema:
+          type: string
+      requestBody:
+        description: 'Array of container entries. Full replacement: omitting a slot removes its content from the page.'
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PageContainerEntryView'
+            example:
+            - identifier: //demo.dotcms.com/application/containers/default/
+              uuid: '10'
+              contentletsId:
+              - 7b33f0b474ba3b82c3a908b81dce5e2c
+        required: true
+      responses:
+        '200':
+          description: Contentlets saved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - containerId: some-container-id
+                  contentletId: some-contentlet-id
+                  uuid: some-uuid
+                - containerId: other-container-id
+                  contentletId: other-contentlet-id
+                  uuid: other-uuid
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad request or data exception
+        '409':
+          description: Conflict — net content loss exceeds the configured threshold; refresh and retry
+  /api/v1/page/{pageId}/languages:
+    get:
+      tags:
+      - Page
+      summary: Check page availability by language (deprecated)
+      description: Returns all available languages in dotCMS, each with a flag indicating whether the page is available in that language. This endpoint is deprecated -- use the more generic ContentResource.getExistingLanguagesForContent endpoint instead.
+      operationId: checkPageLanguageVersions
+      parameters:
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page to check language versions for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Language availability list retrieved successfully (deprecated endpoint)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityLanguagesForPageView'
+        '401':
+          description: Authentication required
+        '404':
+          description: Page not found
+      deprecated: true
+  /api/v1/page/_check-permission:
+    post:
+      tags:
+      - Page
+      summary: Check user permission on a page
+      description: Returns true if the page exists and the current user has the specified permission type over it. Supports both regular HTML pages and URL-mapped content. The permission type defaults to READ if not specified.
+      operationId: checkPagePermission
+      requestBody:
+        description: Form with page path, host ID, language ID, and permission type to check
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/PageCheckPermissionForm'
+        required: true
+      responses:
+        '200':
+          description: Permission check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Authentication required
+        '404':
+          description: Page not found at the specified path
+  /api/v1/page/copyContent:
+    put:
+      tags:
+      - Page
+      summary: Copy a contentlet on a page
+      description: Creates a copy of a contentlet that is part of the multi-tree on a page. The contentlet must exist and be associated with the page specified in the form. Returns the copied contentlet as a map of properties.
+      operationId: copyPageContent
+      requestBody:
+        description: Form containing the contentlet and page information for the copy operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyContentletForm'
+        required: true
+      responses:
+        '200':
+          description: Contentlet copied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request - form is required or contentlet not found
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+  /api/v1/page/{pageId}/_deepcopy:
+    put:
+      tags:
+      - Page
+      summary: Deep copy a page and all its content
+      description: 'Creates a deep copy of a page: (1) creates a copy of the page itself, and (2) for each contentlet in the multi-tree related to the page, creates a copy. Returns the copied page as a map of properties.'
+      operationId: deepCopyPage
+      parameters:
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page to deep copy
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page deep copied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/actions:
+    post:
+      tags:
+      - Page
+      summary: Find available workflow actions for a page
+      description: Returns the page data along with the list of available workflow actions for the specified page path. Supports both regular HTML pages and URL-mapped content. The response includes the page contentlet properties and the workflow actions that the current user can perform.
+      operationId: findAvailablePageActions
+      requestBody:
+        description: Form with page path, host ID, language ID, and render mode for action lookup
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/FindAvailableActionsForm'
+        required: true
+      responses:
+        '200':
+          description: Available workflow actions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPageWorkflowActionsView'
+        '401':
+          description: Authentication required
+        '404':
+          description: Page not found at the specified path and language
+  /api/v1/page/{pageId}/content/tree:
+    get:
+      tags:
+      - Page
+      summary: Get the multi-tree content structure of a page
+      description: Returns the multi-tree data associated with a page, which represents the mapping between containers, contentlets, and their positions on the page. Each entry includes the page ID, container ID, contentlet ID, relation type, tree order, personalization, and variant ID.
+      operationId: getPageContentTree
+      parameters:
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content tree retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMulitreeView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/{pageId}/render/versions:
+    get:
+      tags:
+      - Page
+      summary: Get live and preview render versions of a page
+      description: Returns the page render for both the live and preview (working) versions. Includes a boolean 'diff' flag indicating whether the live and preview versions differ.
+      operationId: getPageRenderVersions
+      parameters:
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page
+        required: true
+        schema:
+          type: string
+      - name: langId
+        in: query
+        description: Language ID (defaults to the system default language)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page render versions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPageLivePreviewVersionView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/types:
+    get:
+      tags:
+      - Page
+      summary: Get content types associated with pages
+      description: Returns all content types associated with pages, including both the base HTMLPAGE type and all content types with URL map patterns. Results are paginated and can be filtered and sorted.
+      operationId: getPageContentTypes
+      parameters:
+      - name: filter
+        in: query
+        description: Filter text for content type names
+        schema:
+          type: string
+          default: ''
+      - name: page
+        in: query
+        description: Page number for pagination (zero-based)
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of results per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: 'Field to order results by (default: UPPER(name))'
+        schema:
+          type: string
+          default: UPPER(name)
+      - name: direction
+        in: query
+        description: 'Sort direction: ASC or DESC (default: ASC)'
+        schema:
+          type: string
+          default: ASC
+      responses:
+        '200':
+          description: Page content types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPaginatedDataView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+  /api/v1/page/{pageId}/personas:
+    get:
+      tags:
+      - Page
+      summary: Get personalized personas for a page
+      description: Returns a paginated list of personas with a flag indicating whether each persona has been customized (personalized) on the specified page. Useful for identifying which personas have page-specific content variations.
+      operationId: getPersonalizedPersonasOnPage
+      parameters:
+      - name: filter
+        in: query
+        description: Filter text to narrow persona results
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination (zero-based)
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of results per page
+        schema:
+          type: integer
+          format: int32
+      - name: orderby
+        in: query
+        description: 'Field to order results by (default: title)'
+        schema:
+          type: string
+          default: title
+      - name: direction
+        in: query
+        description: 'Sort direction: ASC or DESC (default: ASC)'
+        schema:
+          type: string
+          default: ASC
+      - name: hostId
+        in: query
+        description: Host identifier to scope persona lookup
+        schema:
+          type: string
+      - name: pageId
+        in: path
+        description: Identifier of the HTML Page
+        required: true
+        schema:
+          type: string
+      - name: respectFrontEndRoles
+        in: query
+        description: Whether to respect front-end roles for permission checks
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Personas with personalization flags retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListPersonalizationPersonaPageView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/_render-sources/{uri}:
+    get:
+      tags:
+      - Page
+      summary: Get render sources for a page
+      description: 'Returns references only (path + identifier, no file content, no container code) mapping a rendered page to its source files. The page is identified by a URI path segment, exactly like `GET /api/v1/page/render/{uri}`.
+
+
+        The URI must be a plain path (e.g. `index`, `about/team`). To address a specific site, use the `host_id` query parameter.
+
+
+        Includes the page reference, theme VTL files, all containers referenced by the template (only content types actually placed under the applied persona/variant are included), and widget contentlets placed on the page.
+
+
+        **Widget source field:**
+
+        Each widget entry includes a `source` field:
+
+        - `FILE` — the widget''s Velocity lives in a file asset; `path` and `identifier` are populated. Retrieve the VTL content via `GET /api/v2/assets`.
+
+        - `CODE` — the widget''s Velocity is inline (in the content type''s `widgetCode` field and/or the contentlet''s own fields). No `path`/`identifier` are returned. Retrieve the content type definition via `GET /api/v1/contenttype/id/{contentTypeVar}` and the placed contentlet via `GET /api/v1/content/id/{contentletId}`.
+
+
+        **Other source lookups:**
+
+        - Theme folder files: `GET /api/v1/folder/sitename/{site}/uri/{uri}`
+
+        - DB container code: `GET /api/v1/containers/working?containerId=&includeContentType=true`
+
+        - FILE container VTL content: `GET /api/v2/assets`'
+      operationId: getPageRenderSources
+      parameters:
+      - name: uri
+        in: path
+        description: Page URI path (e.g. 'index' or 'about/team'). Must be a plain path without an embedded host; use host_id to target a specific site.
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: host_id
+        in: query
+        description: Explicit host identifier; if omitted the default site is used
+        schema:
+          type: string
+      - name: language_id
+        in: query
+        description: Language identifier; defaults to the default language
+        schema:
+          type: string
+      - name: persona_id
+        in: query
+        description: Persona contentlet identifier for personalization lookup
+        schema:
+          type: string
+      - name: variantName
+        in: query
+        description: Variant name; defaults to DEFAULT
+        schema:
+          type: string
+      - name: mode
+        in: query
+        description: 'Page mode: EDIT_MODE, PREVIEW_MODE, LIVE; defaults to PREVIEW_MODE'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Render sources retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPageRenderSourcesView'
+        '400':
+          description: Invalid request parameter (e.g. an unknown mode value)
+        '403':
+          description: User does not have READ permission on the page
+        '404':
+          description: Page not found, wrong language, or unknown host
+  /api/v1/page/json/{uri}:
+    get:
+      tags:
+      - Page
+      summary: Get page metadata as JSON by URI
+      description: 'Returns the metadata (the objects that make up an HTML Page) in JSON format based on the specified URI. If the URI maps to a Vanity URL, a 200 Forward returns the actual page metadata, while a 301/302 redirect returns an empty page JSON with the Vanity URL properties. Supports Time Machine via the publishDate parameter (ISO 8601 format).
+
+
+        The URI must be a plain page path (no embedded host). To read a page on a NON-default site, pass the `host_id` query parameter (backend users only); without it the current/default site is used. The `//host/uri` path form is NOT supported.'
+      operationId: getPageJsonByUri
+      parameters:
+      - name: uri
+        in: path
+        description: Path to the HTML Page or Vanity URL (e.g., 'about-us/locations/index'). Must be a plain path with no embedded host; use host_id to target a specific site.
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: host_id
+        in: query
+        description: Explicit site to read against, given as a host identifier (UUID). Backend users only; if omitted the current/default site is used.
+        schema:
+          type: string
+      - name: mode
+        in: query
+        description: Page mode for rendering (e.g., EDIT_MODE, PREVIEW_MODE, LIVE)
+        schema:
+          type: string
+      - name: com.dotmarketing.persona.id
+        in: query
+        description: Persona identifier to render the page with personalization
+        schema:
+          type: string
+      - name: language_id
+        in: query
+        description: Language ID for the page content
+        schema:
+          type: string
+      - name: device_inode
+        in: query
+        description: Device inode for responsive rendering dimensions
+        schema:
+          type: string
+      - name: publishDate
+        in: query
+        description: Time Machine date in ISO 8601 format to view page as it was at a specific point in time
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEmptyPageView'
+        '400':
+          description: Bad request
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/render/{uri}:
+    get:
+      tags:
+      - Page
+      summary: Get rendered page metadata by URI
+      description: 'Returns the metadata of an HTML Page including its rendered HTML code and container content in JSON format based on the specified URI. If the URI maps to a Vanity URL, a 200 Forward returns the actual rendered page, while a 301/302 redirect returns an empty page JSON with Vanity URL properties. Supports Time Machine via the publishDate parameter (ISO 8601 format). For EMA (Enterprise Marketing Automation) requests, this may delegate to the JSON endpoint when the rendered attribute is not required.
+
+
+        The URI must be a plain page path (no embedded host). To render a page on a NON-default site, pass the `host_id` query parameter (backend users only); without it the current/default site is used. The `//host/uri` path form is NOT supported.'
+      operationId: getPageRenderByUri
+      parameters:
+      - name: uri
+        in: path
+        description: Path to the HTML Page or Vanity URL (e.g., 'about-us/locations/index'). Must be a plain path with no embedded host; use host_id to target a specific site.
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: host_id
+        in: query
+        description: Explicit site to render against, given as a host identifier (UUID). Backend users only; if omitted the current/default site is used.
+        schema:
+          type: string
+      - name: mode
+        in: query
+        description: Page mode for rendering (e.g., EDIT_MODE, PREVIEW_MODE, LIVE)
+        schema:
+          type: string
+      - name: com.dotmarketing.persona.id
+        in: query
+        description: Persona identifier to render the page with personalization
+        schema:
+          type: string
+      - name: language_id
+        in: query
+        description: Language ID for the page content
+        schema:
+          type: string
+      - name: device_inode
+        in: query
+        description: Device inode for responsive rendering dimensions
+        schema:
+          type: string
+      - name: publishDate
+        in: query
+        description: Time Machine date in ISO 8601 format to view page as it was at a specific point in time
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Rendered page retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPageView'
+        '400':
+          description: Bad request
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+        '404':
+          description: Page not found
+  /api/v1/page/renderHTML/{uri}:
+    get:
+      tags:
+      - Page
+      summary: Render page as raw HTML
+      description: 'Returns the rendered HTML content of a page without the JSON metadata wrapper. Useful for retrieving the raw HTML output of a page for embedding or server-side rendering.
+
+
+        The page is identified by a plain URI path (e.g. `index`, `about/team`). To render a page on a NON-default site, pass the `host_id` query parameter (backend users only); without it the current/default site is used. The `//host/uri` path form is NOT supported — the URI must not embed a host.'
+      operationId: renderPageHtmlOnly
+      parameters:
+      - name: uri
+        in: path
+        description: Plain page URI path (e.g. 'index' or 'about/team'). Must not embed a host; use host_id to target a specific site.
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: host_id
+        in: query
+        description: Explicit site to render against, given as a host identifier (UUID). Backend users only; if omitted the current/default site is used.
+        schema:
+          type: string
+      - name: mode
+        in: query
+        description: 'Page mode for rendering (default: LIVE_ADMIN)'
+        schema:
+          type: string
+          default: LIVE_ADMIN
+      responses:
+        '200':
+          description: Page HTML rendered successfully
+          content:
+            application/html:
+              schema:
+                type: string
+        '401':
+          description: Authentication required
+        '404':
+          description: Page not found
+  /api/v1/page/layout:
+    post:
+      tags:
+      - Page
+      summary: Saves a page template
+      description: Handles saving of a page template using provided data. Method processes the request and returns HTTP response indicating a complete save operation.
+      operationId: postPageLayout
+      requestBody:
+        description: POST body consists of a JSON object containing one property called 'PageForm', which contains a template layout for the page
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageForm'
+        required: true
+      responses:
+        '200':
+          description: Page template saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '400':
+          description: Bad request or data exception
+        '404':
+          description: Page not found
+  /api/v1/page/{pageId}/layout:
+    post:
+      tags:
+      - Page
+      summary: Links template and page
+      description: 'Takes a saved template and links it to an HTML page.
+
+
+        Any pages with a template already linked will update with the new link.
+
+
+        Otherwise a new template will be created without making any changes to previous templates.
+
+
+        Returns the rendered page.'
+      operationId: postPageLayoutHTMLLink
+      parameters:
+      - name: pageId
+        in: path
+        description: ID for the page will link to
+        required: true
+        schema:
+          type: string
+      - name: variantName
+        in: query
+        schema:
+          type: string
+      requestBody:
+        description: 'POST body consists of a JSON object containing one property called ''PageForm'', which contains information about the layout of a page''s template '
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageForm'
+        required: true
+      responses:
+        '200':
+          description: Page template linked to HTML and saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPageView'
+        '400':
+          description: Bad request or data exception
+        '404':
+          description: Page not found
+  /api/v1/page/search:
+    get:
+      tags:
+      - Page
+      summary: Search pages by path
+      description: Returns all pages whose path matches the given filter. If the path starts with '//', the segment after the double-slash is treated as the site name for filtering. Results can be filtered to live versions only and/or pages from live sites only.
+      operationId: searchPages
+      parameters:
+      - name: path
+        in: query
+        description: Path to filter pages by; prefix with '//' to include site name (e.g., '//demo.dotcms.com/about')
+        required: true
+        schema:
+          type: string
+      - name: live
+        in: query
+        description: If true, return only live versions; if false, return both live and working versions
+        schema:
+          type: boolean
+      - name: onlyLiveSites
+        in: query
+        description: If true, filter results to only include pages from live sites
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Pages matching the search criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentletMapsView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have required permissions
+  /api/v1/page/{pageId}/styles:
+    put:
+      tags:
+      - Page
+      summary: Update contentlet styles in a page
+      description: Updates style properties for contentlets within containers on a specific page. Only updates the styleProperties field without modifying page structure.
+      operationId: updateStyles
+      parameters:
+      - name: pageId
+        in: path
+        description: Page identifier
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of containers with contentlet style updates. Each container includes its ID, UUID, and dynamic properties where contentlet IDs are keys with their style properties as values.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentWithStylesForm'
+        required: true
+      responses:
+        '200':
+          description: Contentlet styles updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityContentView'
+        '400':
+          description: Invalid request - empty container entries or invalid contentlet references
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - user does not have EDIT permission on the page
+          content:
+            application/json: {}
+        '404':
+          description: Page not found
+          content:
+            application/json: {}
+components:
+  schemas:
+    ResponseEntityPageView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PageView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContentTypeEntryView:
+      type: object
+      properties:
+        contentTypeVar:
+          type: string
+          description: Velocity variable name of the Content Type
+        path:
+          type: string
+          description: Host-qualified path to the VTL file (FILE containers only)
+        identifier:
+          type: string
+          description: File asset identifier of the VTL file (FILE containers only)
+      description: Content types placed on the page for this container. DB entries contain only contentTypeVar; FILE entries also include path and identifier.
+    ContentView:
+      required:
+      - containerId
+      - contentletId
+      - uuid
+      type: object
+      properties:
+        containerId:
+          type: string
+          description: Container identifier
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+          description: Container unique identifier (UUID)
+        contentletId:
+          type: string
+          description: Contentlet identifier
+        dotStyleProperties:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+            description: Styles defined for the Contentlet
+            example:
+              color: '#FF0000'
+              margin: 10px
+          description: Styles defined for the Contentlet
+          example:
+            color: '#FF0000'
+            margin: 10px
+    ActionInputView:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityTemplateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TemplateView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContainerSourceView:
+      type: object
+      properties:
+        source:
+          type: string
+          description: 'Container source type: DB or FILE'
+          enum:
+          - DB
+          - FILE
+        contentTypes:
+          type: array
+          description: Content types placed on the page for this container. DB entries contain only contentTypeVar; FILE entries also include path and identifier.
+          items:
+            $ref: '#/components/schemas/ContentTypeEntryView'
+      description: Containers referenced by the page template, keyed by container identifier (UUID for DB containers, host-qualified path for FILE containers). Only content types placed on the page appear inside each entry.
+    PageRenderSourcesView:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/PageSourceRefView'
+        theme:
+          $ref: '#/components/schemas/ThemeSourceView'
+        containers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerSourceView'
+          description: Containers referenced by the page template, keyed by container identifier (UUID for DB containers, host-qualified path for FILE containers). Only content types placed on the page appear inside each entry.
+        widgets:
+          type: array
+          description: Widget contentlets placed on the page
+          items:
+            $ref: '#/components/schemas/WidgetSourceView'
+        urlContentMap:
+          $ref: '#/components/schemas/UrlContentMapView'
+    Contentlet:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        inode:
+          type: string
+        identifier:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        versionType:
+          type: string
+        structureInode:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        systemHost:
+          type: boolean
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        type:
+          type: string
+        new:
+          type: boolean
+        locked:
+          type: boolean
+        owner:
+          type: string
+    TemplateLayout:
+      type: object
+      properties:
+        width:
+          type: string
+        title:
+          type: string
+        header:
+          type: boolean
+        footer:
+          type: boolean
+        body:
+          $ref: '#/components/schemas/Body'
+        sidebar:
+          $ref: '#/components/schemas/Sidebar'
+        version:
+          type: integer
+          format: int32
+        bodyRows:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/TemplateLayoutRow'
+      description: 'Required. The row/column/container structure of the layout: a ''body'' of rows, each row holding columns, each column holding containers referenced by identifier + uuid, plus optional ''header'', ''footer'', and ''sidebar''.'
+    TemplateLayoutRow:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutColumn'
+        styleClass:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    WorkflowActionView:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schemeId:
+          type: string
+        condition:
+          type: string
+        nextStep:
+          type: string
+        nextAssign:
+          type: string
+        icon:
+          type: string
+        roleHierarchyForAssign:
+          type: boolean
+        assignable:
+          type: boolean
+        commentable:
+          type: boolean
+        order:
+          type: integer
+          format: int32
+        saveActionlet:
+          type: boolean
+          writeOnly: true
+        publishActionlet:
+          type: boolean
+          writeOnly: true
+        unpublishActionlet:
+          type: boolean
+          writeOnly: true
+        archiveActionlet:
+          type: boolean
+          writeOnly: true
+        pushPublishActionlet:
+          type: boolean
+          writeOnly: true
+        onlyBatchActionlet:
+          type: boolean
+          writeOnly: true
+        unarchiveActionlet:
+          type: boolean
+          writeOnly: true
+        deleteActionlet:
+          type: boolean
+          writeOnly: true
+        destroyActionlet:
+          type: boolean
+          writeOnly: true
+        moveActionlet:
+          type: boolean
+          writeOnly: true
+        commentActionlet:
+          type: boolean
+          writeOnly: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+        resetable:
+          type: boolean
+          writeOnly: true
+        actionInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionInputView'
+        nextStepCurrentStep:
+          type: boolean
+        moveActionletHashPath:
+          type: boolean
+          writeOnly: true
+        owner:
+          type: string
+        showOn:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - NEW
+            - LOCKED
+            - UNLOCKED
+            - PUBLISHED
+            - UNPUBLISHED
+            - ARCHIVED
+            - LISTING
+            - EDITING
+        hasOnlyBatchActionlet:
+          type: boolean
+        hasSaveActionlet:
+          type: boolean
+        hasDeleteActionlet:
+          type: boolean
+        hasResetActionlet:
+          type: boolean
+        hasPublishActionlet:
+          type: boolean
+        hasUnpublishActionlet:
+          type: boolean
+        hasArchiveActionlet:
+          type: boolean
+        hasPushPublishActionlet:
+          type: boolean
+        hasUnarchiveActionlet:
+          type: boolean
+        hasDestroyActionlet:
+          type: boolean
+        hasCommentActionlet:
+          type: boolean
+        hasMoveActionletHasPathActionlet:
+          type: boolean
+        hasMoveActionletActionlet:
+          type: boolean
+    ExistingLanguagesForPageView:
+      type: object
+      properties:
+        empty:
+          type: boolean
+      additionalProperties:
+        type: object
+    TargetingCondition:
+      type: object
+      properties:
+        id:
+          type: string
+        conditionKey:
+          type: string
+        values:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: string
+        operator:
+          type: string
+          enum:
+          - AND
+          - OR
+    ResponseEntityLanguagesForPageView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExistingLanguagesForPageView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    PageWorkflowActionsView:
+      type: object
+      properties:
+        page:
+          type: object
+          additionalProperties:
+            type: object
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowActionView'
+    IPersona:
+      type: object
+      properties:
+        keyTag:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        tags:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        working:
+          type: boolean
+        versionId:
+          type: string
+        modUser:
+          type: string
+        title:
+          type: string
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        parentPermissionable:
+          $ref: '#/components/schemas/Permissionable'
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Scheduling:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    ContainerRaw:
+      type: object
+      properties:
+        containerStructures:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerStructure'
+        contentlets:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              additionalProperties:
+                type: object
+        container:
+          $ref: '#/components/schemas/ContainerView'
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean
+    ResponseEntityContentletMapsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityPaginatedDataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Permissionable:
+      type: object
+      properties:
+        parentPermissionable:
+          $ref: '#/components/schemas/Permissionable'
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Host:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        inode:
+          type: string
+        hostname:
+          type: string
+        systemHost:
+          type: boolean
+        hostThumbnail:
+          type: string
+          format: binary
+        structureInode:
+          type: string
+        tagStorage:
+          type: string
+        parent:
+          type: boolean
+        aliases:
+          type: string
+        default:
+          type: boolean
+        name:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        identifier:
+          type: string
+        type:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        new:
+          type: boolean
+        locked:
+          type: boolean
+    FindAvailableActionsForm:
+      type: object
+      properties:
+        renderMode:
+          type: string
+          enum:
+          - EDITING
+          - LISTING
+        hostId:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        path:
+          type: string
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        languageCode:
+          type: string
+        countryCode:
+          type: string
+        language:
+          type: string
+        country:
+          type: string
+        isoCode:
+          type: string
+    Geolocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        country:
+          type: string
+        countryCode:
+          type: string
+        city:
+          type: string
+        continent:
+          type: string
+        continentCode:
+          type: string
+        company:
+          type: string
+        timezone:
+          type: string
+        subdivision:
+          type: string
+        subdivisionCode:
+          type: string
+        postal:
+          type: string
+        ipAddress:
+          type: string
+    CopyContentletForm:
+      type: object
+      properties:
+        contentId:
+          type: string
+        pageId:
+          type: string
+        containerId:
+          type: string
+        relationType:
+          type: string
+        personalization:
+          type: string
+        variantId:
+          type: string
+        treeOrder:
+          type: integer
+          format: int32
+        styleProperties:
+          type: object
+          additionalProperties:
+            type: object
+    PageView:
+      type: object
+      properties:
+        site:
+          $ref: '#/components/schemas/Host'
+        template:
+          $ref: '#/components/schemas/Template'
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerRaw'
+        layout:
+          $ref: '#/components/schemas/TemplateLayout'
+        viewAs:
+          $ref: '#/components/schemas/ViewAsPageStatus'
+        urlContent:
+          $ref: '#/components/schemas/Contentlet'
+        numberContents:
+          type: integer
+          format: int32
+        pageUrlMapper:
+          type: string
+        live:
+          type: boolean
+        vanityUrl:
+          $ref: '#/components/schemas/VanityURLView'
+        runningExperiment:
+          $ref: '#/components/schemas/Experiment'
+        styleEditorSchemas:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonNode'
+        containersMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerRaw'
+        page:
+          $ref: '#/components/schemas/HTMLPageAsset'
+    Visitor:
+      type: object
+      properties:
+        ipAddress:
+          type: object
+          properties:
+            multicastAddress:
+              type: boolean
+            anyLocalAddress:
+              type: boolean
+            siteLocalAddress:
+              type: boolean
+            mcglobal:
+              type: boolean
+            mcnodeLocal:
+              type: boolean
+            mclinkLocal:
+              type: boolean
+            mcsiteLocal:
+              type: boolean
+            mcorgLocal:
+              type: boolean
+            canonicalHostName:
+              type: string
+            loopbackAddress:
+              type: boolean
+            hostName:
+              type: string
+            linkLocalAddress:
+              type: boolean
+            address:
+              type: string
+              format: byte
+            hostAddress:
+              type: string
+        selectedLanguage:
+          $ref: '#/components/schemas/Language'
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        userAgent:
+          $ref: '#/components/schemas/UserAgent'
+        dmid:
+          type: string
+          format: uuid
+        newVisitor:
+          type: boolean
+        referrer:
+          type: string
+          format: uri
+        lastRequestDate:
+          type: string
+          format: date-time
+        persona:
+          $ref: '#/components/schemas/Persona'
+        geo:
+          $ref: '#/components/schemas/Geolocation'
+        personaCounts:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        accruedTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccruedTag'
+        device:
+          type: string
+        weightedPersonas:
+          type: object
+          additionalProperties:
+            type: number
+            format: float
+        numberPagesViewed:
+          type: integer
+          format: int32
+        personas:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccruedTag'
+    Sidebar:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        location:
+          type: string
+        width:
+          type: string
+        widthPercent:
+          type: integer
+          format: int32
+        preview:
+          type: boolean
+    PageContainerEntryView:
+      required:
+      - contentletsId
+      - identifier
+      - uuid
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Container's path-based key, e.g. '//demo.dotcms.com/application/containers/default/'. Matches the keys in 'page.containers' returned by GET /api/v1/page/json/{uri} (or /render/{uri}). Not the database UUID.
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+          description: Slot instance identifier. Matches the 'uuid' in page.layout.body.rows[].columns[].containers[]. The same container can appear multiple times on a page with different UUIDs.
+          example: '10'
+        contentletsId:
+          type: array
+          description: 'Ordered contentlet identifiers placed in this slot. An empty array clears the slot. This is a full replacement: omitted slots are removed from the page.'
+          items:
+            type: string
+            description: 'Ordered contentlet identifiers placed in this slot. An empty array clears the slot. This is a full replacement: omitted slots are removed from the page.'
+        personaTag:
+          type:
+          - string
+          - 'null'
+          description: Optional persona tag for personalized content variants.
+      description: Single container slot assignment for a page.
+    RunningId:
+      type: object
+      properties:
+        id:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    EmptyPageView:
+      type: object
+      properties:
+        site:
+          $ref: '#/components/schemas/Host'
+        template:
+          $ref: '#/components/schemas/Template'
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerRaw'
+        layout:
+          $ref: '#/components/schemas/TemplateLayout'
+        viewAs:
+          $ref: '#/components/schemas/ViewAsPageStatus'
+        urlContent:
+          $ref: '#/components/schemas/Contentlet'
+        numberContents:
+          type: integer
+          format: int32
+        pageUrlMapper:
+          type: string
+        live:
+          type: boolean
+        vanityUrl:
+          $ref: '#/components/schemas/CachedVanityUrl'
+        runningExperiment:
+          $ref: '#/components/schemas/Experiment'
+        styleEditorSchemas:
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonNode'
+        containersMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerRaw'
+        page:
+          $ref: '#/components/schemas/HTMLPageAsset'
+    ThemeSourceView:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Theme folder identifier
+        name:
+          type: string
+          description: Theme folder name
+        folderPath:
+          type: string
+          description: Host-qualified path to the theme folder, e.g. //demo.dotcms.com/application/themes/travel/
+        files:
+          type: array
+          description: Every file found anywhere under the theme folder (searched recursively), regardless of type. Each entry carries its extension so consumers can filter.
+          items:
+            $ref: '#/components/schemas/FileRefView'
+      description: Theme folder and every file that composes it
+    UserAgent:
+      type: object
+      properties:
+        operatingSystem:
+          type: string
+          enum:
+          - WINDOWS
+          - WINDOWS_10
+          - WINDOWS_81
+          - WINDOWS_8
+          - WINDOWS_7
+          - WINDOWS_VISTA
+          - WINDOWS_2000
+          - WINDOWS_XP
+          - WINDOWS_10_MOBILE
+          - WINDOWS_PHONE8_1
+          - WINDOWS_PHONE8
+          - WINDOWS_MOBILE7
+          - WINDOWS_MOBILE
+          - WINDOWS_98
+          - XBOX_OS
+          - ANDROID
+          - ANDROID6
+          - ANDROID6_TABLET
+          - ANDROID5
+          - ANDROID5_TABLET
+          - ANDROID4
+          - ANDROID4_TABLET
+          - ANDROID4_WEARABLE
+          - ANDROID3_TABLET
+          - ANDROID2
+          - ANDROID2_TABLET
+          - ANDROID1
+          - ANDROID_MOBILE
+          - ANDROID_TABLET
+          - CHROME_OS
+          - WEBOS
+          - PALM
+          - MEEGO
+          - IOS
+          - iOS9_IPHONE
+          - iOS8_4_IPHONE
+          - iOS8_3_IPHONE
+          - iOS8_2_IPHONE
+          - iOS8_1_IPHONE
+          - iOS8_IPHONE
+          - iOS7_IPHONE
+          - iOS6_IPHONE
+          - iOS5_IPHONE
+          - iOS4_IPHONE
+          - MAC_OS_X_IPAD
+          - iOS9_IPAD
+          - iOS8_4_IPAD
+          - iOS8_3_IPAD
+          - iOS8_2_IPAD
+          - iOS8_1_IPAD
+          - iOS8_IPAD
+          - iOS7_IPAD
+          - iOS6_IPAD
+          - MAC_OS_X_IPHONE
+          - MAC_OS_X_IPOD
+          - MAC_OS_X
+          - MAC_OS
+          - MAEMO
+          - BADA
+          - GOOGLE_TV
+          - KINDLE
+          - KINDLE3
+          - KINDLE2
+          - LINUX
+          - UBUNTU
+          - UBUNTU_TOUCH_MOBILE
+          - SYMBIAN
+          - SYMBIAN9
+          - SYMBIAN8
+          - SYMBIAN7
+          - SYMBIAN6
+          - SERIES40
+          - SONY_ERICSSON
+          - SUN_OS
+          - PSP
+          - WII
+          - BLACKBERRY
+          - BLACKBERRY7
+          - BLACKBERRY6
+          - BLACKBERRY_TABLET
+          - ROKU
+          - PROXY
+          - UNKNOWN_MOBILE
+          - UNKNOWN_TABLET
+          - UNKNOWN
+        browser:
+          type: string
+          enum:
+          - OUTLOOK
+          - OUTLOOK2007
+          - OUTLOOK2013
+          - OUTLOOK2010
+          - IE
+          - OUTLOOK_EXPRESS7
+          - IEMOBILE11
+          - IEMOBILE10
+          - IEMOBILE9
+          - IEMOBILE7
+          - IEMOBILE6
+          - IE_XBOX
+          - IE11
+          - IE10
+          - IE9
+          - IE8
+          - IE7
+          - IE6
+          - IE5_5
+          - IE5
+          - EDGE
+          - EDGE_MOBILE
+          - EDGE_MOBILE12
+          - EDGE13
+          - EDGE12
+          - CHROME
+          - CHROME_MOBILE
+          - CHROME49
+          - CHROME48
+          - CHROME47
+          - CHROME46
+          - CHROME45
+          - CHROME44
+          - CHROME43
+          - CHROME42
+          - CHROME41
+          - CHROME40
+          - CHROME39
+          - CHROME38
+          - CHROME37
+          - CHROME36
+          - CHROME35
+          - CHROME34
+          - CHROME33
+          - CHROME32
+          - CHROME31
+          - CHROME30
+          - CHROME29
+          - CHROME28
+          - CHROME27
+          - CHROME26
+          - CHROME25
+          - CHROME24
+          - CHROME23
+          - CHROME22
+          - CHROME21
+          - CHROME20
+          - CHROME19
+          - CHROME18
+          - CHROME17
+          - CHROME16
+          - CHROME15
+          - CHROME14
+          - CHROME13
+          - CHROME12
+          - CHROME11
+          - CHROME10
+          - CHROME9
+          - CHROME8
+          - OMNIWEB
+          - FIREFOX
+          - FIREFOX3MOBILE
+          - FIREFOX_MOBILE
+          - FIREFOX_MOBILE23
+          - FIREFOX_MOBILE_IOS
+          - FIREFOX45
+          - FIREFOX44
+          - FIREFOX43
+          - FIREFOX42
+          - FIREFOX41
+          - FIREFOX40
+          - FIREFOX39
+          - FIREFOX38
+          - FIREFOX37
+          - FIREFOX36
+          - FIREFOX35
+          - FIREFOX34
+          - FIREFOX33
+          - FIREFOX32
+          - FIREFOX31
+          - FIREFOX30
+          - FIREFOX29
+          - FIREFOX28
+          - FIREFOX27
+          - FIREFOX26
+          - FIREFOX25
+          - FIREFOX24
+          - FIREFOX23
+          - FIREFOX22
+          - FIREFOX21
+          - FIREFOX20
+          - FIREFOX19
+          - FIREFOX18
+          - FIREFOX17
+          - FIREFOX16
+          - FIREFOX15
+          - FIREFOX14
+          - FIREFOX13
+          - FIREFOX12
+          - FIREFOX11
+          - FIREFOX10
+          - FIREFOX9
+          - FIREFOX8
+          - FIREFOX7
+          - FIREFOX6
+          - FIREFOX5
+          - FIREFOX4
+          - FIREFOX3
+          - FIREFOX2
+          - FIREFOX1_5
+          - SAFARI
+          - BLACKBERRY10
+          - MOBILE_SAFARI
+          - SILK
+          - SAFARI9
+          - SAFARI8
+          - SAFARI7
+          - SAFARI6
+          - SAFARI5
+          - SAFARI4
+          - COAST
+          - COAST1
+          - OPERA
+          - OPERA_MOBILE
+          - OPERA_MINI
+          - OPERA34
+          - OPERA33
+          - OPERA32
+          - OPERA31
+          - OPERA30
+          - OPERA29
+          - OPERA28
+          - OPERA27
+          - OPERA26
+          - OPERA25
+          - OPERA24
+          - OPERA23
+          - OPERA20
+          - OPERA19
+          - OPERA18
+          - OPERA17
+          - OPERA16
+          - OPERA15
+          - OPERA12
+          - OPERA11
+          - OPERA10
+          - OPERA9
+          - KONQUEROR
+          - DOLFIN2
+          - APPLE_WEB_KIT
+          - APPLE_ITUNES
+          - APPLE_APPSTORE
+          - ADOBE_AIR
+          - LOTUS_NOTES
+          - CAMINO
+          - CAMINO2
+          - FLOCK
+          - THUNDERBIRD
+          - THUNDERBIRD12
+          - THUNDERBIRD11
+          - THUNDERBIRD10
+          - THUNDERBIRD8
+          - THUNDERBIRD7
+          - THUNDERBIRD6
+          - THUNDERBIRD3
+          - THUNDERBIRD2
+          - VIVALDI
+          - SEAMONKEY
+          - BOT
+          - BOT_MOBILE
+          - MOZILLA
+          - CFNETWORK
+          - EUDORA
+          - POCOMAIL
+          - THEBAT
+          - NETFRONT
+          - EVOLUTION
+          - LYNX
+          - DOWNLOAD
+          - UNKNOWN
+          - APPLE_MAIL
+        id:
+          type: integer
+          format: int32
+        browserVersion:
+          $ref: '#/components/schemas/Version'
+    Container:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        code:
+          type: string
+        maxContentlets:
+          type: integer
+          format: int32
+        useDiv:
+          type: boolean
+        preLoop:
+          type: string
+        postLoop:
+          type: string
+        notes:
+          type: string
+        hostName:
+          type: string
+        hostId:
+          type: string
+        variant:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    TemplateView:
+      type: object
+      properties:
+        identifier:
+          type: string
+        inode:
+          type: string
+        categoryId:
+          type: string
+        body:
+          type: string
+        selectedimage:
+          type: string
+        image:
+          type: string
+        drawed:
+          type: boolean
+        deleted:
+          type: boolean
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        lockedBy:
+          type: string
+        working:
+          type: boolean
+        hasLiveVersion:
+          type: boolean
+        showOnMenu:
+          type: boolean
+        drawedBody:
+          type: string
+        countAddContainer:
+          type: integer
+          format: int32
+        countContainers:
+          type: integer
+          format: int32
+        headCode:
+          type: string
+        theme:
+          type: string
+        themeName:
+          type: string
+        footer:
+          type: string
+        friendlyName:
+          type: string
+        header:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        canRead:
+          type: boolean
+        canWrite:
+          type: boolean
+        canPublish:
+          type: boolean
+        layout:
+          $ref: '#/components/schemas/TemplateLayoutView'
+        containers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerView'
+        themeInfo:
+          $ref: '#/components/schemas/ThemeView'
+        hostName:
+          type: string
+        hostId:
+          type: string
+        fullTitle:
+          type: string
+        htmlTitle:
+          type: string
+        new:
+          type: boolean
+    ContainerUUID:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: 'Reference to the Container placed in this layout slot. Accepts any ONE of three forms:
+
+            - a Container **identifier** for a database-backed Container — a full UUID (''2cef9f97-5faf-4d18-8c9b-df22b6c17111'') or a dotCMS ''shorty'' (short) id; or
+
+            - a **file path** for a file-based (Container-as-File) Container — host-qualified (''//demo.dotcms.com/application/containers/default/'') or host-relative (''/application/containers/default/'', resolved against the current site); or
+
+            - the literal string ''SYSTEM_CONTAINER'' for the built-in system Container.
+
+            The server chooses the resolution strategy by inspecting the value: a string containing ''/application/containers'' is resolved as a file-path Container, ''SYSTEM_CONTAINER'' resolves to the system Container, and anything else is looked up as a database identifier. A value that does not resolve to an existing Container produces no container at render time (the slot renders empty) rather than falling back to another Container — pass the exact identifier or the full host-qualified path.'
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+        historyUUIDs:
+          type: array
+          items:
+            type: string
+    VanityURLView:
+      type: object
+      properties:
+        id:
+          type: string
+        siteId:
+          type: string
+        url:
+          type: string
+        forwardTo:
+          type: string
+        response:
+          type: integer
+          format: int32
+    BodyView:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutRowView'
+    SidebarView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        location:
+          type: string
+        width:
+          type: string
+    Template:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        body:
+          type: string
+        selectedimage:
+          type: string
+        image:
+          type: string
+        drawed:
+          type: boolean
+        drawedBody:
+          type: string
+        countAddContainer:
+          type: integer
+          format: int32
+        countContainers:
+          type: integer
+          format: int32
+        headCode:
+          type: string
+        theme:
+          type: string
+        themeName:
+          type: string
+        header:
+          type: string
+        footer:
+          type: string
+        template:
+          type: boolean
+        isTemplate:
+          type: boolean
+          writeOnly: true
+        anonymous:
+          type: boolean
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    ContentWithStylesForm:
+      required:
+      - identifier
+      - uuid
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Container identifier
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+          description: Container unique identifier (UUID)
+          example: '1'
+        personaTag:
+          type: string
+          description: Raw Persona key tag (e.g. the value of viewAs.persona.keyTag) to personalize this style update for. Do not include the 'dot:persona:' prefix -- the backend adds it automatically. Omit for the default persona.
+          example: returning_visitor
+      description: Container with contentlet style properties
+    ContainerStructure:
+      type: object
+      properties:
+        id:
+          type: string
+        structureId:
+          type: string
+        containerInode:
+          type: string
+        containerId:
+          type: string
+        code:
+          type: string
+        contentTypeVar:
+          type: string
+    ResponseEntityPageRenderSourcesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PageRenderSourcesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ViewAsPageStatus:
+      type: object
+      properties:
+        persona:
+          $ref: '#/components/schemas/IPersona'
+        language:
+          $ref: '#/components/schemas/Language'
+        device:
+          $ref: '#/components/schemas/Contentlet'
+        pageMode:
+          type: string
+          enum:
+          - LIVE
+          - ADMIN_MODE
+          - PREVIEW_MODE
+          - WORKING
+          - EDIT_MODE
+          - NAVIGATE_EDIT_MODE
+        personalized:
+          type: boolean
+        visitor:
+          $ref: '#/components/schemas/Visitor'
+        variantId:
+          type: string
+    PageForm:
+      required:
+      - layout
+      type: object
+      properties:
+        themeId:
+          type: string
+          description: Theme folder identifier (not a path) supplying the template's CSS/JS and VTL fragments. Resolve from a path via GET /api/v1/folder/sitename/{site}/uri/{uri}.
+        title:
+          type: string
+          description: Title for the resulting template. Omit to create an anonymous, page-scoped template (a generated name is assigned automatically).
+        siteId:
+          type: string
+          description: Identifier of the site (host) the template belongs to. Sent as the JSON property 'hostId'. Defaults to the site resolved from the current HTTP request context when omitted.
+        layout:
+          $ref: '#/components/schemas/TemplateLayout'
+        anonymousLayout:
+          type: boolean
+      description: Layout payload used to create or update the anonymous Template backing a page. Wrap this object under a top-level 'PageForm' property in the request body. 'layout' is required; omitting 'title' creates an anonymous (page-scoped) template.
+    ThemeView:
+      type: object
+      properties:
+        path:
+          type: string
+        defaultFileType:
+          type: string
+        filesMasks:
+          type: string
+        getiDate:
+          type: string
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+    PersonalizationPersonaPageView:
+      type: object
+      properties:
+        pageId:
+          type: string
+        persona:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Metric:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum:
+          - DIFFERENTIATING_FEATURES
+          - PAID_FEATURES
+          - PLATFORM_SPECIFIC_CUSTOMIZATION
+          - SOPHISTICATED_CONTENT_ARCHITECTURE
+          - POSITIVE_USER_EXPERIENCE
+          - PLATFORM_SPECIFIC_DEVELOPMENT
+          - RECENT_ACTIVITY
+          - HISTORY_LEGACY_DEPRECATED_FEATURES
+        feature:
+          type: string
+          enum:
+          - CONTENTLETS
+          - LANGUAGES
+          - CONTENT_TYPES
+          - SITES
+          - URL_MAPS
+          - WORKFLOW
+          - USERS
+          - SITE_SEARCH
+          - IMAGE_API
+          - LAYOUT
+          - CONTENT_TYPE_FIELDS
+          - AI
+          - EXPERIMENTS
+    ResponseEntityPageLivePreviewVersionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PageLivePreviewVersionBean'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListPersonalizationPersonaPageView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonalizationPersonaPageView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UrlContentMapView:
+      type: object
+      properties:
+        contentTypeVar:
+          type: string
+          description: Velocity variable name of the URL-mapped Content Type (e.g. 'Blog')
+        title:
+          type: string
+          description: Title of the URL-mapped contentlet
+        contentletId:
+          type: string
+          description: Stable identifier of the URL-mapped contentlet (same across all language/variant versions). Use GET /api/v1/content/id/{contentletId} to retrieve it.
+        contentletInode:
+          type: string
+          description: Inode of the exact version of the URL-mapped contentlet resolved for this request (language- and variant-specific). Use GET /api/v1/content/inode/{contentletInode} to retrieve the precise version.
+      description: Present only when the requested URI resolved via a URL-map pattern. Identifies the specific mapped contentlet that owns the URL. Absent for regular (literal) HTML page requests.
+    FileRefView:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Host-qualified path to the file, e.g. //demo.dotcms.com/application/themes/travel/header.vtl
+        identifier:
+          type: string
+          description: File asset identifier
+        extension:
+          type: string
+          description: Lowercased file extension without the leading dot, e.g. vtl, css, scss, js
+      description: Every file found anywhere under the theme folder (searched recursively), regardless of type. Each entry carries its extension so consumers can filter.
+    Persona:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        keyTag:
+          type: string
+        tags:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        working:
+          type: boolean
+        versionId:
+          type: string
+        modUser:
+          type: string
+        title:
+          type: string
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        structureInode:
+          type: string
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        systemHost:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        type:
+          type: string
+        new:
+          type: boolean
+    Version:
+      type: object
+      properties:
+        version:
+          type: string
+        majorVersion:
+          type: string
+        minorVersion:
+          type: string
+    ResponseEntityContentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TrafficProportion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - SPLIT_EVENLY
+          - CUSTOM_PERCENTAGES
+        variants:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperimentVariant'
+    TemplateLayoutColumn:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        widthPercent:
+          type: integer
+          format: int32
+        leftOffset:
+          type: integer
+          format: int32
+        styleClass:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+        preview:
+          type: boolean
+        width:
+          type: integer
+          format: int32
+        left:
+          type: integer
+          format: int32
+    Body:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutRow'
+    JsonNode:
+      type: object
+    PageCheckPermissionForm:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - NONE
+          - READ
+          - USE
+          - EDIT
+          - WRITE
+          - PUBLISH
+          - EDIT_PERMISSIONS
+          - CAN_ADD_CHILDREN
+        hostId:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        path:
+          type: string
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    ResponseEntityMulitreeView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/MulitreeView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserAPI:
+      type: object
+      properties:
+        anonymousUser:
+          $ref: '#/components/schemas/User'
+        systemUser:
+          $ref: '#/components/schemas/User'
+        defaultUser:
+          $ref: '#/components/schemas/User'
+        unDeletedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        anonymousUserNoThrow:
+          $ref: '#/components/schemas/User'
+    RunningIds:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunningId'
+    PageLivePreviewVersionBean:
+      type: object
+      properties:
+        renderLive:
+          type: string
+        renderWorking:
+          type: string
+        diff:
+          type: boolean
+    Goals:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/Goal'
+    HTMLPageAsset:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        pageUrl:
+          type: string
+        httpsRequired:
+          type: boolean
+        redirect:
+          type: string
+        cacheTTL:
+          type: integer
+          format: int64
+        seoKeywords:
+          type: string
+        seoDescription:
+          type: string
+        templateId:
+          type: string
+        menuOrder:
+          type: integer
+          format: int32
+        metadata:
+          type: string
+        friendlyName:
+          type: string
+        showOnMenu:
+          type: boolean
+        title:
+          type: string
+        content:
+          type: boolean
+        uri:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        inode:
+          type: string
+        identifier:
+          type: string
+        host:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        working:
+          type: boolean
+        versionId:
+          type: string
+        modUser:
+          type: string
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        sortOrder:
+          type: integer
+          format: int64
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        structureInode:
+          type: string
+        contentTypeId:
+          type: string
+        systemHost:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        new:
+          type: boolean
+    WidgetSourceView:
+      type: object
+      properties:
+        contentTypeVar:
+          type: string
+          description: Velocity variable name of the Widget Content Type
+        title:
+          type: string
+          description: Title of the placed Widget contentlet
+        contentletId:
+          type: string
+          description: Stable identifier of the placed Widget contentlet (same across all language and variant versions). Use GET /api/v1/content/id/{contentletId} to retrieve the contentlet.
+        contentletInode:
+          type: string
+          description: Inode of the exact version of the placed Widget contentlet resolved for this request (language- and variant-specific). Use GET /api/v1/content/inode/{contentletInode} to retrieve the precise placed version.
+        source:
+          type: string
+          description: 'Source of the widget Velocity code. FILE: VTL lives in a file asset (see path/identifier). CODE: Velocity is inline in the content type''s widgetCode field and/or contentlet fields — retrieve via GET /api/v1/contenttype/id/{contentTypeVar} and GET /api/v1/content/id/{contentletId}.'
+          enum:
+          - FILE
+          - CODE
+        path:
+          type: string
+          description: Host-qualified path to the widget VTL file (FILE source only)
+        identifier:
+          type: string
+          description: File asset identifier of the widget VTL file (FILE source only)
+      description: Widget contentlets placed on the page
+    TemplateLayoutColumnView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        width:
+          type: integer
+          format: int32
+        leftOffset:
+          type: integer
+          format: int32
+        styleClass:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityPageWorkflowActionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PageWorkflowActionsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TemplateLayoutRowView:
+      type: object
+      properties:
+        styleClass:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutColumnView'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    AccruedTag:
+      type: object
+      properties:
+        tag:
+          type: string
+        count:
+          type: integer
+          format: int32
+    CachedVanityUrl:
+      type: object
+      properties:
+        pattern:
+          type: object
+        vanityUrlId:
+          type: string
+        url:
+          type: string
+        siteId:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        forwardTo:
+          type: string
+        response:
+          type: integer
+          format: int32
+        order:
+          type: integer
+          format: int32
+        forward:
+          type: boolean
+        temporaryRedirect:
+          type: boolean
+        permanentRedirect:
+          type: boolean
+    ExperimentVariant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        weight:
+          type: number
+          format: float
+        url:
+          type: string
+        promoted:
+          type: boolean
+    ResponseEntityEmptyPageView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/EmptyPageView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TemplateLayoutView:
+      type: object
+      properties:
+        width:
+          type: string
+        title:
+          type: string
+        header:
+          type: boolean
+        footer:
+          type: boolean
+        body:
+          $ref: '#/components/schemas/BodyView'
+        sidebar:
+          $ref: '#/components/schemas/SidebarView'
+      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
+    Experiment:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - RUNNING
+          - SCHEDULED
+          - ENDED
+          - DRAFT
+          - ARCHIVED
+        trafficProportion:
+          $ref: '#/components/schemas/TrafficProportion'
+        scheduling:
+          $ref: '#/components/schemas/Scheduling'
+        trafficAllocation:
+          type: number
+          format: float
+        creationDate:
+          type: string
+          format: date-time
+        modDate:
+          type: string
+          format: date-time
+        pageId:
+          type: string
+        createdBy:
+          type: string
+        lastModifiedBy:
+          type: string
+        goals:
+          $ref: '#/components/schemas/Goals'
+        targetingConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetingCondition'
+        lookBackWindowExpireTime:
+          type: integer
+          format: int64
+        runningIds:
+          $ref: '#/components/schemas/RunningIds'
+    MulitreeView:
+      type: object
+      properties:
+        pageId:
+          type: string
+        containerId:
+          type: string
+        contentId:
+          type: string
+        relationType:
+          type: string
+        treeOrder:
+          type: integer
+          format: int32
+        personalization:
+          type: string
+        variantId:
+          type: string
+    PageSourceRefView:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Page identifier
+        uri:
+          type: string
+          description: Host-qualified page URI (e.g. //demo.dotcms.com/index)
+        languageId:
+          type: integer
+          description: Language ID under which the page was resolved
+          format: int64
+      description: Lightweight page reference. When the request URI was a URL-mapped path, identifier is the detail page identifier and uri is the originally requested URI (host-qualified).
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    Goal:
+      type: object
+      properties:
+        metric:
+          $ref: '#/components/schemas/Metric'
+        type:
+          type: string
+          writeOnly: true
+          enum:
+          - MINIMIZE
+          - MAXIMIZE

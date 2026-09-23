@@ -1,0 +1,108 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Usage API
+  version: '3'
+  description: Provides business intelligence metrics for dashboard usage
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Usage
+  description: Provides business intelligence metrics for dashboard usage
+paths:
+  /api/v1/usage/summary:
+    get:
+      tags:
+      - Usage
+      summary: Get usage dashboard summary
+      description: Retrieves key business metrics optimized for dashboard display including content, sites, users, and system metrics. Supports optional profile parameter (MINIMAL, STANDARD, FULL) to override the default metric collection profile.
+      operationId: getSummary
+      parameters:
+      - name: profile
+        in: query
+        description: 'Metric collection profile to use. MINIMAL (default): Fast collection with 10-15 core metrics. STANDARD: Comprehensive collection with ~50 metrics. FULL: Complete collection with all available metrics. This allows administrators to view additional metrics beyond the default MINIMAL profile.'
+        schema:
+          type: string
+          enum:
+          - MINIMAL
+          - STANDARD
+          - FULL
+          default: MINIMAL
+      responses:
+        '200':
+          description: Dashboard summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityUsageSummaryView'
+        '400':
+          description: Invalid profile parameter
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityUsageSummaryView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/UsageSummary'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    UsageSummary:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+        lastUpdated:
+          type: string
+          format: date-time
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

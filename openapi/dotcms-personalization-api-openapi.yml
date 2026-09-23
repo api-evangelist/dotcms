@@ -1,0 +1,583 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Personalization API
+  version: '3'
+  description: Content personalization and persona management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Personalization
+  description: Content personalization and persona management
+paths:
+  /api/v1/personalization/pagepersonas:
+    post:
+      tags:
+      - Personalization
+      summary: Personalize page containers
+      description: Copies the current content associated to page containers with default personalization and creates a new set with the specified persona personalization. Requires edit permission on the page.
+      operationId: personalizePageContainers
+      requestBody:
+        description: Personalization form data with page ID and persona tag
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalizationPersonaPageForm'
+        required: true
+      responses:
+        '200':
+          description: Page containers personalized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPersonalizationView'
+        '400':
+          description: Bad request - invalid page ID, persona tag, or missing parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient edit permissions on page
+          content:
+            application/json: {}
+        '404':
+          description: Page or persona not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/personalization/pagepersonas/page/{pageId}/personalization/{personalization}:
+    delete:
+      tags:
+      - Personalization
+      summary: Delete page personalization
+      description: Deletes a personalization persona for a page. Can remove any persona personalization for page containers except the default personalization. Requires edit permission on the page.
+      operationId: personalizePageContainers_1
+      parameters:
+      - name: pageId
+        in: path
+        description: Page identifier
+        required: true
+        schema:
+          type: string
+      - name: personalization
+        in: path
+        description: Personalization/persona tag to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Page personalization deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '400':
+          description: Bad request - invalid parameters, trying to delete default personalization, or persona doesn't exist
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient edit permissions on page
+          content:
+            application/json: {}
+        '404':
+          description: Page not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/personas/layout/{params}:
+    get:
+      tags:
+      - Personalization
+      operationId: getLayout_5
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Get layout 5
+      x-summary-source: derived
+  /api/personas/sites/{id}:
+    get:
+      tags:
+      - Personalization
+      operationId: list_11
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Persona'
+            application/javascript:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Persona'
+      summary: List 11
+      x-summary-source: derived
+components:
+  schemas:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserAPI:
+      type: object
+      properties:
+        anonymousUser:
+          $ref: '#/components/schemas/User'
+        systemUser:
+          $ref: '#/components/schemas/User'
+        defaultUser:
+          $ref: '#/components/schemas/User'
+        unDeletedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        anonymousUserNoThrow:
+          $ref: '#/components/schemas/User'
+    PersonalizationPersonaPageForm:
+      required:
+      - pageId
+      - personaTag
+      type: object
+      properties:
+        pageId:
+          type: string
+        personaTag:
+          type: string
+    Persona:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        keyTag:
+          type: string
+        tags:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        working:
+          type: boolean
+        versionId:
+          type: string
+        modUser:
+          type: string
+        title:
+          type: string
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        structureInode:
+          type: string
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        systemHost:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        type:
+          type: string
+        new:
+          type: boolean
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    ResponseEntityPersonalizationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean

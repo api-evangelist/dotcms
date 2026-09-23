@@ -1,0 +1,740 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Java Script API
+  version: '3'
+  description: JavaScript execution and server-side scripting
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: JavaScript
+  description: JavaScript execution and server-side scripting
+paths:
+  /api/js/{folder}:
+    get:
+      tags:
+      - JavaScript
+      operationId: get
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Get
+      x-summary-source: derived
+    put:
+      tags:
+      - JavaScript
+      operationId: putMultipart
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Put multipart
+      x-summary-source: derived
+    post:
+      tags:
+      - JavaScript
+      operationId: postMultipart
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Post multipart
+      x-summary-source: derived
+    delete:
+      tags:
+      - JavaScript
+      operationId: delete_1
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Delete 1
+      x-summary-source: derived
+    patch:
+      tags:
+      - JavaScript
+      operationId: patchMultipart
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Patch multipart
+      x-summary-source: derived
+  /api/js/{folder}/{pathParam}:
+    get:
+      tags:
+      - JavaScript
+      operationId: get_1
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Get 1
+      x-summary-source: derived
+    put:
+      tags:
+      - JavaScript
+      operationId: putMultipart_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Put multipart 1
+      x-summary-source: derived
+    post:
+      tags:
+      - JavaScript
+      operationId: postMultipart_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Post multipart 1
+      x-summary-source: derived
+    delete:
+      tags:
+      - JavaScript
+      operationId: delete_2
+      parameters:
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Delete 2
+      x-summary-source: derived
+    patch:
+      tags:
+      - JavaScript
+      operationId: patchMultipart_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: folder
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Patch multipart 1
+      x-summary-source: derived
+  /api/js/dynamic/{pathParam}:
+    get:
+      tags:
+      - JavaScript
+      operationId: dynamicGet_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic get 1
+      x-summary-source: derived
+    put:
+      tags:
+      - JavaScript
+      operationId: dynamicPut_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic put 1
+      x-summary-source: derived
+    post:
+      tags:
+      - JavaScript
+      operationId: dynamicPost_1
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic post 1
+      x-summary-source: derived
+    delete:
+      tags:
+      - JavaScript
+      operationId: dynamicDelete
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic delete
+      x-summary-source: derived
+    patch:
+      tags:
+      - JavaScript
+      operationId: dynamicPatch
+      parameters:
+      - name: pathParam
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic patch
+      x-summary-source: derived
+  /api/js/dynamic:
+    get:
+      tags:
+      - JavaScript
+      operationId: dynamicGet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic get
+      x-summary-source: derived
+    put:
+      tags:
+      - JavaScript
+      operationId: dynamicPut
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic put
+      x-summary-source: derived
+    post:
+      tags:
+      - JavaScript
+      operationId: dynamicPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/xml: {}
+            text/plain: {}
+      summary: Dynamic post
+      x-summary-source: derived
+components:
+  schemas:
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    MessageBodyWorkers:
+      type: object
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'

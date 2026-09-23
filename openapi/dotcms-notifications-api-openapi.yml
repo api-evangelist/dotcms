@@ -1,0 +1,111 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Notifications API
+  version: '3'
+  description: User notifications and alerts management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Notifications
+  description: User notifications and alerts management
+paths:
+  /api/v1/notification/delete:
+    put:
+      tags:
+      - Notifications
+      operationId: delete_7
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/DeleteForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete 7
+      x-summary-source: derived
+  /api/v1/notification/id/{id}:
+    delete:
+      tags:
+      - Notifications
+      operationId: delete_8
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete 8
+      x-summary-source: derived
+  /api/v1/notification/getNewNotificationsCount:
+    get:
+      tags:
+      - Notifications
+      operationId: getNewNotificationsCount
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get new notifications count
+      x-summary-source: derived
+  /api/v1/notification/getNotifications/{params}:
+    get:
+      tags:
+      - Notifications
+      operationId: getNotifications
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: Range
+        in: header
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get notifications
+      x-summary-source: derived
+  /api/v1/notification/markAsRead:
+    put:
+      tags:
+      - Notifications
+      operationId: markAsRead
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Mark as read
+      x-summary-source: derived
+components:
+  schemas:
+    DeleteForm:
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: string

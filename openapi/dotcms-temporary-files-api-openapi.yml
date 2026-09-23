@@ -1,0 +1,155 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Temporary Files API
+  version: '3'
+  description: Temporary file upload and management for content creation
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Temporary Files
+  description: Temporary file upload and management for content creation
+paths:
+  /api/v1/temp/byUrl:
+    post:
+      tags:
+      - Temporary Files
+      summary: Create temporary file from a remote URL
+      description: 'Downloads a file from the specified remote URL and stores it as a temporary resource. The temporary file can then be referenced when creating content. The URL must pass validation to prevent SSRF attacks. Anonymous access can be allowed via the TEMP_RESOURCE_ALLOW_ANONYMOUS configuration property.
+
+
+        **Use this endpoint to supply files for binary and image fields** (`ImmutableBinaryField`, `ImmutableImageField`) when a file is already accessible by URL. Send `{"remoteUrl": "https://example.com/image.jpg"}` and pass `tempFiles[0].id` (e.g. `"temp_5311313004"`) as the field value in the workflow fire endpoint. See `PUT /api/v1/workflow/actions/default/fire/{systemAction}` for the full pattern.'
+      operationId: createTempFileFromUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteUrlForm'
+      responses:
+        '200':
+          description: Temporary file created from URL successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TempFilesView'
+              example:
+                tempFiles:
+                - id: temp_5311313004
+                  fileName: hero.jpg
+                  length: 84471
+                  mimeType: image/jpeg
+                  image: true
+                  referenceUrl: /dA/temp_5311313004/tmp/hero.jpg
+                  metadata:
+                    contentType: image/jpeg
+                    height: 522
+                    width: 900
+                    fileSize: 84471
+                    isImage: true
+        '400':
+          description: Invalid URL, missing URL, or invalid origin/referer
+        '401':
+          description: Authentication required (when anonymous access is disabled)
+        '404':
+          description: Temp file resource is not enabled
+  /api/v1/temp:
+    post:
+      tags:
+      - Temporary Files
+      summary: Upload temporary files via multipart form
+      description: 'Uploads one or more files as temporary resources via multipart form data. Files are stored temporarily and can be referenced when creating content. The response streams back a JSON object with the created temporary file references. Anonymous access can be allowed via the TEMP_RESOURCE_ALLOW_ANONYMOUS configuration property.
+
+
+        **Use this endpoint to supply files for binary and image fields** (`ImmutableBinaryField`, `ImmutableImageField`) when creating or updating contentlets. After uploading, pass `tempFiles[0].id` (e.g. `"temp_5311313004"`) as the field value in the workflow fire endpoint. See `PUT /api/v1/workflow/actions/default/fire/{systemAction}` for the full pattern.'
+      operationId: uploadTempFileMultipart
+      parameters:
+      - name: maxFileLength
+        in: query
+        description: Maximum file length in bytes (-1 for default)
+        schema:
+          type: string
+          default: '-1'
+      requestBody:
+        description: Multipart form data with one or more files to upload temporarily. Files are stored for a limited time and can be referenced when creating content.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              description: One or more file parts to upload
+        required: true
+      responses:
+        '200':
+          description: Temporary files created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TempFilesView'
+              example:
+                tempFiles:
+                - id: temp_5311313004
+                  fileName: hero.jpg
+                  length: 84471
+                  mimeType: image/jpeg
+                  image: true
+                  referenceUrl: /dA/temp_5311313004/tmp/hero.jpg
+                  metadata:
+                    contentType: image/jpeg
+                    height: 522
+                    width: 900
+                    fileSize: 84471
+                    isImage: true
+        '400':
+          description: Invalid file, origin, or referer
+        '401':
+          description: Authentication required (when anonymous access is disabled)
+        '404':
+          description: Temp file resource is not enabled
+components:
+  schemas:
+    TempFilesView:
+      type: object
+      properties:
+        tempFiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DotTempFile'
+      description: Response body for /api/v1/temp and /api/v1/temp/byUrl uploads. Contains the tempFiles array; use tempFiles[0].id (e.g. "temp_5311313004") as the field value when creating contentlets with binary or image fields.
+    RemoteUrlForm:
+      type: object
+      properties:
+        remoteUrl:
+          type: string
+        fileName:
+          type: string
+        accessKey:
+          type: string
+        urlTimeoutSeconds:
+          type: integer
+          format: int32
+        maxFileLength:
+          type: integer
+          format: int64
+    DotTempFile:
+      type: object
+      properties:
+        id:
+          type: string
+        mimeType:
+          type: string
+        referenceUrl:
+          type: string
+        thumbnailUrl:
+          type: string
+        fileName:
+          type: string
+        folder:
+          type: string
+        image:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+        length:
+          type: integer
+          format: int64

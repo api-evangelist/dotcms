@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Search Index API
+  version: '3'
+  description: Elasticsearch index management and operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Search Index
+  description: Elasticsearch index management and operations
+paths:
+  /api/v1/esindex/activate/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: activateIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      deprecated: true
+      summary: Activate index
+      x-summary-source: derived
+  /api/v1/esindex/clear/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: clearIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      deprecated: true
+      summary: Clear index
+      x-summary-source: derived
+  /api/v1/esindex/close/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: closeIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      deprecated: true
+      summary: Close index
+      x-summary-source: derived
+  /api/v1/esindex/create/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: createIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain: {}
+      deprecated: true
+      summary: Create index
+      x-summary-source: derived
+  /api/v1/esindex/deactivate/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: deactivateIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      deprecated: true
+      summary: Deactivate index
+      x-summary-source: derived
+  /api/v1/esindex/failed:
+    get:
+      tags:
+      - Search Index
+      operationId: downloadRemainingRecordsAsCsv
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Download remaining records as csv
+      x-summary-source: derived
+    delete:
+      tags:
+      - Search Index
+      operationId: deleteFailedRecords
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete failed records
+      x-summary-source: derived
+  /api/v1/esindex/{indexName}:
+    put:
+      tags:
+      - Search Index
+      operationId: modIndex
+      parameters:
+      - name: indexName
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: action
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Mod index
+      x-summary-source: derived
+    delete:
+      tags:
+      - Search Index
+      operationId: deleteIndex
+      parameters:
+      - name: indexName
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete index
+      x-summary-source: derived
+  /api/v1/esindex/cache:
+    delete:
+      tags:
+      - Search Index
+      operationId: flushIndiciesCache
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Flush indicies cache
+      x-summary-source: derived
+  /api/v1/esindex/active/{params}:
+    get:
+      tags:
+      - Search Index
+      operationId: getActive
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain: {}
+      deprecated: true
+      summary: Get active
+      x-summary-source: derived
+  /api/v1/esindex/cluster:
+    get:
+      tags:
+      - Search Index
+      operationId: getClusterStats
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get cluster stats
+      x-summary-source: derived
+  /api/v1/esindex:
+    get:
+      tags:
+      - Search Index
+      operationId: getIndexStatus
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get index status
+      x-summary-source: derived
+  /api/v1/esindex/reindex:
+    get:
+      tags:
+      - Search Index
+      operationId: getReindexationProgress
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get reindexation progress
+      x-summary-source: derived
+    post:
+      tags:
+      - Search Index
+      operationId: startReindex
+      parameters:
+      - name: contentType
+        in: query
+        schema:
+          type: string
+          default: DOTALL
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Start reindex
+      x-summary-source: derived
+    delete:
+      tags:
+      - Search Index
+      operationId: stopReindexation
+      parameters:
+      - name: switch
+        in: query
+        schema:
+          type: boolean
+          default: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Stop reindexation
+      x-summary-source: derived
+  /api/v1/esindex/indexlist/{params}:
+    get:
+      tags:
+      - Search Index
+      operationId: indexList
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Index list
+      x-summary-source: derived
+  /api/v1/esindex/open/{params}:
+    put:
+      tags:
+      - Search Index
+      operationId: openIndex
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      deprecated: true
+      summary: Open index
+      x-summary-source: derived
+  /api/v1/esindex/optimize:
+    post:
+      tags:
+      - Search Index
+      operationId: optimizeIndices
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Optimize indices
+      x-summary-source: derived

@@ -1,0 +1,169 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST SAML Authentication API
+  version: '3'
+  description: SAML SSO authentication and integration
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: SAML Authentication
+  description: SAML SSO authentication and integration
+paths:
+  /api/v1/dotsaml/login/{idpConfigId}:
+    get:
+      tags:
+      - SAML Authentication
+      summary: Initiate SAML login
+      description: Initiates a SAML authentication request by redirecting the user to the Identity Provider (IDP) login screen. Requires IDP metadata to determine the SSO login endpoint.
+      operationId: doLogin
+      parameters:
+      - name: idpConfigId
+        in: path
+        description: Identity Provider configuration ID (typically host ID)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SAML authentication request initiated successfully (no body)
+        '400':
+          description: Bad request - invalid IDP configuration ID
+          content:
+            application/json: {}
+        '404':
+          description: IDP configuration not found or not enabled
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error during SAML authentication initiation
+          content:
+            application/json: {}
+    post:
+      tags:
+      - SAML Authentication
+      summary: Process SAML login callback
+      description: Handles the callback from the Identity Provider after successful authentication. Extracts user information from the SAML assertion and creates/logs in the user to dotCMS.
+      operationId: processLogin
+      parameters:
+      - name: idpConfigId
+        in: path
+        description: Identity Provider configuration ID (typically host ID)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: SAML assertion data from Identity Provider
+        content:
+          application/xml: {}
+          application/x-www-form-urlencoded: {}
+        required: true
+      responses:
+        '200':
+          description: SAML login processed successfully - user logged in
+          content:
+            text/html: {}
+        '400':
+          description: Bad request - invalid SAML assertion or missing data
+          content:
+            text/html: {}
+        '401':
+          description: Unauthorized - SAML assertion validation failed
+          content:
+            text/html: {}
+        '404':
+          description: IDP configuration not found or not enabled
+          content:
+            text/html: {}
+        '500':
+          description: Internal server error during SAML login processing
+          content:
+            text/html: {}
+  /api/v1/dotsaml/logout/{idpConfigId}:
+    get:
+      tags:
+      - SAML Authentication
+      summary: Process SAML logout (GET)
+      description: Processes a SAML logout request via GET method. Initiates logout flow and redirects to the configured logout endpoint or builds a logout URL based on the request.
+      operationId: logoutGet
+      parameters:
+      - name: idpConfigId
+        in: path
+        description: Identity Provider configuration ID (typically host ID)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SAML logout processed successfully
+          content:
+            text/html: {}
+        '404':
+          description: IDP configuration not found or not enabled
+          content:
+            text/html: {}
+        '500':
+          description: Internal server error during logout processing
+          content:
+            text/html: {}
+    post:
+      tags:
+      - SAML Authentication
+      summary: Process SAML logout (POST)
+      description: Processes a SAML logout request via POST method. Handles logout callbacks from the Identity Provider and redirects to the configured logout endpoint.
+      operationId: logoutPost
+      parameters:
+      - name: idpConfigId
+        in: path
+        description: Identity Provider configuration ID (typically host ID)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SAML logout processed successfully
+          content:
+            text/html: {}
+        '404':
+          description: IDP configuration not found or not enabled
+          content:
+            text/html: {}
+        '500':
+          description: Internal server error during logout processing
+          content:
+            text/html: {}
+  /api/v1/dotsaml/metadata/{idpConfigId}:
+    get:
+      tags:
+      - SAML Authentication
+      summary: Get SAML metadata
+      description: Renders the XML metadata for the SAML Service Provider configuration. This endpoint is only accessible by administrators and provides the metadata required for IDP configuration.
+      operationId: metadata
+      parameters:
+      - name: idpConfigId
+        in: path
+        description: Identity Provider configuration ID (typically host ID)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SAML metadata rendered successfully
+          content:
+            application/xml: {}
+        '401':
+          description: Unauthorized - admin access required
+          content:
+            application/xml: {}
+        '403':
+          description: Forbidden - user is not an administrator
+          content:
+            application/xml: {}
+        '404':
+          description: IDP configuration not found or not enabled
+          content:
+            application/xml: {}
+        '500':
+          description: Internal server error rendering metadata
+          content:
+            application/xml: {}

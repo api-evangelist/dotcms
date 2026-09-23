@@ -1,0 +1,1087 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Experiment API
+  version: '3'
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Experiment
+paths:
+  /api/v1/experiments/{experimentId}/variants:
+    post:
+      tags:
+      - Experiment
+      operationId: addVariant
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddVariantForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Add variant
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/_archive:
+    put:
+      tags:
+      - Experiment
+      operationId: archive
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentView'
+      summary: Archive
+      x-summary-source: derived
+  /api/v1/experiments/scheduled/{experimentId}/_cancel:
+    post:
+      tags:
+      - Experiment
+      operationId: cancel
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Cancel
+      x-summary-source: derived
+  /api/v1/experiments:
+    get:
+      tags:
+      - Experiment
+      operationId: list
+      parameters:
+      - name: pageId
+        in: query
+        schema:
+          type: string
+      - name: name
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - RUNNING
+            - SCHEDULED
+            - ENDED
+            - DRAFT
+            - ARCHIVED
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentView'
+      summary: List
+      x-summary-source: derived
+    post:
+      tags:
+      - Experiment
+      operationId: create_2
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ExperimentForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Create 2
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}:
+    delete:
+      tags:
+      - Experiment
+      operationId: delete_6
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewString'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewString'
+      summary: Delete 6
+      x-summary-source: derived
+    patch:
+      tags:
+      - Experiment
+      operationId: update_2
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ExperimentForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Update 2
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/goals/primary:
+    delete:
+      tags:
+      - Experiment
+      operationId: deleteGoal
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Delete goal
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/targetingConditions/{id}:
+    delete:
+      tags:
+      - Experiment
+      operationId: deleteTargetingCondition
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Delete targeting condition
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/variants/{name}:
+    put:
+      tags:
+      - Experiment
+      operationId: updateVariant
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentVariantForm'
+          application/javascript:
+            schema:
+              $ref: '#/components/schemas/ExperimentVariantForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Update variant
+      x-summary-source: derived
+    delete:
+      tags:
+      - Experiment
+      operationId: deleteVariant
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Delete variant
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/_end:
+    post:
+      tags:
+      - Experiment
+      operationId: end
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: End
+      x-summary-source: derived
+  /api/v1/experiments/{id}:
+    get:
+      tags:
+      - Experiment
+      operationId: get_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Get 3
+      x-summary-source: derived
+  /api/v1/experiments/{id}/results:
+    get:
+      tags:
+      - Experiment
+      operationId: getResult
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentResults'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentResults'
+      summary: Get result
+      x-summary-source: derived
+  /api/v1/experiments/health:
+    get:
+      tags:
+      - Experiment
+      operationId: healthcheck
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+      summary: Healthcheck
+      x-summary-source: derived
+  /api/v1/experiments/isUserIncluded:
+    post:
+      tags:
+      - Experiment
+      operationId: isUserIncluded
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExcludedExperimentListForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityExperimentSelectedView'
+      summary: Is user included
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/variants/{name}/_promote:
+    put:
+      tags:
+      - Experiment
+      operationId: promoteVariant
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentVariantForm'
+          application/javascript:
+            schema:
+              $ref: '#/components/schemas/ExperimentVariantForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Promote variant
+      x-summary-source: derived
+  /api/v1/experiments/{experimentId}/_start:
+    post:
+      tags:
+      - Experiment
+      operationId: start
+      parameters:
+      - name: experimentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySingleExperimentView'
+      summary: Start
+      x-summary-source: derived
+components:
+  schemas:
+    ResponseEntityExperimentResults:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ExperimentResults'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AddVariantForm:
+      type: object
+      properties:
+        description:
+          type: string
+    SelectedVariant:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+    TotalSession:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        variants:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+    SampleGroup:
+      type: object
+      properties:
+        samples:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/SampleData'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    SelectedExperiment:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        runningId:
+          type: string
+        pageUrl:
+          type: string
+        variant:
+          $ref: '#/components/schemas/SelectedVariant'
+        lookBackWindow:
+          $ref: '#/components/schemas/LookBackWindow'
+        regexs:
+          type: object
+          additionalProperties:
+            type: string
+    ExperimentResults:
+      type: object
+      properties:
+        sessions:
+          $ref: '#/components/schemas/TotalSession'
+        goals:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GoalResults'
+        bayesianResult:
+          $ref: '#/components/schemas/BayesianResult'
+    GoalResults:
+      type: object
+      properties:
+        goal:
+          $ref: '#/components/schemas/Goal'
+        variants:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VariantResults'
+    CredibilityInterval:
+      type: object
+      properties:
+        lower:
+          type: number
+          format: double
+        upper:
+          type: number
+          format: double
+    SelectedExperiments:
+      type: object
+      properties:
+        experiments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectedExperiment'
+        includedExperimentIds:
+          type: array
+          items:
+            type: string
+        excludedExperimentIds:
+          type: array
+          items:
+            type: string
+        excludedExperimentIdsEnded:
+          type: array
+          items:
+            type: string
+    RunningIds:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunningId'
+    VariantResult:
+      type: object
+      properties:
+        variant:
+          type: string
+        conversionRate:
+          type: number
+          format: double
+        probability:
+          type: number
+          format: double
+        expectedLoss:
+          type: number
+          format: double
+        risk:
+          type: number
+          format: double
+        medianGrowth:
+          type: number
+          format: double
+        credibilityInterval:
+          $ref: '#/components/schemas/CredibilityInterval'
+        isControl:
+          type: boolean
+    DifferenceData:
+      type: object
+      properties:
+        controlData:
+          type: array
+          items:
+            type: number
+            format: double
+        testData:
+          type: array
+          items:
+            type: number
+            format: double
+        differences:
+          type: array
+          items:
+            type: number
+            format: double
+        relativeDifference:
+          type: number
+          format: double
+    Goals:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/Goal'
+    QuantilePair:
+      type: object
+      properties:
+        quantile:
+          type: number
+          format: double
+        formatted:
+          type: number
+          format: double
+    SampleData:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+    TargetingCondition:
+      type: object
+      properties:
+        id:
+          type: string
+        conditionKey:
+          type: string
+        values:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: string
+        operator:
+          type: string
+          enum:
+          - AND
+          - OR
+    ExcludedExperimentListForm:
+      type: object
+      properties:
+        exclude:
+          type: array
+          items:
+            type: string
+    ResponseEntitySingleExperimentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Experiment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ExperimentVariant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        weight:
+          type: number
+          format: float
+        url:
+          type: string
+        promoted:
+          type: boolean
+    Metric:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum:
+          - DIFFERENTIATING_FEATURES
+          - PAID_FEATURES
+          - PLATFORM_SPECIFIC_CUSTOMIZATION
+          - SOPHISTICATED_CONTENT_ARCHITECTURE
+          - POSITIVE_USER_EXPERIENCE
+          - PLATFORM_SPECIFIC_DEVELOPMENT
+          - RECENT_ACTIVITY
+          - HISTORY_LEGACY_DEPRECATED_FEATURES
+        feature:
+          type: string
+          enum:
+          - CONTENTLETS
+          - LANGUAGES
+          - CONTENT_TYPES
+          - SITES
+          - URL_MAPS
+          - WORKFLOW
+          - USERS
+          - SITE_SEARCH
+          - IMAGE_API
+          - LAYOUT
+          - CONTENT_TYPE_FIELDS
+          - AI
+          - EXPERIMENTS
+    RunningId:
+      type: object
+      properties:
+        id:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    ResponseEntityExperimentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experiment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    VariantResults:
+      type: object
+      properties:
+        weight:
+          type: number
+          format: float
+        variantName:
+          type: string
+        variantDescription:
+          type: string
+        uniqueBySession:
+          $ref: '#/components/schemas/UniqueBySessionResume'
+        details:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ResultResumeItem'
+    ExperimentForm:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        pageId:
+          type: string
+        trafficAllocation:
+          type: number
+          format: float
+        trafficProportion:
+          $ref: '#/components/schemas/TrafficProportion'
+        scheduling:
+          $ref: '#/components/schemas/Scheduling'
+        goals:
+          $ref: '#/components/schemas/Goals'
+        targetingConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetingCondition'
+        lookbackWindow:
+          type: integer
+          format: int32
+    BayesianResult:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        results:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/VariantResult'
+            last:
+              $ref: '#/components/schemas/VariantResult'
+          items:
+            $ref: '#/components/schemas/VariantResult'
+        distributionPdfs:
+          $ref: '#/components/schemas/SampleGroup'
+        differenceData:
+          $ref: '#/components/schemas/DifferenceData'
+        quantiles:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            $ref: '#/components/schemas/QuantilePair'
+        suggestedWinner:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Scheduling:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    ResultResumeItem:
+      type: object
+      properties:
+        uniqueBySession:
+          type: integer
+          format: int64
+        totalSessions:
+          type: integer
+          format: int64
+        conversionRate:
+          type: number
+          format: float
+    ResponseEntityExperimentSelectedView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SelectedExperiments'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UniqueBySessionResume:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+        conversionRate:
+          type: number
+          format: float
+    TrafficProportion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - SPLIT_EVENLY
+          - CUSTOM_PERCENTAGES
+        variants:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperimentVariant'
+    Experiment:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - RUNNING
+          - SCHEDULED
+          - ENDED
+          - DRAFT
+          - ARCHIVED
+        trafficProportion:
+          $ref: '#/components/schemas/TrafficProportion'
+        scheduling:
+          $ref: '#/components/schemas/Scheduling'
+        trafficAllocation:
+          type: number
+          format: float
+        creationDate:
+          type: string
+          format: date-time
+        modDate:
+          type: string
+          format: date-time
+        pageId:
+          type: string
+        createdBy:
+          type: string
+        lastModifiedBy:
+          type: string
+        goals:
+          $ref: '#/components/schemas/Goals'
+        targetingConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetingCondition'
+        lookBackWindowExpireTime:
+          type: integer
+          format: int64
+        runningIds:
+          $ref: '#/components/schemas/RunningIds'
+    ResponseEntityViewString:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ExperimentVariantForm:
+      type: object
+      properties:
+        description:
+          type: string
+    LookBackWindow:
+      type: object
+      properties:
+        value:
+          type: string
+        expireMillis:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Goal:
+      type: object
+      properties:
+        metric:
+          $ref: '#/components/schemas/Metric'
+        type:
+          type: string
+          writeOnly: true
+          enum:
+          - MINIMIZE
+          - MAXIMIZE

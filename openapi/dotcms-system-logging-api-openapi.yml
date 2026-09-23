@@ -1,0 +1,70 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST System Logging API
+  version: '3'
+  description: System logging configuration and management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: System Logging
+  description: System logging configuration and management
+paths:
+  /api/v1/logger:
+    get:
+      tags:
+      - System Logging
+      operationId: getLoggers
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get loggers
+      x-summary-source: derived
+    put:
+      tags:
+      - System Logging
+      operationId: changeLoggerLevel
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ChangeLoggerForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Change logger level
+      x-summary-source: derived
+  /api/v1/logger/{loggerName}:
+    get:
+      tags:
+      - System Logging
+      operationId: getLogger
+      parameters:
+      - name: loggerName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get logger
+      x-summary-source: derived
+components:
+  schemas:
+    ChangeLoggerForm:
+      type: object
+      properties:
+        name:
+          type: string
+        level:
+          type: string

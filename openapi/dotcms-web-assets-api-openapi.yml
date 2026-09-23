@@ -1,0 +1,575 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Web Assets API
+  version: '3'
+  description: Web asset management and operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Web Assets
+  description: Web asset management and operations
+paths:
+  /api/v1/assets/_archive:
+    post:
+      tags:
+      - Web Assets
+      summary: Archive asset
+      description: Archive an asset (file) to make it inactive while preserving it in the system.
+      operationId: archiveAsset
+      requestBody:
+        description: Asset archive request information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetArchiveRequestForm'
+        required: true
+      responses:
+        '200':
+          description: Asset archived successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '404':
+          description: Asset not found
+          content:
+            application/json: {}
+        '403':
+          description: Insufficient permissions to archive asset
+          content:
+            application/json: {}
+  /api/v1/assets/folders:
+    put:
+      tags:
+      - Web Assets
+      summary: Update existing folder
+      description: Update an existing folder's configuration details and optionally rename it
+      operationId: updateFolder
+      requestBody:
+        description: Folder update request with path and new configuration details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFolderForm'
+        required: true
+      responses:
+        '200':
+          description: Folder updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '400':
+          description: Invalid request data or folder path
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '404':
+          description: Folder not found at the specified path
+          content:
+            application/json: {}
+        '403':
+          description: Insufficient permissions to update folder
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Web Assets
+      summary: Create new folder
+      description: Create a new folder at the specified path with the provided configuration details
+      operationId: createFolder
+      requestBody:
+        description: New folder creation request with path and configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFolderForm'
+        required: true
+      responses:
+        '200':
+          description: Folder created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '400':
+          description: Invalid request data or folder path
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '409':
+          description: Folder already exists at the specified path
+          content:
+            application/json: {}
+  /api/v1/assets/_delete:
+    post:
+      tags:
+      - Web Assets
+      summary: Delete asset permanently
+      description: Permanently delete an asset (file) from the system using its path
+      operationId: deleteAsset
+      requestBody:
+        description: Asset deletion request information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetDeletionRequestForm'
+        required: true
+      responses:
+        '200':
+          description: Asset deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '404':
+          description: Asset not found
+          content:
+            application/json: {}
+        '403':
+          description: Insufficient permissions to delete asset
+          content:
+            application/json: {}
+  /api/v1/assets/folders/_delete:
+    post:
+      tags:
+      - Web Assets
+      summary: Delete folder permanently
+      description: Permanently delete a folder and all its contents from the system using its path
+      operationId: deleteFolder
+      requestBody:
+        description: Folder deletion request information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderDeletionRequestForm'
+        required: true
+      responses:
+        '200':
+          description: Folder deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '404':
+          description: Folder not found
+          content:
+            application/json: {}
+        '403':
+          description: Insufficient permissions to delete folder
+          content:
+            application/json: {}
+  /api/v1/assets/_download:
+    post:
+      tags:
+      - Web Assets
+      summary: Download asset file
+      description: Download the binary content of an asset file by path, language and version
+      operationId: download
+      requestBody:
+        description: Asset download request information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetsRequestForm'
+        required: true
+      responses:
+        '200':
+          description: Asset file download started successfully
+          content:
+            application/octet-stream: {}
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+        '404':
+          description: Asset not found
+          content:
+            application/json: {}
+  /api/v1/assets:
+    put:
+      tags:
+      - Web Assets
+      summary: Upload or update asset file
+      description: Upload a new asset file or update an existing one at the specified path using multipart form data
+      operationId: saveUpdateAsset
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  $ref: '#/components/schemas/FormDataContentDisposition'
+                assetPath:
+                  type: string
+                detail:
+                  $ref: '#/components/schemas/FileUploadDetail'
+      responses:
+        '200':
+          description: Asset uploaded/updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebAssetEntityView'
+        '400':
+          description: Bad request - invalid file or path
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Web Assets
+      summary: Get asset information by path
+      description: Retrieve detailed information and metadata for an asset (file or folder) using its path
+      operationId: getAssetsInfo
+      requestBody:
+        description: Asset path information
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/AssetLookupRequestForm'
+        required: true
+      responses:
+        '200':
+          description: Asset information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebAssetEntityView'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json: {}
+components:
+  schemas:
+    FileUploadDetail:
+      type: object
+      properties:
+        assetPath:
+          type: string
+        language:
+          type: string
+        status:
+          type: boolean
+          writeOnly: true
+        live:
+          type: boolean
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    NewFolderForm:
+      required:
+      - assetPath
+      - data
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path where the folder should be created or updated including site and folder structure. Must end with '/'
+          example: //demo.dotcms.com/my-new-folder/
+        data:
+          $ref: '#/components/schemas/FolderDetail'
+    AssetArchiveRequestForm:
+      required:
+      - assetPath
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path to the asset (file) to be archived
+          example: //demo.dotcms.com/temp/temp-presentation.pptx
+    AssetLookupRequestForm:
+      required:
+      - assetPath
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path to the asset (file or folder) to retrieve information for
+          example: //demo.dotcms.com/documents/annual-report.pdf
+    WebAssetEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/WebAssetView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FolderDeletionRequestForm:
+      required:
+      - assetPath
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path to the folder to be deleted permanently (must end with /)
+          example: //demo.dotcms.com/old-projects/
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    AssetDeletionRequestForm:
+      required:
+      - assetPath
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path to the asset (file) to be deleted permanently
+          example: //demo.dotcms.com/uploads/old-document.pdf
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UpdateFolderForm:
+      required:
+      - assetPath
+      - data
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path where the folder should be created or updated including site and folder structure. Must end with '/'
+          example: //demo.dotcms.com/my-new-folder/
+        data:
+          $ref: '#/components/schemas/UpdateFolderDetail'
+    UpdateFolderDetail:
+      required:
+      - name
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: Display title for the folder
+          example: My Documents Folder
+        sortOrder:
+          type: integer
+          description: Sort order for the folder within its parent directory
+          format: int32
+          example: 100
+        showOnMenu:
+          type: boolean
+          description: Whether the folder should be visible in navigation menus
+          example: true
+        fileMasks:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: List of file patterns that are allowed in this folder (e.g., *.jpg, *.pdf)
+          example:
+          - '*.jpg'
+          - '*.png'
+          - '*.pdf'
+          items:
+            type: string
+            description: List of file patterns that are allowed in this folder (e.g., *.jpg, *.pdf)
+            example: '["*.jpg","*.png","*.pdf"]'
+        defaultAssetType:
+          type: string
+          description: Default asset type for files uploaded to this folder
+          example: FileAsset
+        defaultBaseType:
+          type: string
+          description: Content Drive upload-mode preference for this folder, recorded as a base content type name (DOTASSET or FILEASSET; case-insensitive, also accepts the alternate names DotAsset/File and stored canonically in uppercase). Omit or set to null for no preference ("ask each time"); on update, omitting/null clears any previously set preference. This is orthogonal to defaultAssetType and does not change FileAsset behavior.
+          example: DOTASSET
+        name:
+          type: string
+          description: New name for the folder. If provided, the folder will be renamed. The name is derived from the path if not specified
+          example: my-renamed-folder
+      description: Folder configuration details
+    FolderDetail:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: Display title for the folder
+          example: My Documents Folder
+        sortOrder:
+          type: integer
+          description: Sort order for the folder within its parent directory
+          format: int32
+          example: 100
+        showOnMenu:
+          type: boolean
+          description: Whether the folder should be visible in navigation menus
+          example: true
+        fileMasks:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: List of file patterns that are allowed in this folder (e.g., *.jpg, *.pdf)
+          example:
+          - '*.jpg'
+          - '*.png'
+          - '*.pdf'
+          items:
+            type: string
+            description: List of file patterns that are allowed in this folder (e.g., *.jpg, *.pdf)
+            example: '["*.jpg","*.png","*.pdf"]'
+        defaultAssetType:
+          type: string
+          description: Default asset type for files uploaded to this folder
+          example: FileAsset
+        defaultBaseType:
+          type: string
+          description: Content Drive upload-mode preference for this folder, recorded as a base content type name (DOTASSET or FILEASSET; case-insensitive, also accepts the alternate names DotAsset/File and stored canonically in uppercase). Omit or set to null for no preference ("ask each time"); on update, omitting/null clears any previously set preference. This is orthogonal to defaultAssetType and does not change FileAsset behavior.
+          example: DOTASSET
+      description: Folder configuration details
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    WebAssetView:
+      type: object
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    AssetsRequestForm:
+      required:
+      - assetPath
+      type: object
+      properties:
+        assetPath:
+          type: string
+          description: Full path to the asset (file or folder) including site and folder structure. Folders must end-up with `/`
+          example: //demo.dotcms.com/application/containers/default/banner.vtl
+        language:
+          type: string
+          description: Language identifier for the asset. Uses system default language if not specified
+          example: en-US
+          default: System default language
+        live:
+          type: boolean
+          description: Whether to retrieve the live version (true) or working version (false) of the asset
+          example: false
+          default: false

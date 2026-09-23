@@ -1,0 +1,107 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content Analytics API
+  version: '3'
+  description: Proxy endpoints that forward analytics requests to the dot-ca-event-manager service.
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content Analytics
+  description: Proxy endpoints that forward analytics requests to the dot-ca-event-manager service.
+paths:
+  /api/v1/analytics/content/siteauth/generate/{siteId}:
+    get:
+      tags:
+      - Content Analytics
+      summary: Generate Site Auth
+      description: Generates and returns a Site Key that must be used by the client-side JS code to send custom Content Analytics Events
+      operationId: generateSiteAuth
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The Site key was generated and returned successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Site ID in path is not found or incorrect path
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+  /api/v1/analytics/content/event:
+    post:
+      tags:
+      - Content Analytics
+      summary: Proxy analytics event ingest with site auth validation
+      description: Validates the site_auth field in the JSON body via SiteAuthValidator, resolves the active site, injects site_id into context, and asynchronously forwards the body to {DOT_ANALYTICS_BASE_URL}/v1/event/ingest. The dotCMS-side path is a fixed match; the upstream sub-path is not caller-controllable.
+      operationId: proxyAnalyticsEventRequest
+      requestBody:
+        description: JSON request body with a `context.site_auth` value and event payload
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Successful upstream response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: dotCMS response envelope containing the upstream analytics data
+        '400':
+          description: Invalid siteAuth or upstream returned an error
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error or upstream unreachable
+          content:
+            application/json: {}
+  /api/v1/analytics/{path}:
+    get:
+      tags:
+      - Content Analytics
+      summary: Proxy any analytics GET request
+      description: 'Forwards any authenticated GET request to /v1/analytics/** to the dot-ca-event-manager service at /v1/**, preserving all query parameters. Requests are site-permission gated: the caller must have READ on the site resolved from ?siteId=, ?host_id=, or the session fallback.'
+      operationId: proxyAnalyticsGetRequest
+      parameters:
+      - name: path
+        in: path
+        description: Path to forward to the upstream analytics service
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: Successful upstream response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: dotCMS response envelope containing the upstream analytics data
+        '400':
+          description: Site identifier could not be resolved
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized – backend user required
+          content:
+            application/json: {}
+        '403':
+          description: User lacks READ permission on the resolved site (error code SITE_ACCESS_DENIED)
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error or upstream unreachable
+          content:
+            application/json: {}

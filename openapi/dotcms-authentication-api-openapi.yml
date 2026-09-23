@@ -1,0 +1,456 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Authentication API
+  version: '3'
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Authentication
+  externalDocs:
+    description: Additional Authentication API information
+    url: https://www.dotcms.com/docs/latest/rest-api-authentication
+paths:
+  /api/v1/authentication:
+    post:
+      tags:
+      - Authentication
+      summary: Verifies user or application authentication
+      description: 'Takes a user''s login ID and password and checks them against the user rolls.
+
+
+        If the user is found and authenticated, a session is created.
+
+
+        Otherwise the system will return an ''authentication failed'' message.'
+      operationId: postAuthenticationV1
+      requestBody:
+        description: 'This method takes a user''s credentials and language preferences to authenticate them.
+
+
+          Requires a POST body consisting of a JSON object containing the following properties:
+
+
+          | **Property** | **Value** | **Description**                               |
+
+          |--------------|-----------|-----------------------------------------------|
+
+          | `userId`     | String    | **Required.** ID of user attempting to log in |
+
+          | `password`   | String    | User password                                 |
+
+          | `language`   | String    | Preferred language for user                   |
+
+          | `country`    | String    | Country where user is located                 |
+
+          '
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationForm'
+        required: true
+      responses:
+        '200':
+          description: User authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '401':
+          description: User not authenticated
+        '403':
+          description: Forbidden request
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Unexpected error
+  /api/v1/authentication/logInUser:
+    get:
+      tags:
+      - Authentication
+      summary: Retrieves user data
+      description: 'Provides information about any users that are currently in a session.
+
+
+        This retrieved data will be formatted into a JSON response body.'
+      operationId: getLogInUserV1
+      responses:
+        '200':
+          description: User data successfully collected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapMapView'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized request
+        '404':
+          description: User not found
+  /api/v1/forgotpassword:
+    post:
+      tags:
+      - Authentication
+      summary: Send password reset email
+      description: Sends a password reset email to the specified user. Returns the email address where the reset link was sent.
+      operationId: forgotPassword
+      requestBody:
+        description: Forgot password form containing user ID or email address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordForm'
+        required: true
+      responses:
+        '200':
+          description: Password reset email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityForgotPasswordView'
+        '400':
+          description: Bad request - invalid email address or user not found (if configured to show)
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/loginform:
+    post:
+      tags:
+      - Authentication
+      summary: Get login form configuration
+      description: Retrieves login form configuration including company details, available languages, and localized messages
+      operationId: loginForm
+      requestBody:
+        description: Internationalization form containing language and country preferences
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/I18NForm'
+        required: true
+      responses:
+        '200':
+          description: Login form configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityLoginFormView'
+        '403':
+          description: Forbidden - security exception
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/logout:
+    get:
+      tags:
+      - Authentication
+      summary: Logout user
+      description: Logs out the current user, invalidating their session and optionally providing a redirect URL
+      operationId: logoutUser
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '403':
+          description: Forbidden - security exception during logout
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/changePassword:
+    post:
+      tags:
+      - Authentication
+      summary: Reset user password
+      description: Resets a user's password using a valid token received via email or other secure channel
+      operationId: resetPassword
+      requestBody:
+        description: Reset password form containing token and new password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordForm'
+        required: true
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityPasswordResetView'
+        '400':
+          description: Bad request - invalid login, token, or password
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - token expired or invalid
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+components:
+  schemas:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    LanguageView:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        displayName:
+          type: string
+    ResponseEntityLoginFormView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/LoginFormResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    I18NForm:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string
+    AuthenticationForm:
+      required:
+      - password
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+        backEndLogin:
+          type: boolean
+        language:
+          type: string
+        country:
+          type: string
+    ResetPasswordForm:
+      required:
+      - password
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+    ResponseEntityMapMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityPasswordResetView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    LoginFormResultView:
+      type: object
+      properties:
+        serverId:
+          type: string
+        levelName:
+          type: string
+        version:
+          type: string
+        buildDateString:
+          type: string
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/LanguageView'
+        backgroundColor:
+          type: string
+        backgroundPicture:
+          type: string
+        logo:
+          type: string
+        authorizationType:
+          type: string
+        currentLanguage:
+          $ref: '#/components/schemas/LanguageView'
+        companyEmail:
+          type: string
+    ResponseEntityForgotPasswordView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ForgotPasswordForm:
+      required:
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

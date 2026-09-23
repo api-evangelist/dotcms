@@ -1,0 +1,118 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Language API
+  version: '3'
+  description: Language configuration and management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Language
+  description: Language configuration and management
+paths:
+  /api/v1/languages/i18n:
+    post:
+      tags:
+      - Language
+      summary: Get internationalized messages
+      description: Retrieves internationalized (i18n) message strings for the specified locale and message keys. The locale is determined from the request body's country and language fields. Returns a map of message keys to their translated string values.
+      operationId: getI18nMessages
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/I18NForm'
+      responses:
+        '200':
+          description: Messages returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringStringView'
+        '400':
+          description: Invalid request form data
+        '401':
+          description: Authentication required
+        '500':
+          description: Internal server error
+  /api/v1/languages:
+    get:
+      tags:
+      - Language
+      summary: List all available languages
+      description: Returns all configured languages in the system, keyed by language code. Each entry contains the full language details including country, language code, and display name.
+      operationId: listLanguages
+      responses:
+        '200':
+          description: Languages returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Map of language codes to language details (RestLanguage objects)
+        '401':
+          description: Authentication required
+components:
+  schemas:
+    ResponseEntityMapStringStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    I18NForm:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

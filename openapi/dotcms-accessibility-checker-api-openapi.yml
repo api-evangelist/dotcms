@@ -1,0 +1,97 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Accessibility Checker API
+  version: '3'
+  description: Endpoints that perform operations related to validating accessibility in content.
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Accessibility Checker
+  description: Endpoints that perform operations related to validating accessibility in content.
+paths:
+  /api/v1/achecker/guidelines:
+    get:
+      tags:
+      - Accessibility Checker
+      summary: Retrieves Accessibility Guidelines
+      description: Returns the list of available Accessibility Guidelines that are used to validate content.
+      operationId: getAccessibilityGuidelines
+      responses:
+        '200':
+          description: Guideline list retrieved successfully
+          content:
+            application/json: {}
+        '500':
+          description: Internal Server Error
+  /api/v1/achecker/_validate:
+    post:
+      tags:
+      - Accessibility Checker
+      summary: Validates content
+      description: Validates the given content against the one or more Accessibility Guidelines.
+      operationId: postValidateContent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                empty:
+                  type: boolean
+              additionalProperties:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Content validated successfully
+          content:
+            application/json:
+              example: "{\n    \"entity\": {\n        \"errors\": [\n            {\n                \"check\": {\n                    \"check_id\": 98,\n                    \"confidence\": 2,\n                    \"confidenceEnum\": \"POTENTIAL\",\n                    \"decision_fail\": \"Not all abbreviations are marked with the <code>abbr</code> element.\",\n                    \"decision_pass\": \"All abbreviations are marked with the <code>abbr</code> element.\",\n                    \"description\": \"If <code>body</code> element content is greater than 10 characters (English) this error will be generated.\",\n                    \"err\": \"Abbreviations may not be marked with <code>abbr</code> element.\",\n                    \"func\": \"return (BasicFunctions::getPlainTextLength() <= 10);\",\n                    \"how_to_repair\": \"\",\n                    \"html_tag\": \"body\",\n                    \"lang\": \"en\",\n                    \"long_description\": null,\n                    \"name\": \"Abbreviations must be marked with <code>abbr</code> element.\",\n                    \"note\": \"\",\n                    \"open_to_public\": 1,\n                    \"question\": \"Are there any abbreviations in the document that are not marked with the <code>abbr</code> element?\",\n                    \"rationale\": \"_RATIONALE_98\",\n                    \"repair_example\": \"\",\n                    \"search_str\": null,\n                    \"test_expected_result\": \"1. All abbreviations are expected to be marked with a valid <code>abbr</code> element.\",\n                    \"test_failed_result\": \"1. Mark all abbreviations with a valid <code>abbr</code> element.\",\n                    \"test_procedure\": \"1. Check the document for any text abbreviations.\\\\n2. If an abbreviation is found, check if it is properly marked with the <code>abbr</code> element.\",\n                    \"user_id\": 0\n                },\n                \"col_number\": 110,\n                \"cssCode\": null,\n                \"htmlCode\": \"<body> Adventure travel done right  Wherever you want to go, whatever you want to get into, we’ve go...\",\n                \"image\": null,\n                \"imageAlt\": null,\n                \"line_number\": 0,\n                \"success\": false\n            },\n            ...\n            ...\n        ],\n        \"lang\": \"en\",\n        \"results\": [\n            {\n                \"check\": {\n                    \"check_id\": 29,\n                    \"confidence\": 0,\n                    \"confidenceEnum\": \"KNOWN\",\n                    \"decision_fail\": \"\",\n                    \"decision_pass\": \"\",\n                    \"description\": \"Each document must contain a valid <code>doctype</code> declaration.\",\n                    \"err\": \"<code>doctype</code> declaration missing.\",\n                    \"func\": \"return (BasicFunctions::getNumOfTagInWholeContent(\\\\\\\"doctype\\\\\\\") > 0);\",\n                    \"how_to_repair\": \"Add a valid <code>doctype</code> declaration to the document.\",\n                    \"html_tag\": \"html\",\n                    \"lang\": \"en\",\n                    \"long_description\": null,\n                    \"name\": \"HTML content has a valid <code>doctype</code> declaration.\",\n                    \"note\": \"\",\n                    \"open_to_public\": 1,\n                    \"question\": \"\",\n                    \"rationale\": \"\",\n                    \"repair_example\": \"\",\n                    \"search_str\": null,\n                    \"test_expected_result\": \"1. HTML content has a valid <code>doctype</code> declaration.\",\n                    \"test_failed_result\": \"1. Add a valid <code>doctype</code> declaration to the document.\",\n                    \"test_procedure\": \"1. Check for the presence of a <code>doctype</code> declaration at the start of the document.\\\\n2. Check the content of the <code>doctype</code> declaration.\",\n                    \"user_id\": 0\n                },\n                \"col_number\": 110,\n                \"cssCode\": null,\n                \"htmlCode\": \"<html lang=\\\"en\\\" xml:lang=\\\"en\\\">     <body> Adventure travel done right  Wherever you want to go, what...\",\n                \"image\": null,\n                \"imageAlt\": null,\n                \"line_number\": 0,\n                \"success\": true\n            },\n            ...\n            ...\n        ]\n    },\n    \"errors\": [],\n    \"i18nMessagesMap\": {},\n    \"messages\": [],\n    \"pagination\": null,\n    \"permissions\": []\n}"
+        '400':
+          description: Bad Request
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+  /api/v1/page-scanner/a11y/check:
+    post:
+      tags:
+      - Accessibility Checker
+      operationId: a11yCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageScanCheckForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: A11y check
+      x-summary-source: derived
+  /api/v1/page-scanner/geo/check:
+    post:
+      tags:
+      - Accessibility Checker
+      operationId: geoCheck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageScanCheckForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Geo check
+      x-summary-source: derived
+components:
+  schemas:
+    PageScanCheckForm:
+      type: object
+      properties:
+        url:
+          type: string

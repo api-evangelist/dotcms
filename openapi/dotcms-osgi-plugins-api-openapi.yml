@@ -1,0 +1,716 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST OSGi Plugins API
+  version: '3'
+  description: OSGi plugin management and dynamic deployment
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: OSGi Plugins
+  description: OSGi plugin management and dynamic deployment
+paths:
+  /api/osgi/getInstalledBundles/{params}:
+    get:
+      tags:
+      - OSGi Plugins
+      operationId: getInstalledBundles
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      deprecated: true
+      summary: Get installed bundles
+      x-summary-source: derived
+  /api/osgi/_processExports/{bundle}:
+    get:
+      tags:
+      - OSGi Plugins
+      operationId: processBundle
+      parameters:
+      - name: bundle
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      deprecated: true
+      summary: Process bundle
+      x-summary-source: derived
+  /api/osgi:
+    post:
+      tags:
+      - OSGi Plugins
+      operationId: updateBundles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Update bundles
+      x-summary-source: derived
+  /api/v1/osgi/jar/{jar}/_deploy:
+    put:
+      tags:
+      - OSGi Plugins
+      summary: deploys bundle
+      operationId: deploy
+      parameters:
+      - name: jar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '404':
+          description: Bundle not found
+        '400':
+          description: Error loading OSGI Bundle
+  /api/v1/osgi/available-plugins:
+    get:
+      tags:
+      - OSGi Plugins
+      summary: get available plugins
+      operationId: getAvailablePlugis
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListView'
+  /api/v1/osgi/extra-packages:
+    get:
+      tags:
+      - OSGi Plugins
+      summary: get extra packages
+      operationId: getExtraPackages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+    put:
+      tags:
+      - OSGi Plugins
+      summary: modify extra packages
+      operationId: modifyExtraPackages
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ExtraPackagesForm'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+  /api/v1/osgi:
+    get:
+      tags:
+      - OSGi Plugins
+      summary: Returns a list of all bundles installed
+      operationId: getInstalledBundles_1
+      parameters:
+      - name: ignoresystembundles
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBundleListView'
+    post:
+      tags:
+      - OSGi Plugins
+      summary: Upload bundles to the OSGI framework
+      description: 'Uploads one or more plugin JARs to the OSGi upload folder and schedules their processing. A 200 confirms the upload was accepted, NOT that the plugin is live: if new packages must be exported the OSGi framework is restarted cluster-wide asynchronously, after this response returns. Restart completion is signalled by the OSGI_FRAMEWORK_RESTART system event and successful deployment by the OSGI_BUNDLES_LOADED event; an asynchronous failure is reported via the OSGI_BUNDLES_UPLOAD_FAILED event and an error notification (check the server logs for the full stack trace). Clients should react to these events rather than assume the plugin is active once the 200 is received.'
+      operationId: uploadBundles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        '200':
+          description: Bundle upload accepted and scheduled. Any required OSGi restart happens asynchronously; watch the OSGI_FRAMEWORK_RESTART / OSGI_BUNDLES_LOADED / OSGI_BUNDLES_UPLOAD_FAILED system events for the outcome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySetStringView'
+        '403':
+          description: Can not access the upload folder or invalid OSGI Upload request
+  /api/v1/osgi/dotsystem:
+    get:
+      tags:
+      - OSGi Plugins
+      summary: Returns the dot system list of all bundles installed
+      operationId: getSystemInstalledBundles
+      parameters:
+      - name: ignoresystembundles
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBundleListView'
+  /api/v1/osgi/_processExports/{bundle}:
+    get:
+      tags:
+      - OSGi Plugins
+      summary: Process exports
+      operationId: processBundle_1
+      parameters:
+      - name: bundle
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+  /api/v1/osgi/_restart:
+    put:
+      tags:
+      - OSGi Plugins
+      summary: restarts the OSGI framework
+      operationId: restart
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+  /api/v1/osgi/jar/{jar}/_start:
+    put:
+      tags:
+      - OSGi Plugins
+      summary: starts bundle
+      operationId: start_1
+      parameters:
+      - name: jar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '404':
+          description: Bundle not found
+        '400':
+          description: Can not stop system bundle
+  /api/v1/osgi/jar/{jar}/_stop:
+    put:
+      tags:
+      - OSGi Plugins
+      summary: stops bundle
+      operationId: stop
+      parameters:
+      - name: jar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '404':
+          description: Bundle not found
+        '400':
+          description: Can not stop system bundle
+  /api/v1/osgi/jar/{jar}:
+    delete:
+      tags:
+      - OSGi Plugins
+      summary: Undeploys bundle
+      operationId: undeploy
+      parameters:
+      - name: jar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '404':
+          description: Bundle not found
+        '400':
+          description: Can not stop system bundle
+components:
+  schemas:
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ExtraPackagesForm:
+      required:
+      - packages
+      type: object
+      properties:
+        packages:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    BundleMap:
+      type: object
+      properties:
+        bundleId:
+          type: integer
+          format: int64
+        symbolicName:
+          type: string
+        location:
+          type: string
+        jarFile:
+          type: string
+        state:
+          type: integer
+          format: int32
+        version:
+          type: string
+        separator:
+          type: string
+        javaVersion:
+          type: string
+        javaClassVersion:
+          type: integer
+          format: int32
+        usesDotcmsApis:
+          type: boolean
+        dotcmsCoreDependencyVersion:
+          type: string
+        builtWithMaven:
+          type: boolean
+        multiRelease:
+          type: boolean
+        system:
+          type: boolean
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    MessageBodyWorkers:
+      type: object
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntitySetStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBundleListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/BundleMap'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

@@ -1,0 +1,988 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Folders API
+  version: '3'
+  description: Endpoints for managing folder structure and organization
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Folders
+  description: Endpoints for managing folder structure and organization
+paths:
+  /api/v1/folder/createfolders/{siteName}:
+    post:
+      tags:
+      - Folders
+      summary: Create folders by paths on a site
+      description: Creates one or more folders on the specified site. The request body is a raw JSON array of folder paths (e.g., ["/path1", "/path2/subpath"]). Nested paths will create intermediate folders as needed.
+      operationId: createFoldersBySiteName
+      parameters:
+      - name: siteName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Folders created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Site not found
+  /api/v1/folder/{siteName}:
+    delete:
+      tags:
+      - Folders
+      summary: Delete one or more path for a site
+      description: Delete one or more path for a site if they exist
+      operationId: deleteFoldersBySiteName
+      parameters:
+      - name: siteName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Folders deleted successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - /folder-1/folder-2/target-folder
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Folders not found
+        '403':
+          description: Insufficient permissions to delete folders
+  /api/v1/folder/{folderId}:
+    get:
+      tags:
+      - Folders
+      summary: Find a folder by ID
+      description: Retrieves a folder by its identifier. Returns 404 if the folder does not exist.
+      operationId: findFolderById
+      parameters:
+      - name: folderId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Folder retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFolderView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Folder not found
+  /api/v1/folder/byPath:
+    post:
+      tags:
+      - Folders
+      summary: Find subfolders by path (deprecated)
+      description: Retrieves subfolders of a given path, filtered by the path sent. This endpoint is deprecated — use GET /api/v1/folder/search instead.
+      operationId: findSubFoldersByPath
+      parameters:
+      - name: offset
+        in: query
+        description: Number of results to skip for pagination. Must be >= 0.
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: Maximum number of results to return. Default 40. Use -1 for unlimited (capped at 10000 as a safety limit).
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SearchByPathForm'
+      responses:
+        '200':
+          description: Subfolders retrieved successfully (deprecated endpoint)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFolderSearchResultView'
+        '400':
+          description: Path property must be sent
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Site not found
+      deprecated: true
+  /api/v1/folder/siteId/{siteId}/path/{path}:
+    get:
+      tags:
+      - Folders
+      summary: Load folder and subfolders by path
+      description: Finds a folder by the given path within the specified site and returns the folder along with all its subfolders, respecting the user's permissions.
+      operationId: loadFolderAndSubFoldersByPath
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: path
+        in: path
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      responses:
+        '200':
+          description: Folder and subfolders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFolderWithSubfoldersView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Folder not found
+  /api/v1/folder/sitename/{siteName}/uri/{uri}:
+    get:
+      tags:
+      - Folders
+      summary: Load a folder by site name and URI
+      description: Retrieves a folder by its URI path within the specified site.
+      operationId: loadFolderByURI
+      parameters:
+      - name: siteName
+        in: path
+        description: Site hostname the folder lives on (e.g. 'demo.dotcms.com').
+        required: true
+        schema:
+          type: string
+      - name: uri
+        in: path
+        description: Folder path within the site, as a plain path — e.g. 'application/themes/travel' (a leading slash is optional and added if missing). Embedded slashes are allowed (they select nested folders). Pass the raw path; do NOT percent-encode the slashes (a pre-encoded '%2F...' will not match).
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      responses:
+        '200':
+          description: Folder retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFolderView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Folder not found
+  /api/v1/folder/search:
+    get:
+      tags:
+      - Folders
+      summary: Search folders
+      description: Returns folders within a site matching an optional name filter and/or path scope. Supports recursive depth control, standard pagination, and sorting. With no 'name' and default path '/' + recursive=true, all site folders are returned. Each folder carries the detail fields a folder-edit form needs (title, sortOrder, filesMasks, defaultFileType, showOnMenu, defaultBaseType). Set 'includePermissions=true' to also receive the permission types the requesting user holds on each folder; that flag caps 'perPage' (see the parameter description).
+      operationId: searchFolders
+      parameters:
+      - name: name
+        in: query
+        description: Optional case-insensitive partial match on folder name (minimum 2 characters when provided)
+        schema:
+          type: string
+      - name: path
+        in: query
+        description: Path scope for the search. Defaults to '/' (site root).
+        schema:
+          type: string
+          default: /
+      - name: recursive
+        in: query
+        description: false = direct children of 'path' only (default); true = search all descendants
+        schema:
+          type: boolean
+          default: false
+      - name: siteId
+        in: query
+        description: Site ID to scope the search (required)
+        schema:
+          type: string
+      - name: orderby
+        in: query
+        description: Column to sort by.
+        schema:
+          type: string
+          enum:
+          - name
+          - mod_date
+          default: name
+      - name: direction
+        in: query
+        description: Sort direction
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+          default: ASC
+      - name: page
+        in: query
+        description: Page number (1-based, default 1)
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: per_page
+        in: query
+        description: Number of results per page (default 40)
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: includePermissions
+        in: query
+        description: When true, each returned folder includes a 'permissions' array with the permission types the requesting user holds on it (READ, EDIT, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). When false (the default) 'permissions' is null — meaning 'not requested', which is not the same as an empty array ('requested, no grants'). Because permissions are resolved per page, enabling this flag caps 'perPage' at the value of the 'content.drive.folder.search.permissions.max.per.page' configuration property (default 200); a larger 'perPage' is rejected with a 400.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Paginated list of matching folders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFolderSearchView'
+        '400':
+          description: '''siteId'' is required; ''name'' must be at least 2 characters if provided; ''perPage'' exceeds the maximum allowed when ''includePermissions'' is true'
+        '401':
+          description: User is not authenticated
+        '500':
+          description: Internal server error
+  /api/v1/folder/{id}/file-browser-selected:
+    put:
+      tags:
+      - Folders
+      summary: Select folder in file browser
+      description: Marks a folder as the currently selected folder in the file browser session.
+      operationId: selectFolderInFileBrowser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Folder selected successfully
+        '401':
+          description: Authentication required
+components:
+  schemas:
+    ResponseEntityFolderWithSubfoldersView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/FolderView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserAPI:
+      type: object
+      properties:
+        anonymousUser:
+          $ref: '#/components/schemas/User'
+        systemUser:
+          $ref: '#/components/schemas/User'
+        defaultUser:
+          $ref: '#/components/schemas/User'
+        unDeletedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        anonymousUserNoThrow:
+          $ref: '#/components/schemas/User'
+    Host:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        inode:
+          type: string
+        hostname:
+          type: string
+        systemHost:
+          type: boolean
+        hostThumbnail:
+          type: string
+          format: binary
+        structureInode:
+          type: string
+        tagStorage:
+          type: string
+        parent:
+          type: boolean
+        aliases:
+          type: string
+        default:
+          type: boolean
+        name:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        identifier:
+          type: string
+        type:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        new:
+          type: boolean
+        locked:
+          type: boolean
+    ResponseEntityFolderSearchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          properties:
+            totalResults:
+              type: integer
+              format: int64
+            query:
+              type: string
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/FolderSearchView'
+            last:
+              $ref: '#/components/schemas/FolderSearchView'
+          items:
+            $ref: '#/components/schemas/FolderSearchView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ResponseEntityFolderView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Folder'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SearchByPathForm:
+      type: object
+      properties:
+        path:
+          type: string
+    Folder:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        hostId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        filesMasks:
+          type: string
+        defaultFileType:
+          type: string
+        defaultBaseType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        owner:
+          type: string
+        inode:
+          type: string
+        path:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        systemFolder:
+          type: boolean
+        permissionType:
+          type: string
+        parent:
+          type: boolean
+        host:
+          $ref: '#/components/schemas/Host'
+        map:
+          type: object
+          additionalProperties:
+            type: object
+    FolderView:
+      type: object
+      properties:
+        path:
+          type: string
+        defaultFileType:
+          type: string
+        filesMasks:
+          type: string
+        getiDate:
+          type: string
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+        subFolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderView'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    FolderSearchView:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Folder identifier
+        inode:
+          type: string
+          description: Folder inode
+        name:
+          type: string
+          description: Folder name (last path segment)
+        path:
+          type: string
+          description: Parent path of the folder, e.g. '/application/' for '/application/blog/'
+        addChildrenAllowed:
+          type: boolean
+          description: True when the requesting user has CAN_ADD_CHILDREN on this folder
+        hasChildren:
+          type: boolean
+          description: True when the folder has at least one child folder readable by the requesting user
+        defaultBaseType:
+          type: string
+          description: Content Drive upload-mode preference as a BaseContentType name (e.g. DOTASSET, FILEASSET); null when the folder has no preference
+        title:
+          type: string
+          description: Folder title
+        sortOrder:
+          type: integer
+          description: Folder sort order used when ordering menu items
+          format: int32
+        filesMasks:
+          type: string
+          description: Comma-separated file-name masks allowed in this folder, e.g. '*.jpg,*.png'
+        defaultFileType:
+          type: string
+          description: Velocity variable name of the Content Type used by default for new files in this folder
+        showOnMenu:
+          type: boolean
+          description: True when the folder is shown on navigation menus
+        permissions:
+          type: array
+          description: Permission types the requesting user holds on this folder. Only populated when 'includePermissions=true'; null means the permissions were not requested, while an empty array means they were requested and the user holds none.
+          items:
+            type: string
+            enum:
+            - READ
+            - EDIT
+            - PUBLISH
+            - EDIT_PERMISSIONS
+            - CAN_ADD_CHILDREN
+    FolderSearchResultView:
+      type: object
+      properties:
+        id:
+          type: string
+        inode:
+          type: string
+        path:
+          type: string
+        hostName:
+          type: string
+        addChildrenAllowed:
+          type: boolean
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityFolderSearchResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderSearchResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

@@ -1,0 +1,103 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Elasticsearch Content Search API
+  version: '3'
+  description: Backend Elasticsearch search endpoints for portlet context
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Elasticsearch Content Search
+  description: Backend Elasticsearch search endpoints for portlet context
+paths:
+  /api/es/layout/{params}:
+    get:
+      tags:
+      - Elasticsearch Content Search
+      operationId: getLayout_4
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Get layout 4
+      x-summary-source: derived
+  /api/es/search:
+    post:
+      tags:
+      - Elasticsearch Content Search
+      summary: Search content using a search query (POST)
+      description: Executes a JSON search query against dotCMS content in a portlet context. The request body accepts an Elasticsearch/OpenSearch JSON query. The query is routed through the phase-aware search API, so it targets whichever engine the active OpenSearch migration phase selects (Elasticsearch in phases 0-1, OpenSearch in phases 2-3). Results include the matching contentlets plus the search response metadata under 'esresponse', which retains the legacy Elasticsearch-wire shape (took, hits.total, hits.hits[]._id/._index/._score/._source, aggregations) for backward compatibility, regardless of the engine that served the query.
+      operationId: searchContentByESPost
+      parameters:
+      - name: depth
+        in: query
+        description: 'Depth of related content to include: 0=identifiers only, 1=related contentlets, 2=related contentlets with their related identifiers, 3=related contentlets with their related contentlets. Omit to exclude relationships.'
+        schema:
+          type: string
+      - name: live
+        in: query
+        description: If true, search only live content; if false, search working content
+        schema:
+          type: boolean
+      - name: userid
+        in: query
+        description: 'Admin-only: run the query under the permission context of this user ID or email address'
+        schema:
+          type: string
+      - name: allCategoriesInfo
+        in: query
+        description: If true, return full category details (key, name, description); if false, return only category names
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Search results returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Search results containing the matching contentlets and the Elasticsearch-wire response metadata under 'esresponse'
+        '400':
+          description: Invalid Elasticsearch query syntax
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/es/raw:
+    post:
+      tags:
+      - Elasticsearch Content Search
+      summary: Execute raw search query (POST)
+      description: Executes a raw JSON search query and returns the unprocessed search response in a portlet context. The request body accepts an Elasticsearch/OpenSearch JSON query. Unlike the /search endpoint, results are returned directly from the search engine without additional contentlet processing. The query is routed through the phase-aware search API, so it targets whichever engine the active OpenSearch migration phase selects (Elasticsearch in phases 0-1, OpenSearch in phases 2-3). The response preserves the legacy Elasticsearch-wire shape (took, hits.total, hits.hits[]._id/._index/._score/._source, aggregations, suggest) for backward compatibility, regardless of the engine that served the query.
+      operationId: rawSearchContentByESPost
+      responses:
+        '200':
+          description: Search response returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Search response in the legacy Elasticsearch-wire shape (took, hits, aggregations, suggest)
+        '400':
+          description: Invalid Elasticsearch query
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}

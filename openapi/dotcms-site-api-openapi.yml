@@ -1,0 +1,1275 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Site API
+  version: '3'
+  description: Site management, lifecycle, and configuration endpoints
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Site
+  description: Site management, lifecycle, and configuration endpoints
+paths:
+  /api/v1/site/{siteId}/_archive:
+    put:
+      tags:
+      - Site
+      summary: Archive a site
+      description: Archives the specified site. The default site cannot be archived. If the site is locked, it will be unlocked before archiving. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: archiveSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to archive (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site archived successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Cannot archive the default site, or site does not exist
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to archive sites
+        '404':
+          description: Site not found
+  /api/v1/site/_copy:
+    put:
+      tags:
+      - Site
+      summary: Copy a site
+      description: Creates a new site by copying an existing one. Optionally copies templates, containers, folders, links, content on pages, content on site, site variables, and content types based on the provided copy options. Asset copying runs as a background job. Requires an Enterprise license.
+      operationId: copySite
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CopySiteForm'
+      responses:
+        '200':
+          description: Site copied successfully and background asset copy initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Invalid copy parameters
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission or missing Enterprise license
+        '404':
+          description: Source site not found
+  /api/v1/site:
+    get:
+      tags:
+      - Site
+      summary: List sites with pagination
+      description: Returns a paginated list of sites that the currently logged-in user has access to. Supports filtering by name, archived status, live status, and system site inclusion.
+      operationId: getSites
+      parameters:
+      - name: filter
+        in: query
+        description: Filter string for site names. Use '*' suffix for wildcard matching, or 'all' to return all sites
+        schema:
+          type: string
+      - name: archive
+        in: query
+        description: Include archived sites in the results
+        schema:
+          type: boolean
+      - name: live
+        in: query
+        description: Filter to show only live sites
+        schema:
+          type: boolean
+      - name: system
+        in: query
+        description: Include the system site in the results
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        description: Page number for pagination (zero-based)
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of results per page
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Paginated list of sites retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+        '403':
+          description: User does not have permission to access sites
+        '500':
+          description: Internal server error
+    put:
+      tags:
+      - Site
+      summary: Update an existing site
+      description: Updates the properties of an existing site. The site to update is identified by the 'id' query parameter (also referred to as 'siteId' or 'hostId' in other parts of the API). Requires access to the Sites portlet.
+      operationId: updateSite
+      parameters:
+      - name: id
+        in: query
+        description: Identifier of the site to update (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated site properties. 'siteName' (the hostname) is required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteForm'
+        required: true
+      responses:
+        '200':
+          description: Site updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Invalid site data (e.g., missing site name or id)
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to update sites
+        '404':
+          description: Site not found
+    post:
+      tags:
+      - Site
+      summary: Create a new site
+      description: Creates a new site with the provided properties including hostname, aliases, tag storage, SEO settings, and optional site variables.
+      operationId: createSite
+      requestBody:
+        description: Site properties to create. 'siteName' (the hostname) is required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteForm'
+        required: true
+      responses:
+        '200':
+          description: Site created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Invalid site data (e.g., missing site name, invalid identifier format)
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to create sites
+        '409':
+          description: Site with the same name already exists
+  /api/v1/site/currentSite:
+    get:
+      tags:
+      - Site
+      summary: Get the current site for the logged-in user
+      description: Returns the site currently selected in the user's HTTP session. Used by the Site Selector component in the UI. If no site is set in the session, the first available site for the user is returned.
+      operationId: getCurrentSite
+      responses:
+        '200':
+          description: Current site retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityHostView'
+        '403':
+          description: User does not have permission to access sites
+        '500':
+          description: Internal server error
+  /api/v1/site/defaultSite:
+    get:
+      tags:
+      - Site
+      summary: Get the default site
+      description: Returns the site marked as the default site in the system.
+      operationId: getDefaultSite
+      responses:
+        '200':
+          description: Default site retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityHostView'
+        '403':
+          description: User does not have permission to access sites
+        '500':
+          description: Internal server error
+  /api/v1/site/{siteId}:
+    get:
+      tags:
+      - Site
+      summary: Get a site by its identifier
+      description: Retrieves the full details of a site by its identifier. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: getSiteById
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to retrieve (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to access this site
+        '404':
+          description: Site not found
+    delete:
+      tags:
+      - Site
+      summary: Delete a site
+      description: Deletes the specified site asynchronously. The default site cannot be deleted; you must first mark another site as default before deleting. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: deleteSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to delete (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '400':
+          description: Cannot delete the default site, or site does not exist
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to delete sites
+  /api/v1/site/thumbnails:
+    get:
+      tags:
+      - Site
+      summary: Get thumbnails for all sites
+      description: Returns a list of all sites with their thumbnail information, including hostId, hostInode, hostName, hasThumbnail flag, and tagStorage. The system site is excluded from results.
+      operationId: findAllSiteThumbnails
+      responses:
+        '200':
+          description: Site thumbnails retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+        '403':
+          description: User does not have permission to access sites
+        '500':
+          description: Internal server error
+  /api/v1/site/_byname:
+    post:
+      tags:
+      - Site
+      summary: Find a site by name
+      description: Finds a site by its hostname. The site name is sent via POST body to avoid URL-escaping issues with special characters in hostnames.
+      operationId: findSiteByName
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SearchSiteByNameForm'
+      responses:
+        '200':
+          description: Site found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Site name is null or invalid
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to access sites
+        '404':
+          description: Site not found
+  /api/v1/site/{siteId}/setup_progress:
+    get:
+      tags:
+      - Site
+      summary: Get site setup progress
+      description: Returns the progress of a background site asset copy operation. This is used after a site copy to track the progress of the asset copying job. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: getSiteSetupProgress
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site whose setup progress to retrieve (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site setup progress retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteSetupProgressView'
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to access site setup progress
+  /api/v1/site/variable/{siteId}:
+    get:
+      tags:
+      - Site
+      summary: Retrieve the Site Variables for a site
+      description: Returns all site variables associated with the specified site, including variable names, keys, values, and last modifier information. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: getSiteVariables
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site whose variables to retrieve (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site variables retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to access site variables
+        '404':
+          description: When the site id does not exist
+  /api/v1/site/{siteId}/_makedefault:
+    put:
+      tags:
+      - Site
+      summary: Mark a site as the default
+      description: Sets the specified site as the default site for the system. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: makeDefaultSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to mark as default (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site marked as default successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '400':
+          description: Site does not exist
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to change the default site
+  /api/v1/site/{siteId}/_publish:
+    put:
+      tags:
+      - Site
+      summary: Publish a site
+      description: Publishes the specified site, making it live and accessible. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: publishSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to publish (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Site does not exist
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to publish sites
+  /api/v1/site/variable:
+    put:
+      tags:
+      - Site
+      summary: Save a Site Variable
+      description: Creates or updates a site variable for the specified site. If an ID or matching key is provided, the existing variable is updated; otherwise a new one is created.
+      operationId: saveSiteVariable
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/SiteVariableForm'
+      responses:
+        '200':
+          description: Site variable saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseHostVariableEntityView'
+        '400':
+          description: When a required value is not sent
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to manage site variables
+  /api/v1/site/switch:
+    put:
+      tags:
+      - Site
+      summary: Switch to the user's default site
+      description: Switches the current user's active site to their default site.
+      operationId: switchToDefaultSite
+      responses:
+        '200':
+          description: Switched to default site successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityHostView'
+        '403':
+          description: User does not have permission
+        '500':
+          description: Internal server error
+  /api/v1/site/switch/{id}:
+    put:
+      tags:
+      - Site
+      summary: Switch to a specific site
+      description: Switches the current user's active site to the specified site. The 'id' path parameter represents the site identifier (also referred to as 'siteId' or 'hostId' in the API).
+      operationId: switchSiteById
+      parameters:
+      - name: id
+        in: path
+        description: Identifier of the site to switch to (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site switched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteSwitchView'
+        '403':
+          description: User does not have permission to access the specified site
+        '404':
+          description: Site not found
+        '500':
+          description: Internal server error
+  /api/v1/site/{siteId}/_unarchive:
+    put:
+      tags:
+      - Site
+      summary: Unarchive a site
+      description: Restores a previously archived site to its active state. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: unarchiveSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to unarchive (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site unarchived successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '400':
+          description: Site does not exist
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to unarchive sites
+  /api/v1/site/{siteId}/_unpublish:
+    put:
+      tags:
+      - Site
+      summary: Unpublish a site
+      description: Unpublishes the specified site, removing it from live status. The 'siteId' parameter is the site identifier (also known as 'hostId' or 'host' in other parts of the API).
+      operationId: unpublishSite
+      parameters:
+      - name: siteId
+        in: path
+        description: Identifier of the site to unpublish (siteId/hostId are used interchangeably)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Site unpublished successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySiteView'
+        '401':
+          description: Unauthorized access
+        '403':
+          description: User does not have permission to unpublish sites
+        '404':
+          description: Site not found
+components:
+  schemas:
+    SearchSiteByNameForm:
+      type: object
+      properties:
+        siteName:
+          type: string
+    ResponseSiteVariablesEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteVariableView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    SiteVariableForm:
+      type: object
+      properties:
+        id:
+          type: string
+        siteId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+    UserAPI:
+      type: object
+      properties:
+        anonymousUser:
+          $ref: '#/components/schemas/User'
+        systemUser:
+          $ref: '#/components/schemas/User'
+        defaultUser:
+          $ref: '#/components/schemas/User'
+        unDeletedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        anonymousUserNoThrow:
+          $ref: '#/components/schemas/User'
+    SiteVariableView:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+        lastModifierFullName:
+          type: string
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CopySiteForm:
+      type: object
+      properties:
+        copyFromSiteId:
+          type: string
+        copyAll:
+          type: boolean
+        copyTemplatesContainers:
+          type: boolean
+        copyContentOnPages:
+          type: boolean
+        copyFolders:
+          type: boolean
+        copyContentOnSite:
+          type: boolean
+        copyLinks:
+          type: boolean
+        copySiteVariables:
+          type: boolean
+        copyContentTypes:
+          type: boolean
+        site:
+          $ref: '#/components/schemas/SiteForm'
+    Host:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        inode:
+          type: string
+        hostname:
+          type: string
+        systemHost:
+          type: boolean
+        hostThumbnail:
+          type: string
+          format: binary
+        structureInode:
+          type: string
+        tagStorage:
+          type: string
+        parent:
+          type: boolean
+        aliases:
+          type: string
+        default:
+          type: boolean
+        name:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        identifier:
+          type: string
+        type:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        new:
+          type: boolean
+        locked:
+          type: boolean
+    ResponseHostVariableEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/HostVariable'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySiteView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SimpleSiteVariableForm:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+      description: Optional list of site variables (key/value pairs) to create alongside the site.
+    HostVariable:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+    SiteForm:
+      required:
+      - siteName
+      type: object
+      properties:
+        aliases:
+          type: string
+          description: Comma- or newline-separated list of host aliases (alternate hostnames) for this site.
+        siteName:
+          type: string
+          description: The hostname of the site, e.g. 'www.example.com'. This is the site's primary name.
+        tagStorage:
+          type: string
+          description: Identifier of the site whose tag storage this site shares. Defaults to this site itself when omitted.
+        siteThumbnail:
+          type: string
+          description: Identifier of the image asset used as the site thumbnail.
+        runDashboard:
+          type: boolean
+          description: Whether the analytics dashboard runs for this site.
+        keywords:
+          type: string
+          description: Default meta keywords applied to pages on this site.
+        description:
+          type: string
+          description: Default meta description applied to pages on this site.
+        googleMap:
+          type: string
+          description: Google Maps API key for this site.
+        googleAnalytics:
+          type: string
+          description: Google Analytics tracking ID for this site.
+        addThis:
+          type: string
+          description: AddThis sharing-widget account ID for this site.
+        proxyUrlForEditMode:
+          type: string
+          description: Proxy URL used to render the site in edit mode.
+        embeddedDashboard:
+          type: string
+          description: Embedded dashboard markup for this site.
+        languageId:
+          type: integer
+          description: Default language ID for this site. Defaults to the system default language when 0/omitted.
+          format: int64
+        identifier:
+          type: string
+          description: Identifier of the site. Ignored on creation; server-generated.
+        inode:
+          type: string
+          description: Inode (version identifier) of the site. Ignored on creation; server-generated.
+        default:
+          type: boolean
+        forceExecution:
+          type: boolean
+          description: Whether to force creation even when validation would otherwise warn (e.g. a duplicate alias).
+        variables:
+          type: array
+          description: Optional list of site variables (key/value pairs) to create alongside the site.
+          items:
+            $ref: '#/components/schemas/SimpleSiteVariableForm'
+      description: Form used to create a Site (Host) in dotCMS. 'siteName' (the hostname) is the only required field; the new site is created unpublished and must be published separately.
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySiteSwitchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityHostView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Host'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntitySiteSetupProgressView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean

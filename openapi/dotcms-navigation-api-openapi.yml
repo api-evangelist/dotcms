@@ -1,0 +1,120 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Navigation API
+  version: '3'
+  description: Site navigation tree endpoints
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Navigation
+  description: Site navigation tree endpoints
+paths:
+  /api/v1/menu:
+    get:
+      tags:
+      - Navigation
+      operationId: getMenus
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get menus
+      x-summary-source: derived
+  /api/v1/nav/{uri}:
+    get:
+      tags:
+      - Navigation
+      summary: Get site navigation tree
+      description: Returns the dotCMS site navigation tree starting at the given **folder** URI, up to the specified depth. Only objects marked as 'show on menu' are included. The URI must resolve to a folder — page URIs (e.g., '/index', '/about-us/team') will return 404. Use '/' to fetch the navigation tree for the site root.
+      operationId: getNavigationTree
+      parameters:
+      - name: uri
+        in: path
+        description: Starting folder URI for the navigation tree (e.g., '/about-us', '/blog', or '/' for the site root). Must resolve to a folder — page URIs return 404.
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      - name: depth
+        in: query
+        description: 'Total number of levels to include, counting the starting node as level 1. depth=1 returns only the starting node with no children; depth=2 returns the node plus its direct children. Values exceeding the actual tree depth return the full subtree. Values less than 1 are treated as 1. (default: 1)'
+        schema:
+          type: integer
+          format: int32
+      - name: languageId
+        in: query
+        description: 'Tags each returned node with this language ID. Note: folder names are language-neutral in dotCMS and are not translated — this parameter only affects the ''languageId'' attribute on each node, not the visible ''title''. Defaults to the language of the current request.'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Navigation tree retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Invalid depth or languageId parameter
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Navigation path not found
+components:
+  schemas:
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

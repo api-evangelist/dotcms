@@ -1,0 +1,223 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Health API
+  version: '3'
+  description: Health management and monitoring endpoints for administrative dashboards
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Health
+  description: Health management and monitoring endpoints for administrative dashboards
+paths:
+  /api/v1/health/check/{checkName}:
+    get:
+      tags:
+      - Health
+      summary: Get specific health check result
+      description: Returns the result of a specific health check identified by name. Useful for monitoring individual components or debugging specific health issues.
+      operationId: getHealthCheck
+      parameters:
+      - name: checkName
+        in: path
+        description: Name of the health check to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully retrieved health check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '404':
+          description: Health check not found
+        '500':
+          description: Internal Server Error
+  /api/v1/health/checks:
+    get:
+      tags:
+      - Health
+      summary: Get all health check names
+      description: Returns a list of all registered health check names. Useful for discovering available health checks and building monitoring interfaces.
+      operationId: getHealthCheckNames
+      responses:
+        '200':
+          description: Successfully retrieved health check names
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '500':
+          description: Internal Server Error
+  /api/v1/health/liveness:
+    get:
+      tags:
+      - Health
+      summary: Get liveness health status
+      description: Returns liveness health checks suitable for application dashboards. This endpoint provides detailed JSON information about critical system components required for the application to be considered alive.
+      operationId: getLivenessHealth
+      responses:
+        '200':
+          description: Successfully retrieved liveness health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '500':
+          description: Internal Server Error
+  /api/v1/health:
+    get:
+      tags:
+      - Health
+      summary: Get overall health status
+      description: Returns comprehensive health status including all registered health checks. Authentication requirements are controlled by the health.detailed.authentication.required configuration property.
+      operationId: getOverallHealth
+      responses:
+        '200':
+          description: Successfully retrieved overall health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '500':
+          description: Internal Server Error
+  /api/v1/health/readiness:
+    get:
+      tags:
+      - Health
+      summary: Get readiness health status
+      description: Returns readiness health checks to determine if the application is ready to receive traffic. This endpoint provides detailed JSON information about system components required for the application to be considered ready to serve requests.
+      operationId: getReadinessHealth
+      responses:
+        '200':
+          description: Successfully retrieved readiness health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '500':
+          description: Internal Server Error
+  /api/v1/health/status:
+    get:
+      tags:
+      - Health
+      summary: Get system status summary
+      description: Returns a simple boolean summary of system health status with alive and ready flags. Provides a quick overview of system health without detailed check information.
+      operationId: getSystemStatus
+      responses:
+        '200':
+          description: Successfully retrieved system status summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '500':
+          description: Internal Server Error
+  /api/v1/health/refresh/{checkName}:
+    post:
+      tags:
+      - Health
+      summary: Force refresh a specific health check
+      description: Triggers an immediate refresh of a specific health check identified by name, bypassing any caching mechanisms. Useful for testing individual components or getting up-to-date status after targeted maintenance.
+      operationId: refreshHealthCheck
+      parameters:
+      - name: checkName
+        in: path
+        description: Name of the health check to refresh
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully refreshed the health check
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '404':
+          description: Health check not found
+        '500':
+          description: Internal Server Error
+  /api/v1/health/refresh:
+    post:
+      tags:
+      - Health
+      summary: Force refresh all health checks
+      description: Triggers an immediate refresh of all registered health checks, bypassing any caching mechanisms. Useful for getting up-to-date health status after configuration changes or system maintenance.
+      operationId: refreshHealthChecks
+      responses:
+        '200':
+          description: Successfully triggered health checks refresh
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '403':
+          description: Forbidden - Authentication required
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

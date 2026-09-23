@@ -1,0 +1,192 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Variants API
+  version: '3'
+  description: Endpoints for managing content variants
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Variants
+  description: Endpoints for managing content variants
+paths:
+  /api/v1/variants:
+    post:
+      tags:
+      - Variants
+      summary: Creates a new content variant
+      description: Creates a new content variant with the specified name and description. Variants allow for A/B testing and personalization of content.
+      operationId: addVariant_1
+      requestBody:
+        description: Variant configuration including name and description
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VariantForm'
+        required: true
+      responses:
+        '200':
+          description: Variant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityVariantView'
+        '400':
+          description: Bad request - Invalid variant data or variant already exists
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks required permissions
+        '500':
+          description: Internal server error
+  /api/v1/variants/{variantName}/_promote:
+    put:
+      tags:
+      - Variants
+      summary: Promotes a variant to become the default
+      description: Promotes a content variant to replace the default content version. This action makes the variant content live for all users.
+      operationId: promoteVariant_1
+      parameters:
+      - name: variantName
+        in: path
+        description: Name of the variant to promote
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Variant promoted successfully
+        '400':
+          description: Bad request - Invalid variant name
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks required permissions
+        '404':
+          description: Variant not found
+        '500':
+          description: Internal server error
+  /api/v1/versionables/{versionableInode}/_bringback:
+    put:
+      tags:
+      - Variants
+      operationId: bringBack
+      parameters:
+      - name: versionableInode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Bring back
+      x-summary-source: derived
+  /api/v1/versionables/{versionableInode}:
+    delete:
+      tags:
+      - Variants
+      operationId: deleteVersion
+      parameters:
+      - name: versionableInode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete version
+      x-summary-source: derived
+  /api/v1/versionables/{versionableInodeOrIdentifier}:
+    get:
+      tags:
+      - Variants
+      operationId: findVersionable
+      parameters:
+      - name: versionableInodeOrIdentifier
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Find versionable
+      x-summary-source: derived
+components:
+  schemas:
+    ResponseEntityVariantView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Variant'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Variant:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        archived:
+          type: boolean
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    VariantForm:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string

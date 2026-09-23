@@ -1,0 +1,105 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Personas API
+  version: '3'
+  description: Content persona management and targeting
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Personas
+  description: Content persona management and targeting
+paths:
+  /api/v1/personas:
+    get:
+      tags:
+      - Personas
+      summary: List personas
+      description: Returns all personas for the current site. Site can be determined from session or header.
+      operationId: list_1
+      responses:
+        '200':
+          description: Personas retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapStringRestPersonaView'
+        '400':
+          description: Bad request - site ID required or invalid
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/personas/{id}:
+    get:
+      tags:
+      - Personas
+      summary: Get persona by ID
+      description: Returns a specific persona by its identifier
+      operationId: self
+      parameters:
+      - name: siteId
+        in: path
+        description: Site identifier
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Persona identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Persona retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestPersona'
+        '400':
+          description: Bad request - persona ID or site ID required
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Persona not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+components:
+  schemas:
+    MapStringRestPersonaView:
+      type: object
+      properties:
+        empty:
+          type: boolean
+      additionalProperties:
+        $ref: '#/components/schemas/RestPersona'
+    RestPersona:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string

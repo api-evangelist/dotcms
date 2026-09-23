@@ -1,0 +1,1041 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Users API
+  version: '3'
+  description: User account management and administration
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Users
+  description: User account management and administration
+paths:
+  /api/user/getloggedinuser/{params}:
+    get:
+      tags:
+      - Users
+      summary: Get logged in user (deprecated)
+      description: Returns a JSON representation of the currently logged in user including userId, emailAddress, firstName, lastName, and roleId. This endpoint is deprecated - use v1 UserResource instead.
+      operationId: getLoggedInUserLegacy
+      parameters:
+      - name: params
+        in: path
+        description: URL parameters for the request
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: User information containing userId, emailAddress, firstName, lastName, and roleId
+        '401':
+          description: Unauthorized - backend user authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/users/activate/{userId}:
+    patch:
+      tags:
+      - Users
+      summary: Active an existing user
+      operationId: activateUser
+      parameters:
+      - name: userId
+        in: path
+        description: 'Identifier of an user.
+
+
+          Example value: `b9d89c80-3d88-4311-8365-187323c96436` '
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: If success returns a map with the user + user id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '403':
+          description: If the user is not an admin or access to the role + user layouts or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '404':
+          description: If the user to update does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '400':
+          description: If the user information is not valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+  /api/v1/users:
+    put:
+      tags:
+      - Users
+      summary: Update an existing user
+      description: 'Updates an existing user''s information including personal details, roles, and account settings. Only admin users or users with appropriate portlet access can perform this operation. The optional roles list carries role KEYS and is the user''s complete desired set of user-assignable roles (editUsers=true): omit the field to leave roles untouched, send a non-empty list to replace the user-assignable role set, or send an empty list to remove all of the user''s user-assignable roles. System-managed memberships (e.g. the user''s individual role) are never modified, keys that resolve to no role are ignored, and null or blank entries are rejected with 400. Note that roles without a key cannot be expressed in this list — manage those through the role-centric /v1/roles/{roleId}/users endpoints instead.'
+      operationId: updateUser
+      requestBody:
+        description: 'User update data including personal information, roles, and account settings. The roles list (role keys) is the complete desired set of user-assignable roles: absent = untouched, empty = remove all user-assignable roles, non-empty = replace.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserForm'
+        required: true
+      responses:
+        '200':
+          description: If success returns a map with the user + user id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityUserUpdateView'
+        '403':
+          description: If the user is not an admin or access to the role + user layouts or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
+        '404':
+          description: If the user to update does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
+        '400':
+          description: If the user information is not valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
+    post:
+      tags:
+      - Users
+      summary: Create user
+      description: Creates a new user. Requires admin privileges or access to Users and Roles portlets. FirstName, LastName, Email and Password are required
+      operationId: createUser
+      requestBody:
+        description: User creation data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserForm'
+        required: true
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityUserUpdateView'
+        '400':
+          description: Bad request - missing required fields or invalid data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions to create users
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - user already exists
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/users/deactivate/{userId}:
+    patch:
+      tags:
+      - Users
+      summary: Deactivate an existing user
+      operationId: deactivateUser
+      parameters:
+      - name: userId
+        in: path
+        description: 'Identifier of an user.
+
+
+          Example value: `b9d89c80-3d88-4311-8365-187323c96436` '
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: If success returns a map with the user + user id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '403':
+          description: If the user is not an admin or access to the role + user layouts or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '404':
+          description: If the user to update does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '400':
+          description: If the user information is not valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+  /api/v1/users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: Find an user
+      description: Returns an user
+      operationId: findUser
+      parameters:
+      - name: userId
+        in: path
+        description: Identifier of user to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserMapEntityView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Users
+      summary: Deletes an existing user
+      description: Deletes a user account and reassigns all associated content and permissions to a replacement user. Only admin users or users with appropriate portlet access can perform this operation.
+      operationId: deleteUser
+      parameters:
+      - name: userId
+        in: path
+        description: 'Identifier of an user.
+
+
+          Example value: `b9d89c80-3d88-4311-8365-187323c96436` '
+        required: true
+        schema:
+          type: string
+      - name: replacementUserId
+        in: query
+        description: 'Identifier of an user.
+
+
+          Example value: `b9d89c80-3d88-4311-8365-187323c96436` '
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: If success returns a map with the user + user id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDeletedEntityView'
+        '403':
+          description: If the user is not an admin or access to the role + user layouts or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDeletedEntityView'
+        '404':
+          description: If the user to update does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDeletedEntityView'
+        '400':
+          description: If the user information is not valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserDeletedEntityView'
+  /api/v1/users/filter:
+    get:
+      tags:
+      - Users
+      summary: Filter users
+      description: Returns a list of dotCMS users based on specified search criteria with pagination support
+      operationId: filterUsers
+      parameters:
+      - name: query
+        in: query
+        description: Filter users by user ID, first name, last name, email address, or full name -- or parts of any of them
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: orderby
+        in: query
+        description: Column name for sorting results
+        schema:
+          type: string
+      - name: direction
+        in: query
+        description: 'Sorting direction: ASC or DESC'
+        schema:
+          type: string
+          default: ASC
+      - name: includeanonymous
+        in: query
+        description: Include anonymous user in results
+        schema:
+          type: boolean
+      - name: includedefault
+        in: query
+        description: Include default user in results
+        schema:
+          type: boolean
+      - name: assetinode
+        in: query
+        description: Asset inode for permission-based filtering
+        schema:
+          type: string
+      - name: permission
+        in: query
+        description: Permission type for asset-based filtering
+        schema:
+          type: integer
+          format: int32
+      - name: roleKey
+        in: query
+        description: Role key(s) to restrict results to users holding any of them; repeatable and/or comma-separated, e.g. roleKey=DOTCMS_BACK_END_USER
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListUserView'
+        '400':
+          description: Bad request - a provided roleKey does not match any existing Role
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+  /api/v1/users/loginas:
+    post:
+      tags:
+      - Users
+      summary: Login as user
+      description: Performs user impersonation via the 'Login As' feature, allowing administrators to simulate another user's session
+      operationId: loginAsUser
+      requestBody:
+        description: Login as credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginAsForm'
+        required: true
+      responses:
+        '200':
+          description: Login as operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityLoginAsView'
+        '400':
+          description: Bad request - invalid user credentials
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication failed
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions or missing Login As role
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/users/loginAsData:
+    get:
+      tags:
+      - Users
+      summary: Get login as data
+      description: Returns a paginated list of users that can be impersonated (excludes anonymous and default users)
+      operationId: getLoginAsData
+      parameters:
+      - name: filter
+        in: query
+        description: Filter for user search
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number for pagination
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: Number of items per page
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: User list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListUserView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/users/logoutas:
+    put:
+      tags:
+      - Users
+      summary: Logout as user
+      description: Ends user impersonation session and reverts back to the original administrator user
+      operationId: logoutAsUser
+      responses:
+        '200':
+          description: Logout as operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityLoginAsView'
+        '400':
+          description: Bad request - invalid session state
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+  /api/v1/users/current:
+    get:
+      tags:
+      - Users
+      summary: Get current user
+      description: Returns information about the currently authenticated user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestUser'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '400':
+          description: Bad request - could not provide current user
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Users
+      summary: Update current user
+      description: Updates information for the currently authenticated user. May require reauthentication if critical fields are changed.
+      operationId: updateCurrentUser
+      requestBody:
+        description: Current user update data including personal information and password changes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCurrentUserForm'
+        required: true
+      responses:
+        '200':
+          description: User information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityUserUpdateView'
+        '400':
+          description: Bad request - invalid user data or password requirements
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityUserUpdateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SiteVariableView:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+        lastModifierFullName:
+          type: string
+    ResponseSiteVariablesEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteVariableView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityLoginAsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserForm:
+      required:
+      - email
+      - firstName
+      - lastName
+      type: object
+      properties:
+        userId:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        nickName:
+          type: string
+        email:
+          type: string
+        male:
+          type: boolean
+        birthday:
+          type: string
+        languageId:
+          type: string
+        timeZoneId:
+          type: string
+        password:
+          type: array
+          items:
+            type: string
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        roles:
+          type: array
+          description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
+          example:
+          - DOTCMS_BACK_END_USER
+          - 48190c8c-42c4-46af-8d1a-0cd5db894797
+          items:
+            type: string
+            description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
+            example: '["DOTCMS_BACK_END_USER","48190c8c-42c4-46af-8d1a-0cd5db894797"]'
+    ResponseUserDeletedEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/UserDeletedView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserDeletedView:
+      type: object
+      properties:
+        status:
+          type: string
+        deletedUser:
+          type: string
+        reassignedTo:
+          type: string
+    RestUser:
+      type: object
+      properties:
+        userId:
+          type: string
+        givenName:
+          type: string
+        email:
+          type: string
+        surname:
+          type: string
+        roleId:
+          type: string
+        loginAs:
+          type: boolean
+        admin:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    ResponseUserMapEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListUserView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    UpdateCurrentUserForm:
+      type: object
+      properties:
+        userId:
+          type: string
+        givenName:
+          type: string
+        email:
+          type: string
+        surname:
+          type: string
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+    User:
+      type: object
+      properties:
+        modificationDate:
+          type: string
+          format: date-time
+        companyId:
+          type: string
+        resolution:
+          type: string
+        refreshRate:
+          type: string
+        defaultUser:
+          type: boolean
+        recipientName:
+          type: string
+        actualCompanyId:
+          type: string
+        female:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        recipientId:
+          type: string
+        userRole:
+          $ref: '#/components/schemas/Role'
+        anonymousUser:
+          type: boolean
+        timeZoneId:
+          type: string
+        languageId:
+          type: string
+        recipientInternetAddress:
+          type: string
+        multipleRecipients:
+          type: boolean
+        fullName:
+          type: string
+        timeZone:
+          type: object
+          properties:
+            dstsavings:
+              type: integer
+              format: int32
+            rawOffset:
+              type: integer
+              format: int32
+            id:
+              type: string
+            displayName:
+              type: string
+        locale:
+          type: object
+          properties:
+            script:
+              type: string
+            variant:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+            language:
+              type: string
+        recipientAddress:
+          type: string
+        passwordEncrypted:
+          type: boolean
+        passwordExpirationDate:
+          type: string
+          format: date-time
+        favoriteActivity:
+          type: string
+        favoriteBibleVerse:
+          type: string
+        agreedToTermsOfUse:
+          type: boolean
+        deleteInProgress:
+          type: boolean
+        male:
+          type: boolean
+        skinId:
+          type: string
+        loginDate:
+          type: string
+          format: date-time
+        loginIP:
+          type: string
+        lastLoginDate:
+          type: string
+          format: date-time
+        lastLoginIP:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        deleteDate:
+          type: string
+          format: date-time
+        passwordReset:
+          type: boolean
+        smsId:
+          type: string
+        aimId:
+          type: string
+        icqId:
+          type: string
+        msnId:
+          type: string
+        ymId:
+          type: string
+        favoriteFood:
+          type: string
+        favoriteMovie:
+          type: string
+        favoriteMusic:
+          type: string
+        dottedSkins:
+          type: boolean
+        roundedSkins:
+          type: boolean
+        greeting:
+          type: string
+        layoutIds:
+          type: string
+        comments:
+          type: string
+        emailAddress:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        nickName:
+          type: string
+        birthday:
+          type: string
+          format: date-time
+        additionalInfo:
+          type: object
+          additionalProperties:
+            type: object
+        failedLoginAttempts:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        password:
+          type: string
+        modified:
+          type: boolean
+        new:
+          type: boolean
+    LoginAsForm:
+      required:
+      - password
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        password:
+          type: string

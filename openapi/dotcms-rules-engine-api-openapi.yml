@@ -1,0 +1,767 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Rules Engine API
+  version: '3'
+  description: Business rules and conditional logic management
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Rules Engine
+  description: Business rules and conditional logic management
+paths:
+  /api/rulesengine/layout/{params}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: getLayout_3
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Get layout 3
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/rules:
+    get:
+      tags:
+      - Rules Engine
+      operationId: list_2
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/RestRule'
+            application/javascript:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/RestRule'
+      summary: List 2
+      x-summary-source: derived
+    post:
+      tags:
+      - Rules Engine
+      operationId: add
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestRule'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Add
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/rules/{ruleId}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: self_1
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRule'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/RestRule'
+      summary: Self 1
+      x-summary-source: derived
+    put:
+      tags:
+      - Rules Engine
+      operationId: update_3
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestRule'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRule'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/RestRule'
+      summary: Update 3
+      x-summary-source: derived
+    delete:
+      tags:
+      - Rules Engine
+      operationId: remove
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Remove
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/actions:
+    post:
+      tags:
+      - Rules Engine
+      operationId: add_1
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestRuleAction'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Add 1
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/actions/{actionId}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: self_2
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: actionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRuleAction'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/RestRuleAction'
+      summary: Self 2
+      x-summary-source: derived
+    put:
+      tags:
+      - Rules Engine
+      operationId: update_4
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: actionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestRuleAction'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRuleAction'
+      summary: Update 4
+      x-summary-source: derived
+    delete:
+      tags:
+      - Rules Engine
+      operationId: remove_1
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: actionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Remove 1
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/rules/{ruleId}/conditionGroups:
+    get:
+      tags:
+      - Rules Engine
+      operationId: list_3
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: List 3
+      x-summary-source: derived
+    post:
+      tags:
+      - Rules Engine
+      operationId: add_2
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestConditionGroup'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Add 2
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/rules/{ruleId}/conditionGroups/{conditionGroupId}:
+    delete:
+      tags:
+      - Rules Engine
+      operationId: remove_2
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionGroupId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Remove 2
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/rules/{ruleId}/conditionGroups/{groupId}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: self_3
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestConditionGroup'
+      summary: Self 3
+      x-summary-source: derived
+    put:
+      tags:
+      - Rules Engine
+      operationId: update_5
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: groupId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestConditionGroup'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestConditionGroup'
+      summary: Update 5
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/conditions:
+    post:
+      tags:
+      - Rules Engine
+      operationId: add_3
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestCondition'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Add 3
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/conditions/{conditionId}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: self_4
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Self 4
+      x-summary-source: derived
+    put:
+      tags:
+      - Rules Engine
+      operationId: update_6
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestCondition'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCondition'
+      summary: Update 6
+      x-summary-source: derived
+    delete:
+      tags:
+      - Rules Engine
+      operationId: remove_3
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Remove 3
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/conditions/{conditionId}/conditionValues:
+    get:
+      tags:
+      - Rules Engine
+      operationId: list_4
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: List 4
+      x-summary-source: derived
+    post:
+      tags:
+      - Rules Engine
+      operationId: add_4
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestConditionValue'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Add 4
+      x-summary-source: derived
+  /api/v1/sites/{siteId}/ruleengine/conditions/{conditionId}/conditionValues/{valueId}:
+    get:
+      tags:
+      - Rules Engine
+      operationId: self_5
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: valueId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Self 5
+      x-summary-source: derived
+    put:
+      tags:
+      - Rules Engine
+      operationId: update_7
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: valueId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestConditionValue'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestConditionValue'
+      summary: Update 7
+      x-summary-source: derived
+    delete:
+      tags:
+      - Rules Engine
+      operationId: remove_4
+      parameters:
+      - name: siteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conditionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: valueId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Remove 4
+      x-summary-source: derived
+  /api/v1/system/ruleengine/actionlets:
+    get:
+      tags:
+      - Rules Engine
+      operationId: list_8
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: List 8
+      x-summary-source: derived
+  /api/v1/system/ruleengine/conditionlets:
+    get:
+      tags:
+      - Rules Engine
+      operationId: list_9
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: List 9
+      x-summary-source: derived
+components:
+  schemas:
+    RestRuleAction:
+      required:
+      - owningRule
+      type: object
+      properties:
+        owningRule:
+          type: string
+        priority:
+          type: integer
+          format: int32
+        actionlet:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ParameterModel'
+    ParameterModel:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerId:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        priority:
+          type: integer
+          format: int32
+    RestConditionValue:
+      required:
+      - key
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        priority:
+          type: integer
+          format: int32
+    RestRule:
+      type: object
+      properties:
+        name:
+          type: string
+        fireOn:
+          type: string
+        shortCircuit:
+          type: boolean
+        priority:
+          type: integer
+          format: int32
+        enabled:
+          type: boolean
+        conditionGroups:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestConditionGroup'
+        ruleActions:
+          type: object
+          additionalProperties:
+            type: boolean
+    RestConditionGroup:
+      required:
+      - operator
+      type: object
+      properties:
+        operator:
+          type: string
+        priority:
+          type: integer
+          format: int32
+        conditions:
+          type: object
+          additionalProperties:
+            type: boolean
+    RestCondition:
+      required:
+      - conditionlet
+      - operator
+      - owningGroup
+      type: object
+      properties:
+        owningGroup:
+          type: string
+        conditionlet:
+          type: string
+        values:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestConditionValue'
+        operator:
+          type: string
+        priority:
+          type: integer
+          format: int32

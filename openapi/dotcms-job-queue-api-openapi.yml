@@ -1,0 +1,758 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Job Queue API
+  version: '3'
+  description: Endpoints for managing background jobs and job queues
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Job Queue
+  description: Endpoints for managing background jobs and job queues
+paths:
+  /api/v1/jobs/abandoned:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves abandoned jobs
+      description: Fetches a paginated list of abandoned jobs. Results can be paginated using query parameters.
+      operationId: getAbandonedJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of abandoned jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/active:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves active jobs
+      description: Fetches a paginated list of active jobs. Results can be paginated using query parameters.
+      operationId: getActiveJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of active jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/{queueName}/active:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves active jobs in a queue
+      description: Fetches a paginated list of active jobs. Results can be paginated using query parameters.for the specified queue.
+      operationId: getActiveJobsByQueue
+      parameters:
+      - name: queueName
+        in: path
+        description: Logical name of the queue.
+        required: true
+        schema:
+          type: string
+          example: image-processing
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved active jobs for the queue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permission to view jobs in this queue.'
+        '404':
+          description: 'Not Found: Queue with the specified name does not exist.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/{jobId}/cancel:
+    post:
+      tags:
+      - Job Queue
+      summary: Cancel a job
+      description: Sends an asynchronous cancellation request for the specified job. The job may still complete if it has already finished or cannot be interrupted.
+      operationId: cancelJobQueueJob
+      parameters:
+      - name: jobId
+        in: path
+        description: Unique identifier (UUID) of the job to cancel.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Cancellation request accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+              example:
+                entity: Cancellation request successfully sent to job e6d9bae8-657b-4e2f-8524-c0222db66355
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permission to cancel this job.'
+        '404':
+          description: 'Not Found: Job with the specified ID does not exist or is already completed/cancelled.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while attempting to cancel the job.'
+  /api/v1/jobs/canceled:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves canceled jobs
+      description: Fetches a paginated list of canceled jobs. Results can be paginated using query parameters.
+      operationId: getCanceledJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of canceled jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User lacks permission to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/completed:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves completed jobs
+      description: Fetches a paginated list of completed jobs. Results can be paginated using query parameters.
+      operationId: getCompletedJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of completed jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/{queueName}/upload:
+    post:
+      tags:
+      - Job Queue
+      summary: Creates a new job with form data
+      description: Creates and queues a new background job with multipart form data parameters. Returns the job ID and initial status information.
+      operationId: createJobWithFormData
+      parameters:
+      - name: queueName
+        in: path
+        description: Name of the job queue to submit to
+        required: true
+        schema:
+          type: string
+          example: image-processing
+      requestBody:
+        description: "This endpoint accepts a `multipart/form-data` request with two fields:\n\n| **Field** | **Type** | **Required** | **Description** |\n|-----------|----------|--------------|-----------------|\n| `file`    | File     | ❌ No        | The file to be processed by the queue.|\n| `form`    | String   | ❌ No        | A JSON string containing job-specific parameters.|\n\n**Example `form` value:**\n\n```json\n{\n \"contentType\":\"CustomContentType\", \"workflowActionId\":\"Workflow-UUID\", \"language\":\"en-us\", \"stopOnError\":true,\n}\n```"
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobParamsSchema'
+      responses:
+        '200':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+              example:
+                entity:
+                  jobId: e6d9bae8-657b-4e2f-8524-c0222db66355
+                  statusUrl: http://localhost:8080/api/v1/_import/e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: 'Bad Request: Invalid parameters, malformed multipart payload, or file issues.'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User lacks permission to enqueue jobs in the specified queue.'
+        '404':
+          description: 'Not Found: Queue with the specified name does not exist.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while creating the job.'
+  /api/v1/jobs/{queueName}:
+    post:
+      tags:
+      - Job Queue
+      summary: Creates a new job with JSON parameters
+      description: Creates and queues a new background job with JSON parameters. Returns the job ID and initial status information.
+      operationId: createJobWithJson
+      parameters:
+      - name: queueName
+        in: path
+        description: Name of the job queue to submit to
+        required: true
+        schema:
+          type: string
+          example: image-processing
+      requestBody:
+        description: Job parameters as JSON key-value pairs
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+        required: true
+      responses:
+        '200':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+              example:
+                entity:
+                  jobId: e6d9bae8-657b-4e2f-8524-c0222db66355
+                  statusUrl: http://localhost:8080/api/v1/_import/e6d9bae8-657b-4e2f-8524-c0222db66355
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: 'Bad Request: Invalid parameters or malformed JSON.'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User lacks permission to enqueue jobs in the specified queue.'
+        '404':
+          description: 'Not Found: Queue with the specified name does not exist.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while creating the job.'
+  /api/v1/jobs/failed:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves failed jobs
+      description: Fetches a paginated list of failed jobs. Results can be paginated using query parameters.
+      operationId: getFailedJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of failed jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/{jobId}/status:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves job status information
+      description: Returns detailed status information for a specific job including progress, state, and results.
+      operationId: getJobStatus_1
+      parameters:
+      - name: jobId
+        in: path
+        description: Unique identifier (UUID) of the job.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Job status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '400':
+          description: Bad request - Invalid job ID
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks required permissions
+        '404':
+          description: Job not found
+        '500':
+          description: Internal server error
+  /api/v1/jobs/queues:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves available job queues
+      description: Returns a list of all available job queue names that can be used for submitting jobs.
+      operationId: getQueues
+      responses:
+        '200':
+          description: Queues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityView'
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User lacks required permissions
+        '500':
+          description: Internal server error
+  /api/v1/jobs:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves jobs
+      description: Fetches a paginated list of all jobs regardless of state. Results can be paginated using query parameters.
+      operationId: listJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based indexing).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+  /api/v1/jobs/{jobId}/monitor:
+    get:
+      tags:
+      - Job Queue
+      summary: Monitor a job in real time
+      description: Establishes a Server-Sent Events (SSE) connection to monitor the progress of a specific job in real-time. This endpoint will continuously send updates as the job progresses, including status changes and completion information.
+      operationId: monitorJob
+      parameters:
+      - name: jobId
+        in: path
+        description: The unique identifier (UUID) of the job whose status is to be retrieved.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: e6d9bae8-657b-4e2f-8524-c0222db66355
+      responses:
+        '200':
+          description: Server-Sent Events stream established successfully. Events will be sent as the job progresses.
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/EventOutput'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have permissions to monitor the specified job.'
+        '404':
+          description: 'Not Found: Job with the specified ID could not be found.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while establishing the monitoring connection.'
+  /api/v1/jobs/successful:
+    get:
+      tags:
+      - Job Queue
+      summary: Retrieves successful jobs
+      description: Fetches a paginated list of successful jobs. Results can be paginated using query parameters.
+      operationId: getSuccessfulJobs
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based).
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: Number of records per page.
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        '200':
+          description: Successfully retrieved the paginated list of successful jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobPaginatedResultView'
+        '401':
+          description: 'Unauthorized: Invalid or missing user authentication.'
+        '403':
+          description: 'Forbidden: User does not have necessary permissions to view jobs.'
+        '500':
+          description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
+components:
+  schemas:
+    JobResult:
+      type: object
+      properties:
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    JobPaginatedResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        jobs:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/Job'
+            last:
+              $ref: '#/components/schemas/Job'
+          items:
+            $ref: '#/components/schemas/Job'
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        queueName:
+          type: string
+        state:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - SUCCESS
+          - FAILED
+          - FAILED_PERMANENTLY
+          - ABANDONED
+          - ABANDONED_PERMANENTLY
+          - CANCEL_REQUESTED
+          - CANCELLING
+          - CANCELED
+        executionNode:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        result:
+          $ref: '#/components/schemas/JobResult'
+        parameters:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        retryCount:
+          type: integer
+          format: int32
+        progress:
+          type: number
+          format: float
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    ResponseEntityJobPaginatedResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobPaginatedResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobParamsSchema:
+      type: object
+      properties:
+        file:
+          type: string
+          description: The file to be processed by the job.
+          format: binary
+        params:
+          type: string
+          description: JSON string with job-specific parameters.
+          example: '{"contentType":"CustomContentType","workflowActionId":"Workflow-UUID","language":"en-us","stopOnError":true}'
+      description: Schema for multipart job queue parameters.
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorDetail:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptionClass:
+          type: string
+        stackTrace:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        processingStage:
+          type: string

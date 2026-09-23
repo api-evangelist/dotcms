@@ -1,0 +1,838 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Dot Auth API
+  version: '3'
+  description: 'OAuth/OIDC and SAML authentication: per-site configuration (SYSTEM_HOST is the global default) and headless OIDC token exchange'
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: dotAuth
+  description: 'OAuth/OIDC and SAML authentication: per-site configuration (SYSTEM_HOST is the global default) and headless OIDC token exchange'
+paths:
+  /api/v1/dotauth/oauth/exchange:
+    post:
+      tags:
+      - dotAuth
+      summary: Exchange an OIDC id_token for a dotAuth session-ref
+      description: Validates the caller-supplied id_token against the configured OIDC provider's JWKS (signature, iss, aud == our client_id, exp, nonce), resolves or JIT-provisions the matching dotCMS user, and returns an opaque session-ref bound to that user.
+      operationId: exchange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OAuthExchangeForm'
+      responses:
+        '200':
+          description: Token exchange succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityOAuthExchangeView'
+        '400':
+          description: Malformed payload or non-OIDC provider configured
+        '401':
+          description: id_token failed validation (signature, iss, aud, exp, or nonce)
+        '403':
+          description: Resolved dotCMS user exists but is not active
+        '404':
+          description: Exchange endpoint not found
+        '503':
+          description: OAuth is not configured for this site
+    options:
+      tags:
+      - dotAuth
+      operationId: exchangePreflight
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Exchange preflight
+      x-summary-source: derived
+  /api/v1/dotauth/sites/{hostId}:
+    get:
+      tags:
+      - dotAuth
+      summary: Get the dotAuth configuration for a site
+      description: Returns the protocol-specific configuration stored for the given hostId. Use the sentinel "SYSTEM_HOST" for the global default. When the host has no row of its own and the system default is configured, the response carries inherited=true and values holds the system defaults. Hidden secrets (e.g. clientSecret, privateKey) are masked as "****".
+      operationId: getDotAuthConfig
+      parameters:
+      - name: hostId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityDotAuthConfigView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have permission to read this site
+        '404':
+          description: Site not found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+      - dotAuth
+      summary: Save (upsert) the dotAuth configuration for a site
+      description: Writes the chosen protocol's secrets for the given hostId and deletes the other protocol's row for that host (mutual exclusion). Posting "****" on a hidden field preserves the stored value.
+      operationId: saveDotAuthConfig
+      parameters:
+      - name: hostId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DotAuthConfigForm'
+      responses:
+        '200':
+          description: Configuration saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '400':
+          description: Invalid form payload
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have permission to edit this site
+        '404':
+          description: Site not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+      - dotAuth
+      summary: Clear the dotAuth configuration for a site
+      description: Deletes both OAuth and SAML secret rows for the given hostId. On SYSTEM_HOST this removes the global default; non-system hosts fall back to inheriting from SYSTEM_HOST afterward.
+      operationId: clearDotAuthConfig
+      parameters:
+      - name: hostId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Configuration cleared successfully
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have permission to edit this site
+        '404':
+          description: Site not found
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/headless:
+    put:
+      tags:
+      - dotAuth
+      summary: Save the system-level headless token-exchange configuration
+      description: Writes headless config to SYSTEM_HOST. Headless config is system-wide (not per-site). SSO saves/deletes never affect it.
+      operationId: saveDotAuthHeadlessConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        '200':
+          description: Headless config saved
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+      - dotAuth
+      summary: Clear the system-level headless token-exchange configuration
+      description: Deletes the headless config. SSO config is not affected.
+      operationId: clearDotAuthHeadlessConfig
+      responses:
+        '204':
+          description: Headless config cleared
+        '401':
+          description: Authentication required
+        '403':
+          description: Insufficient permissions
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/discover/oidc:
+    post:
+      tags:
+      - dotAuth
+      summary: Fetch and parse an OIDC discovery document
+      description: Thin authenticated proxy used by the dotAuth portlet to populate issuer, endpoint, JWKS, and supported algorithm fields from a .well-known/openid-configuration URL.
+      operationId: discoverDotAuthOidc
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        '200':
+          description: Discovery document parsed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: 'Parsed OIDC discovery fields: issuer, endpoints, JWKS URI, and signing algorithms'
+        '400':
+          description: Missing or invalid discovery URL
+        '401':
+          description: Authentication required
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/export:
+    post:
+      tags:
+      - dotAuth
+      summary: Export all dotAuth AppSecrets
+      description: Exports OAuth/OIDC, SAML, and headless dotAuth AppSecrets into one encrypted Apps export file.
+      operationId: exportDotAuthAppSecrets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        '200':
+          description: Encrypted export file
+          content:
+            application/octet-stream: {}
+        '400':
+          description: Invalid password or no secrets configured
+        '401':
+          description: Authentication required
+        '403':
+          description: Admin access required
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/fetch/saml-metadata:
+    post:
+      tags:
+      - dotAuth
+      summary: Fetch SAML IdP metadata XML from a URL
+      description: Authenticated proxy that fetches SAML metadata XML from an IdP's metadata endpoint URL. Returns the raw XML as a string so the admin can review it before saving.
+      operationId: fetchSamlMetadata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: object
+      responses:
+        '200':
+          description: Metadata fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Object with a single 'xml' field containing the raw metadata XML
+        '400':
+          description: Missing or invalid metadata URL
+        '401':
+          description: Authentication required
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/saml/metadata/{hostId}:
+    get:
+      tags:
+      - dotAuth
+      summary: Download SAML SP metadata XML for a site
+      description: Generates SAML Service Provider metadata XML for the given site. For inherited configs the certificate comes from the SYSTEM_HOST row, but the entity ID and ACS URL use the target site's hostname so the IdP can distinguish per-site requests.
+      operationId: getSamlSpMetadata
+      parameters:
+      - name: hostId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SP metadata XML
+          content:
+            application/xml: {}
+        '401':
+          description: Authentication required
+        '404':
+          description: No SAML configuration found for this site
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/import:
+    post:
+      tags:
+      - dotAuth
+      summary: Import dotAuth AppSecrets
+      description: Imports an encrypted Apps export file containing only OAuth/OIDC, SAML, and headless dotAuth AppSecrets.
+      operationId: importDotAuthAppSecrets
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormDataMultiPart'
+      responses:
+        '200':
+          description: Import succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Import result with count of imported secrets
+        '400':
+          description: Invalid password, empty file, or non-dotAuth secrets in file
+        '401':
+          description: Authentication required
+        '403':
+          description: Admin access required
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/sites:
+    get:
+      tags:
+      - dotAuth
+      summary: List all sites with their dotAuth status
+      description: Returns the SYSTEM_HOST (global default) status plus a per-site list indicating whether each site has its own OAuth/SAML configuration, inherits from the system default, or is unconfigured.
+      operationId: listDotAuthSites
+      responses:
+        '200':
+          description: Sites retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityDotAuthSitesView'
+        '401':
+          description: Authentication required
+        '403':
+          description: User does not have permission to access dotAuth
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/sessionrefs/revoke:
+    post:
+      tags:
+      - dotAuth
+      summary: Revoke all dotAuth sessionRefs
+      description: Flushes the dotAuth sessionRef cache. Existing browser sessions are not affected.
+      operationId: revokeDotAuthSessionRefs
+      responses:
+        '200':
+          description: All session-refs revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '401':
+          description: Authentication required
+        '403':
+          description: Admin access required
+        '500':
+          description: Internal server error
+  /api/v1/dotauth/oauth/session:
+    delete:
+      tags:
+      - dotAuth
+      summary: Invalidate the caller's dotAuth session-ref
+      description: 'Removes the session referenced by the Authorization: Bearer header from the in-memory session cache. Always returns 204 — unknown or missing refs are silently ignored so this is safe to call unconditionally on sign-out.'
+      operationId: logout
+      responses:
+        '204':
+          description: Session invalidated (or was unknown)
+components:
+  schemas:
+    SiteRowView:
+      type: object
+      properties:
+        hostId:
+          type: string
+        hostName:
+          type: string
+        status:
+          type: string
+          enum:
+          - SITE_OVERRIDE
+          - INHERITED
+          - NOT_CONFIGURED
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+    ResponseEntityOAuthExchangeView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/OAuthExchangeView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageBodyWorkers:
+      type: object
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    DotAuthSitesView:
+      type: object
+      properties:
+        system:
+          $ref: '#/components/schemas/SystemView'
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteRowView'
+    FormDataMultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    DotAuthConfigView:
+      type: object
+      properties:
+        hostId:
+          type: string
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        configured:
+          type: boolean
+        inherited:
+          type: boolean
+        values:
+          type: object
+          additionalProperties:
+            type: object
+        headlessValues:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SystemView:
+      type: object
+      properties:
+        configured:
+          type: boolean
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        headlessConfigured:
+          type: boolean
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    DotAuthConfigForm:
+      required:
+      - values
+      type: object
+      properties:
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        values:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityDotAuthConfigView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DotAuthConfigView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    OAuthExchangeView:
+      type: object
+      properties:
+        sessionRef:
+          type: string
+        expiresAt:
+          type: string
+        expirationDays:
+          type: integer
+          format: int32
+        user:
+          $ref: '#/components/schemas/UserSummary'
+    ResponseEntityDotAuthSitesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DotAuthSitesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    OAuthExchangeForm:
+      required:
+      - idToken
+      - nonce
+      type: object
+      properties:
+        idToken:
+          type: string
+        nonce:
+          type: string
+        expirationDays:
+          type: integer
+          format: int32
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string

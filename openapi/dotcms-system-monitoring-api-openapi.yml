@@ -1,0 +1,36 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST System Monitoring API
+  version: '3'
+  description: System monitoring and health checks
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: System Monitoring
+  description: System monitoring and health checks
+paths:
+  /api/v1/{a}:
+    get:
+      tags:
+      - System Monitoring
+      operationId: heavyCheck
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Heavy check
+      x-summary-source: derived
+  /api/v1/{a}/{a}:
+    get:
+      tags:
+      - System Monitoring
+      operationId: ready
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Ready
+      x-summary-source: derived

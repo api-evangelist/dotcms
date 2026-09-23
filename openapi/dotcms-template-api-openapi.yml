@@ -1,0 +1,1080 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Template API
+  version: '3'
+  description: Template CRUD, publish, archive, and layout management endpoints
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Template
+  description: Template CRUD, publish, archive, and layout management endpoints
+paths:
+  /api/v1/templates/_archive:
+    put:
+      tags:
+      - Template
+      summary: Archive templates in bulk
+      description: Archives one or more templates identified by their identifiers. The user must have Edit permissions on each template. Returns a bulk result with success count and details of any failures.
+      operationId: archiveTemplates
+      requestBody:
+        description: List of template identifiers to archive
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk archive operation completed. Check the response body for individual success/failure details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Request body is empty or not a valid list of identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/v1/templates/{templateId}/_copy:
+    put:
+      tags:
+      - Template
+      summary: Copy a template
+      description: Creates a duplicate of the specified template. The copy will be a new working version with a new identifier. Returns 404 if the template does not exist.
+      operationId: copyTemplate
+      parameters:
+      - name: templateId
+        in: path
+        description: Template identifier to copy
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Template copied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Template with the given identifier does not exist
+          content:
+            application/json: {}
+  /api/v1/templates:
+    get:
+      tags:
+      - Template
+      summary: List templates
+      description: Returns a paginated list of templates that the authenticated user has READ permissions on. Each template returned is the current working version. Results can be filtered by title, site, and archive status. Use hostId='*' to search across all sites.
+      operationId: listTemplates
+      parameters:
+      - name: filter
+        in: query
+        description: Filter templates by title or identifier pattern
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number to return (zero-based)
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        description: 'Number of items per page (default: 40)'
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: orderby
+        in: query
+        description: 'Field to order results by (default: mod_date)'
+        schema:
+          type: string
+          default: mod_date
+      - name: direction
+        in: query
+        description: 'Sort direction: ASC or DESC (default: DESC)'
+        schema:
+          type: string
+          default: DESC
+      - name: host
+        in: query
+        description: Site identifier to filter templates by. Use '*' to search across all sites
+        schema:
+          type: string
+      - name: archive
+        in: query
+        description: 'If true, returns only archived templates (default: false)'
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Paginated list of templates returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListTemplateView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Template
+      summary: Update an existing template
+      description: 'Saves a new working version of an existing template. The form must contain the template identifier. The ''theme'' field in the form corresponds to the theme folder identifier (referred to as ''themeId'' in other endpoints). Returns 404 if the template does not exist.
+
+
+        When `drawed` is true: `body` is REQUIRED and non-empty (else 400 ''body required when drawed''), and `theme` MUST resolve to a theme **folder** identifier (else 400 ''theme must be a folder identifier''). Include `drawedBody` (the layout JSON) so the template stays a real drawn template.
+
+
+        For a themed drawn template, `body` is a generated compatibility shell and is not used to assemble the rendered page; the theme''s `template.vtl` and `drawedBody` are authoritative. A persisted `/themes/null/` reference in that shell is benign, and changing `body` does not repair or affect themed drawn rendering because the server regenerates it.'
+      operationId: updateTemplate
+      requestBody:
+        description: Template data to update. Must include the template identifier.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateForm'
+        required: true
+      responses:
+        '200':
+          description: Template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '400':
+          description: Invalid template data
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Template with the given identifier does not exist
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Template
+      summary: Create a new template
+      description: 'Creates a new working version of a template. The ''theme'' field in the form corresponds to the theme folder identifier (referred to as ''themeId'' in other endpoints). If a layout is provided, the template is saved as a designed (drawed) template with its layout.
+
+
+        When `drawed` is true (a layout-designer template): `body` is REQUIRED and must be non-empty (a null body returns 400 ''body required when drawed''), and `theme` MUST resolve to a theme **folder** identifier — a host id or other non-folder id returns 400 ''theme must be a folder identifier''. Provide `drawedBody` (the layout JSON) as well so the template is a real drawn template.
+
+
+        For a themed drawn template, `body` is a generated compatibility shell and is not the render source; rendering flows through the theme''s `template.vtl` and `drawedBody`. The stored shell may contain `/themes/null/` even when `theme` and `themeName` are correct. That value is benign for this template kind, and PUT-updating `body` will only cause the shell to be regenerated.'
+      operationId: createTemplate
+      requestBody:
+        description: Template data to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateForm'
+        required: true
+      responses:
+        '200':
+          description: Template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '400':
+          description: Invalid template data
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Template
+      summary: Delete templates in bulk
+      description: Permanently deletes one or more templates identified by their identifiers. Each template must be archived and have no page dependencies (no pages referencing it). The user must have Edit permissions. Returns a bulk result with success count and details of any failures.
+      operationId: deleteTemplates
+      requestBody:
+        description: List of template identifiers to delete
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk delete operation completed. Check the response body for individual success/failure details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Request body is empty or not a valid list of identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/v1/templates/image:
+    post:
+      tags:
+      - Template
+      summary: Get the image associated with a template
+      description: Returns metadata about the image contentlet associated with a template, including the image's inode, name, identifier, and file extension. Returns 404 if the template does not exist or has no associated image.
+      operationId: fetchTemplateImage
+      requestBody:
+        description: Form containing the template identifier to look up the image for
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateImageForm'
+        required: true
+      responses:
+        '200':
+          description: Template image metadata returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Template image metadata containing inode, name, identifier, and file extension of the associated image contentlet
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Template does not exist or has no associated image
+          content:
+            application/json: {}
+  /api/v1/templates/{templateId}/live:
+    get:
+      tags:
+      - Template
+      summary: Get live version of a template
+      description: Returns the live (published) version of a template identified by its identifier. Throws a 404 error if no live version exists.
+      operationId: getLiveTemplateById
+      parameters:
+      - name: templateId
+        in: path
+        description: Template identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Live template version returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Live version of the template does not exist
+          content:
+            application/json: {}
+  /api/v1/templates/{templateId}/working:
+    get:
+      tags:
+      - Template
+      summary: Get working version of a template
+      description: Returns the working (latest draft) version of a template identified by its identifier. Throws a 404 error if the template does not exist.
+      operationId: getWorkingTemplateById
+      parameters:
+      - name: templateId
+        in: path
+        description: Template identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Working template version returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Working version of the template does not exist
+          content:
+            application/json: {}
+  /api/v1/templates/_publish:
+    put:
+      tags:
+      - Template
+      summary: Publish templates in bulk
+      description: Publishes one or more templates identified by their identifiers. The user must have Publish permissions on each template, and the templates must not be archived. Returns a bulk result with success count and details of any failures.
+      operationId: publishTemplates
+      requestBody:
+        description: List of template identifiers to publish
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk publish operation completed. Check the response body for individual success/failure details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Request body is empty or not a valid list of identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/v1/templates/_savepublish:
+    put:
+      tags:
+      - Template
+      summary: Save and publish a template
+      description: Saves and immediately publishes a template in a single operation. If the form contains an identifier, it updates the existing template; otherwise, it creates a new one. The 'theme' field in the form corresponds to the theme folder identifier (referred to as 'themeId' in other endpoints). Requires Publish permissions.
+      operationId: saveAndPublishTemplate
+      requestBody:
+        description: Template data to save and publish. Optionally include identifier to update an existing template.
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/TemplateForm'
+        required: true
+      responses:
+        '200':
+          description: Template saved and published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '400':
+          description: Invalid template data
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '403':
+          description: User does not have Publish permissions on the template
+          content:
+            application/json: {}
+  /api/v1/templates/draft:
+    put:
+      tags:
+      - Template
+      summary: Save a template as draft
+      description: Saves a new draft version of an existing template without publishing it. The form must contain the template identifier. The 'theme' field in the form corresponds to the theme folder identifier (referred to as 'themeId' in other endpoints). Returns 404 if the template does not exist.
+      operationId: saveTemplateDraft
+      requestBody:
+        description: Template draft data to save. Must include the template identifier.
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/TemplateForm'
+        required: true
+      responses:
+        '200':
+          description: Template draft saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityTemplateView'
+        '400':
+          description: Invalid template data
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+        '404':
+          description: Template with the given identifier does not exist
+          content:
+            application/json: {}
+  /api/v1/templates/_unarchive:
+    put:
+      tags:
+      - Template
+      summary: Unarchive templates in bulk
+      description: Unarchives one or more previously archived templates identified by their identifiers. The user must have Edit permissions on each template and the templates must be currently archived. Returns a bulk result with success count and details of any failures.
+      operationId: unarchiveTemplates
+      requestBody:
+        description: List of template identifiers to unarchive
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk unarchive operation completed. Check the response body for individual success/failure details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Request body is empty or not a valid list of identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+  /api/v1/templates/_unpublish:
+    put:
+      tags:
+      - Template
+      summary: Unpublish templates in bulk
+      description: Unpublishes one or more templates identified by their identifiers. The user must have Publish permissions on each template, and the templates must not be archived. Returns a bulk result with success count and details of any failures.
+      operationId: unpublishTemplates
+      requestBody:
+        description: List of template identifiers to unpublish
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Bulk unpublish operation completed. Check the response body for individual success/failure details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBulkResultView'
+        '400':
+          description: Request body is empty or not a valid list of identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Authentication required
+          content:
+            application/json: {}
+components:
+  schemas:
+    ContainerUUID:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: 'Reference to the Container placed in this layout slot. Accepts any ONE of three forms:
+
+            - a Container **identifier** for a database-backed Container — a full UUID (''2cef9f97-5faf-4d18-8c9b-df22b6c17111'') or a dotCMS ''shorty'' (short) id; or
+
+            - a **file path** for a file-based (Container-as-File) Container — host-qualified (''//demo.dotcms.com/application/containers/default/'') or host-relative (''/application/containers/default/'', resolved against the current site); or
+
+            - the literal string ''SYSTEM_CONTAINER'' for the built-in system Container.
+
+            The server chooses the resolution strategy by inspecting the value: a string containing ''/application/containers'' is resolved as a file-path Container, ''SYSTEM_CONTAINER'' resolves to the system Container, and anything else is looked up as a database identifier. A value that does not resolve to an existing Container produces no container at render time (the slot renders empty) rather than falling back to another Container — pass the exact identifier or the full host-qualified path.'
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+        historyUUIDs:
+          type: array
+          items:
+            type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    BodyView:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutRowView'
+    SidebarView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        location:
+          type: string
+        width:
+          type: string
+    TemplateImageForm:
+      type: object
+      properties:
+        templateId:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    ResponseEntityTemplateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TemplateView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Template:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        body:
+          type: string
+        selectedimage:
+          type: string
+        image:
+          type: string
+        drawed:
+          type: boolean
+        drawedBody:
+          type: string
+        countAddContainer:
+          type: integer
+          format: int32
+        countContainers:
+          type: integer
+          format: int32
+        headCode:
+          type: string
+        theme:
+          type: string
+        themeName:
+          type: string
+        header:
+          type: string
+        footer:
+          type: string
+        template:
+          type: boolean
+        isTemplate:
+          type: boolean
+          writeOnly: true
+        anonymous:
+          type: boolean
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    ResponseEntityListTemplateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    TemplateLayoutColumnView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        width:
+          type: integer
+          format: int32
+        leftOffset:
+          type: integer
+          format: int32
+        styleClass:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    TemplateLayoutRowView:
+      type: object
+      properties:
+        styleClass:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutColumnView'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    TemplateForm:
+      required:
+      - title
+      type: object
+      properties:
+        siteId:
+          type: string
+          description: Identifier of the site (host) where this template will be created. This is a site identifier UUID, not 'hostId'. If not provided, the template is assigned to the site resolved from the current HTTP request context.
+        identifier:
+          type: string
+          description: Identifier of the template. Required for updates, ignored on creation.
+        inode:
+          type: string
+          description: Inode (version identifier) of the template. Server-managed; typically omitted on input.
+        body:
+          type: string
+          description: Raw Velocity markup that renders the template. Required even when 'drawed:true' — send an empty string ('') when using the layout builder ('layout') instead of hand-written body.
+        selectedimage:
+          type: string
+          description: Identifier of the image asset currently selected as the template thumbnail in the UI.
+        image:
+          type: string
+          description: Identifier of the image asset used as the template thumbnail.
+        drawed:
+          type: boolean
+          description: Whether this template was built with the visual layout builder. When true, provide 'layout' (the row/column/container structure); when false, provide 'body'.
+        showOnMenu:
+          type: boolean
+          description: Whether this template should appear in navigation menus.
+        drawedBody:
+          type: string
+          description: Velocity body generated by the layout builder for a drawn template. Server-managed.
+        countAddContainer:
+          type: integer
+          description: Count of 'add container' placeholders in the layout. Server-managed; typically omitted.
+          format: int32
+        countContainers:
+          type: integer
+          description: Count of containers in the layout. Server-managed; typically omitted.
+          format: int32
+        headCode:
+          type: string
+          description: Velocity/HTML injected into the page <head> for pages using this template.
+        theme:
+          type: string
+          description: Theme folder identifier (not a path) that supplies the template's CSS/JS and VTL fragments. Resolve the folder identifier from a path via GET /api/v1/folder/sitename/{site}/uri/{uri}.
+        themeName:
+          type: string
+          description: Display name of the theme. Informational; 'theme' (the folder identifier) is authoritative.
+        footer:
+          type: string
+          description: Velocity/HTML footer fragment for pages using this template.
+        friendlyName:
+          type: string
+          description: Friendly (human-readable) name of the template.
+        header:
+          type: string
+          description: Velocity/HTML header fragment for pages using this template.
+        name:
+          type: string
+          description: Internal/asset name of the template.
+        title:
+          type: string
+          description: Title of the template (displayed in the UI).
+        sortOrder:
+          type: integer
+          description: Sort order for display purposes.
+          format: int32
+        headerCheck:
+          type: boolean
+          description: Whether the header fragment is enabled for this template.
+        footerCheck:
+          type: boolean
+          description: Whether the footer fragment is enabled for this template.
+        layout:
+          $ref: '#/components/schemas/TemplateLayoutView'
+      description: Form used to create or update a Template in dotCMS. A Template can be either drawn with the layout builder (set 'drawed:true' and provide 'layout') or authored as raw Velocity markup (provide 'body').
+    ThemeView:
+      type: object
+      properties:
+        path:
+          type: string
+        defaultFileType:
+          type: string
+        filesMasks:
+          type: string
+        getiDate:
+          type: string
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+    TemplateLayoutView:
+      type: object
+      properties:
+        width:
+          type: string
+        title:
+          type: string
+        header:
+          type: boolean
+        footer:
+          type: boolean
+        body:
+          $ref: '#/components/schemas/BodyView'
+        sidebar:
+          $ref: '#/components/schemas/SidebarView'
+      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Container:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        code:
+          type: string
+        maxContentlets:
+          type: integer
+          format: int32
+        useDiv:
+          type: boolean
+        preLoop:
+          type: string
+        postLoop:
+          type: string
+        notes:
+          type: string
+        hostName:
+          type: string
+        hostId:
+          type: string
+        variant:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    TemplateView:
+      type: object
+      properties:
+        identifier:
+          type: string
+        inode:
+          type: string
+        categoryId:
+          type: string
+        body:
+          type: string
+        selectedimage:
+          type: string
+        image:
+          type: string
+        drawed:
+          type: boolean
+        deleted:
+          type: boolean
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        lockedBy:
+          type: string
+        working:
+          type: boolean
+        hasLiveVersion:
+          type: boolean
+        showOnMenu:
+          type: boolean
+        drawedBody:
+          type: string
+        countAddContainer:
+          type: integer
+          format: int32
+        countContainers:
+          type: integer
+          format: int32
+        headCode:
+          type: string
+        theme:
+          type: string
+        themeName:
+          type: string
+        footer:
+          type: string
+        friendlyName:
+          type: string
+        header:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        canRead:
+          type: boolean
+        canWrite:
+          type: boolean
+        canPublish:
+          type: boolean
+        layout:
+          $ref: '#/components/schemas/TemplateLayoutView'
+        containers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerView'
+        themeInfo:
+          $ref: '#/components/schemas/ThemeView'
+        hostName:
+          type: string
+        hostId:
+          type: string
+        fullTitle:
+          type: string
+        htmlTitle:
+          type: string
+        new:
+          type: boolean

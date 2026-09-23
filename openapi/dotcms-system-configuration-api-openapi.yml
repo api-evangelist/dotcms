@@ -1,0 +1,840 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST System Configuration API
+  version: '3'
+  description: System configuration and company settings
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: System Configuration
+  description: System configuration and company settings
+paths:
+  /api/config/deleteEndpoint:
+    post:
+      tags:
+      - System Configuration
+      operationId: deleteEndpoint
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                endPoint:
+                  type: string
+                type:
+                  type: string
+                callback:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      deprecated: true
+      summary: Delete endpoint
+      x-summary-source: derived
+  /api/config/deleteEnvironment:
+    post:
+      tags:
+      - System Configuration
+      operationId: deleteEnvironment
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                environment:
+                  type: string
+                type:
+                  type: string
+                callback:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Delete environment
+      x-summary-source: derived
+  /api/config/regenerateKey:
+    post:
+      tags:
+      - System Configuration
+      operationId: regenerateKey
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Regenerate key
+      x-summary-source: derived
+  /api/config/saveCompanyAuthTypeInfo:
+    post:
+      tags:
+      - System Configuration
+      operationId: saveCompanyAuthTypeInfo
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                authType:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Save company auth type info
+      x-summary-source: derived
+  /api/config/saveCompanyBasicInfo:
+    post:
+      tags:
+      - System Configuration
+      operationId: saveCompanyBasicInfo
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                portalURL:
+                  type: string
+                mx:
+                  type: string
+                emailAddress:
+                  type: string
+                size:
+                  type: string
+                type:
+                  type: string
+                street:
+                  type: string
+                homeURL:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Save company basic info
+      x-summary-source: derived
+  /api/config/saveCompanyLocaleInfo:
+    post:
+      tags:
+      - System Configuration
+      operationId: saveCompanyLocaleInfo
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                languageId:
+                  type: string
+                timeZoneId:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Save company locale info
+      x-summary-source: derived
+  /api/config/saveCompanyLogo:
+    post:
+      tags:
+      - System Configuration
+      operationId: saveCompanyLogo
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                logoFile:
+                  $ref: '#/components/schemas/FormDataContentDisposition'
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      deprecated: true
+      summary: Save company logo
+      x-summary-source: derived
+  /api/v1/configuration/branding:
+    get:
+      tags:
+      - System Configuration
+      summary: Get company configuration
+      description: Returns the full company configuration including branding, authentication settings, and metadata for the admin editing UI.
+      operationId: getCompanyConfig
+      responses:
+        '200':
+          description: Company configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCompanyConfigView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+    put:
+      tags:
+      - System Configuration
+      summary: Save company basic info and branding
+      description: Updates the company's portal URL, email address, branding colors, logos, and background image. Navigation bar logo requires Enterprise license.
+      operationId: saveBasicInfo
+      requestBody:
+        description: Company basic info and branding settings
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyBasicInfoForm'
+        required: true
+      responses:
+        '200':
+          description: Company basic info updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCompanyConfigView'
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/configuration/_regenerateKey:
+    post:
+      tags:
+      - System Configuration
+      summary: Regenerate company security key
+      description: Regenerates the company's security key and returns the SHA-256 digest of the new key. This operation cannot be undone.
+      operationId: regenerateKey_1
+      responses:
+        '200':
+          description: Security key regenerated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/configuration/authentication:
+    put:
+      tags:
+      - System Configuration
+      summary: Save company authentication type
+      description: Updates the authentication method used for user login. Accepts 'emailAddress' or 'userId'.
+      operationId: saveAuthType
+      requestBody:
+        description: Authentication type setting
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyAuthTypeForm'
+        required: true
+      responses:
+        '200':
+          description: Authentication type updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCompanyConfigView'
+        '400':
+          description: Bad request - invalid auth type
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/configuration/locale:
+    put:
+      tags:
+      - System Configuration
+      summary: Save company locale info
+      description: Updates the locale (language and timezone) for the current company. This sets the default language and timezone for the system.
+      operationId: saveLocaleInfo
+      requestBody:
+        description: Locale settings to apply
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyLocaleForm'
+        required: true
+      responses:
+        '200':
+          description: Locale settings updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityCompanyConfigView'
+        '400':
+          description: Invalid locale parameters (e.g. invalid timezone)
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/appconfiguration:
+    get:
+      tags:
+      - System Configuration
+      operationId: list_5
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: List 5
+      x-summary-source: derived
+  /api/v1/configuration/config:
+    get:
+      tags:
+      - System Configuration
+      summary: Retrieve whitelisted configuration values
+      description: Returns a map of configuration key to value for each requested key that is present in the server whitelist. Boolean feature-flag keys (those in BOOLEAN_FEATURE_FLAGS) are normalised to the lowercase strings "true" or "false" regardless of how they are stored in the properties file; undefined flags return the sentinel string "NOT_FOUND". Keys prefixed with "number:" return an Integer, "list:" returns an array of strings, "boolean:" returns a native JSON boolean. All other whitelisted keys return their raw string value. Keys not on the whitelist are silently excluded.
+      operationId: getConfigVariables
+      parameters:
+      - name: keys
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Map of key to configuration value
+          content:
+            application/json:
+              schema:
+                type: object
+                description: 'Map of configuration key to value. Value type depends on the key: normalised string "true"/"false" for boolean feature flags, "NOT_FOUND" for undefined flags, Integer for number:-prefixed keys, array for list:-prefixed keys, native boolean for boolean:-prefixed keys, raw string otherwise.'
+                example:
+                  FEATURE_FLAG_EXPERIMENTS: 'true'
+                  EMAIL_SYSTEM_ADDRESS: admin@example.com
+                  FEATURE_FLAG_UVE_STYLE_EDITOR: NOT_FOUND
+        '401':
+          description: User is not authenticated
+  /api/v1/configuration:
+    get:
+      tags:
+      - System Configuration
+      operationId: list_6
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: List 6
+      x-summary-source: derived
+    put:
+      tags:
+      - System Configuration
+      operationId: set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+      summary: Set
+      x-summary-source: derived
+  /api/v1/configuration/_validateCompanyEmail:
+    post:
+      tags:
+      - System Configuration
+      operationId: validateEmail
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/CompanyEmailForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Validate email
+      x-summary-source: derived
+  /api/v1/system-table/{key}:
+    get:
+      tags:
+      - System Configuration
+      operationId: get_4
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+      summary: Get 4
+      x-summary-source: derived
+    delete:
+      tags:
+      - System Configuration
+      operationId: delete_9
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+      summary: Delete 9
+      x-summary-source: derived
+  /api/v1/system-table/_delete:
+    delete:
+      tags:
+      - System Configuration
+      operationId: deleteWithKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+      summary: Delete with key
+      x-summary-source: derived
+  /api/v1/system-table:
+    get:
+      tags:
+      - System Configuration
+      operationId: getAll_2
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewMapStringString'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityViewMapStringString'
+      summary: Get all 2
+      x-summary-source: derived
+    put:
+      tags:
+      - System Configuration
+      summary: Updates an existing system table entry
+      description: 'Updates the value of an existing key in the system table, or returns a 404 if the key does not exist. The change is applied cluster wide: every node is notified and re-resolves the key, so the request does not need to be repeated against each node.'
+      operationId: update_8
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyValueForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+    post:
+      tags:
+      - System Configuration
+      summary: Saves or updates a system table entry
+      description: 'Saves or updates the value of a key in the system table. The change is applied cluster wide: every node is notified and re-resolves the key, so the request does not need to be repeated against each node.'
+      operationId: save
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/KeyValueForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+            application/javascript:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+components:
+  schemas:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CompanyEmailForm:
+      type: object
+      properties:
+        senderAndEmail:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    CompanyBasicInfoForm:
+      required:
+      - emailAddress
+      - portalURL
+      - primaryColor
+      - secondaryColor
+      type: object
+      properties:
+        portalURL:
+          type: string
+          description: Portal URL for the dotCMS instance
+          example: http://localhost:8080
+        emailAddress:
+          type: string
+          description: Company email address used as the system sender. Accepts plain email (e.g. 'admin@dotcms.com') or display name format (e.g. 'dotCMS Website <website@dotcms.com>'). The mx domain is derived from this value when mx is not provided.
+          example: admin@dotcms.com
+        mx:
+          type: string
+          description: Mail exchange domain (derived from emailAddress if not provided)
+          example: dotcms.com
+        primaryColor:
+          type: string
+          description: Primary branding color (hex)
+          example: '#C336E5'
+        secondaryColor:
+          type: string
+          description: Secondary branding color (hex)
+          example: '#54428E'
+        backgroundColor:
+          type: string
+          description: Background branding color (hex). Cleared if omitted.
+          example: '#3C1361'
+        backgroundImage:
+          type: string
+          description: Background image path (dotAsset path starting with /dA). Cleared if omitted.
+          example: /dA/abc123/background.png
+        loginScreenLogo:
+          type: string
+          description: Login screen logo path (dotAsset path starting with /dA). Cleared if omitted.
+          example: /dA/abc123/logo.png
+        navBarLogo:
+          type: string
+          description: Navigation bar logo path (dotAsset path starting with /dA, Enterprise only). Cleared if omitted.
+          example: /dA/abc123/nav-logo.png
+      description: Company basic information and branding settings
+    CompanyConfigView:
+      required:
+      - authType
+      - companyId
+      - companyName
+      - emailAddress
+      - mx
+      - portalURL
+      type: object
+      properties:
+        companyId:
+          type: string
+          description: Company identifier
+          example: dotcms.org
+        companyName:
+          type: string
+          description: Company display name
+          example: dotcms.org
+        portalURL:
+          type: string
+          description: Portal URL for the dotCMS instance
+          example: http://localhost:8080
+        emailAddress:
+          type: string
+          description: Company email address used as the system sender. May be a plain email or display name format (e.g. 'dotCMS Website <website@dotcms.com>')
+          example: admin@dotcms.com
+        mx:
+          type: string
+          description: Mail exchange domain for outgoing email
+          example: dotcms.com
+        primaryColor:
+          type: string
+          description: Primary branding color (hex)
+          example: '#C336E5'
+        secondaryColor:
+          type: string
+          description: Secondary branding color (hex)
+          example: '#54428E'
+        backgroundColor:
+          type: string
+          description: Background branding color (hex)
+          example: '#3C1361'
+        backgroundImage:
+          type: string
+          description: Background image path (dotAsset path starting with /dA)
+          example: /dA/abc123/background.png
+        loginScreenLogo:
+          type: string
+          description: Login screen logo path (dotAsset path starting with /dA)
+          example: /dA/abc123/logo.png
+        navBarLogo:
+          type: string
+          description: Navigation bar logo path (dotAsset path starting with /dA, Enterprise only)
+          example: /dA/abc123/nav-logo.png
+        authType:
+          type: string
+          description: 'Authentication type: ''emailAddress'' or ''userId'''
+          example: emailAddress
+          enum:
+          - emailAddress
+          - userId
+        keyDigest:
+          type: string
+          description: SHA-256 digest of the company security key (read-only, admin only)
+        languageId:
+          type: string
+          description: System default language as a Java locale string
+          example: en_US
+        timeZoneId:
+          type: string
+          description: System default timezone ID
+          example: America/New_York
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    CompanyLocaleForm:
+      required:
+      - languageId
+      - timeZoneId
+      type: object
+      properties:
+        languageId:
+          type: string
+          description: Java locale string
+          example: en_US
+        timeZoneId:
+          type: string
+          description: Java TimeZone ID
+          example: America/New_York
+      description: Company locale settings (language and timezone)
+    CompanyAuthTypeForm:
+      required:
+      - authType
+      type: object
+      properties:
+        authType:
+          type: string
+          description: 'Authentication type: ''emailAddress'' or ''userId'''
+          example: emailAddress
+          enum:
+          - emailAddress
+          - userId
+          - emailAddress
+          - userId
+      description: Company authentication type setting
+    ResponseEntityCompanyConfigView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CompanyConfigView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    ResponseEntityViewMapStringString:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    KeyValueForm:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string

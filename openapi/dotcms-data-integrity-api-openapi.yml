@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Data Integrity API
+  version: '3'
+  description: Data integrity checking and conflict resolution
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Data Integrity
+  description: Data integrity checking and conflict resolution
+paths:
+  /api/integrity/checkintegrity/{params}:
+    get:
+      tags:
+      - Data Integrity
+      operationId: checkIntegrity
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Check integrity
+      x-summary-source: derived
+  /api/integrity/checkIntegrityProcessStatus/{params}:
+    get:
+      tags:
+      - Data Integrity
+      operationId: checkIntegrityProcessStatus
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Check integrity process status
+      x-summary-source: derived
+  /api/integrity/discardconflicts/{params}:
+    get:
+      tags:
+      - Data Integrity
+      operationId: discardConflicts
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Discard conflicts
+      x-summary-source: derived
+  /api/integrity/fixconflicts/{params}:
+    get:
+      tags:
+      - Data Integrity
+      operationId: fixConflicts
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Fix conflicts
+      x-summary-source: derived
+  /api/integrity/_fixconflictsfromremote:
+    post:
+      tags:
+      - Data Integrity
+      operationId: fixConflictsFromRemote
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                DATA_TO_FIX:
+                  type: object
+                TYPE:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain: {}
+      summary: Fix conflicts from remote
+      x-summary-source: derived
+  /api/integrity/_generateintegritydata:
+    post:
+      tags:
+      - Data Integrity
+      operationId: generateIntegrityData
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain: {}
+      summary: Generate integrity data
+      x-summary-source: derived
+  /api/integrity/{requestId}/integrityData:
+    get:
+      tags:
+      - Data Integrity
+      operationId: getIntegrityData
+      parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/zip: {}
+      summary: Get integrity data
+      x-summary-source: derived
+  /api/integrity/getIntegrityResult/{params}:
+    get:
+      tags:
+      - Data Integrity
+      operationId: getIntegrityResult
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Get integrity result
+      x-summary-source: derived

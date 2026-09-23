@@ -1,0 +1,265 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Portlets API
+  version: '3'
+  description: Portlet management and administration
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Portlets
+  description: Portlet management and administration
+paths:
+  /api/portlet/layout/{params}:
+    get:
+      tags:
+      - Portlets
+      operationId: getLayout_1
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Get layout 1
+      x-summary-source: derived
+  /api/portlet/{params}:
+    get:
+      tags:
+      - Portlets
+      operationId: layoutGet
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Layout get
+      x-summary-source: derived
+    post:
+      tags:
+      - Portlets
+      operationId: layoutPost
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+      summary: Layout post
+      x-summary-source: derived
+  /api/v1/portlet/custom/{portletId}/_addtolayout/{layoutId}:
+    put:
+      tags:
+      - Portlets
+      operationId: addContentPortletToLayout
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: layoutId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Add content portlet to layout
+      x-summary-source: derived
+  /api/v1/portlet/custom/{portletId}:
+    delete:
+      tags:
+      - Portlets
+      operationId: deleteCustomPortlet
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete custom portlet
+      x-summary-source: derived
+  /api/v1/portlet/portletId/{portletId}:
+    delete:
+      tags:
+      - Portlets
+      operationId: deletePersonalPortlet
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete personal portlet
+      x-summary-source: derived
+  /api/v1/portlet/portletId/{portletId}/roleId/{roleId}:
+    delete:
+      tags:
+      - Portlets
+      operationId: deletePortletForRole
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete portlet for role
+      x-summary-source: derived
+  /api/v1/portlet/{portletId}/_doesuserhaveaccess:
+    get:
+      tags:
+      - Portlets
+      operationId: doesUserHaveAccessToPortlet
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Does user have access to portlet
+      x-summary-source: derived
+  /api/v1/portlet/{portletId}:
+    get:
+      tags:
+      - Portlets
+      operationId: findPortlet
+      parameters:
+      - name: portletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Find portlet
+      x-summary-source: derived
+  /api/v1/portlet/_actionurl/{contentTypeVariable}:
+    get:
+      tags:
+      - Portlets
+      operationId: getCreateContentURL
+      parameters:
+      - name: contentTypeVariable
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: language_id
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get create content URL
+      x-summary-source: derived
+  /api/v1/portlet/custom:
+    put:
+      tags:
+      - Portlets
+      operationId: updatePortlet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomPortletForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Update portlet
+      x-summary-source: derived
+    post:
+      tags:
+      - Portlets
+      operationId: saveNew
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomPortletForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Save new
+      x-summary-source: derived
+components:
+  schemas:
+    CustomPortletForm:
+      type: object
+      properties:
+        portletId:
+          type: string
+        portletName:
+          type: string
+        baseTypes:
+          type: string
+        contentTypes:
+          type: string
+        dataViewMode:
+          type: string

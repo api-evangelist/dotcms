@@ -1,0 +1,59 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Test Resource API
+  version: '3'
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: TestResource
+paths:
+  /api/testResource/testGet/{params}:
+    get:
+      operationId: getDocumentCount
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      tags:
+      - TestResource
+      summary: Get document count
+      x-summary-source: derived
+  /api/testResource/testPost:
+    post:
+      operationId: saveTest
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                password:
+                  type: string
+                param1:
+                  type: string
+                param2:
+                  type: string
+                type:
+                  type: string
+                callback:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      tags:
+      - TestResource
+      summary: Save test
+      x-summary-source: derived

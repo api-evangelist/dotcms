@@ -1,0 +1,155 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Browser Tree API
+  version: '3'
+  description: File and folder browser tree operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Browser Tree
+  description: File and folder browser tree operations
+paths:
+  /api/v1/browser:
+    post:
+      tags:
+      - Browser Tree
+      operationId: getFolderContent
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/BrowserQueryForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get folder content
+      x-summary-source: derived
+  /api/v1/browser/selectedfolder:
+    get:
+      tags:
+      - Browser Tree
+      operationId: getSelectFolder
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get select folder
+      x-summary-source: derived
+    put:
+      tags:
+      - Browser Tree
+      operationId: selectFolder
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/OpenFolderForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Select folder
+      x-summary-source: derived
+  /api/v1/browsertree/sitename/{sitename}/uri:
+    get:
+      tags:
+      - Browser Tree
+      operationId: loadAssetsUnder
+      parameters:
+      - name: sitename
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Load assets under
+      x-summary-source: derived
+  /api/v1/browsertree/sitename/{sitename}/uri/{uri}:
+    get:
+      tags:
+      - Browser Tree
+      operationId: loadAssetsUnder_1
+      parameters:
+      - name: sitename
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: uri
+        in: path
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Load assets under 1
+      x-summary-source: derived
+components:
+  schemas:
+    BrowserQueryForm:
+      type: object
+      properties:
+        hostFolderId:
+          type: string
+        filter:
+          type: string
+        sortBy:
+          type: string
+        offset:
+          type: integer
+          format: int32
+        maxResults:
+          type: integer
+          format: int32
+        showWorking:
+          type: boolean
+        showArchived:
+          type: boolean
+        showFolders:
+          type: boolean
+        showFiles:
+          type: boolean
+        showPages:
+          type: boolean
+        sortByDesc:
+          type: boolean
+        showLinks:
+          type: boolean
+        showDotAssets:
+          type: boolean
+        languageId:
+          type: integer
+          format: int64
+        extensions:
+          type: array
+          items:
+            type: string
+        mimeTypes:
+          type: array
+          items:
+            type: string
+    OpenFolderForm:
+      type: object
+      properties:
+        path:
+          type: string

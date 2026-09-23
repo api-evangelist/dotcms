@@ -1,0 +1,31 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Widgets API
+  version: '3'
+  description: Widget development and rendering
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Widgets
+  description: Widget development and rendering
+paths:
+  /api/widget/{params}:
+    get:
+      tags:
+      - Widgets
+      operationId: getWidget
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain; charset=UTF-8: {}
+      summary: Get widget
+      x-summary-source: derived

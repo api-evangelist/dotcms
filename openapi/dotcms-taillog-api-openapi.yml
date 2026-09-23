@@ -1,0 +1,123 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Tail Log API
+  version: '3'
+  description: Server log file monitoring and real-time viewing
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: TailLog
+  description: Server log file monitoring and real-time viewing
+paths:
+  /api/v1/logs/{fileName}/_tail:
+    get:
+      tags:
+      - TailLog
+      operationId: getLogs
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      - name: linesBack
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        default:
+          description: default response
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/EventOutput'
+      summary: Get logs
+      x-summary-source: derived
+  /api/v1/logs:
+    get:
+      tags:
+      - TailLog
+      summary: List available log files
+      description: Returns log file names from the configured log folder (TAIL_LOG_LOG_FOLDER), filtered by TAIL_LOG_FILE_REGEX and sorted alphabetically. The names are used as the {fileName} path parameter for the tail and download endpoints.
+      operationId: listLogFiles
+      responses:
+        '200':
+          description: Sorted list of log file names
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListStringView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role and Maintenance portlet access required
+          content:
+            application/json: {}
+components:
+  schemas:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityListStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

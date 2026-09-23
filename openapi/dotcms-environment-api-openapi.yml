@@ -1,0 +1,879 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Environment API
+  version: '3'
+  description: Publishing environment management and configuration
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Environment
+  description: Publishing environment management and configuration
+paths:
+  /api/v1/environments/endpoints:
+    get:
+      tags:
+      - Environment
+      summary: Returns the endpoints
+      operationId: getEndpoints
+      responses:
+        '200':
+          description: Collection of environments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEndpointsView'
+    post:
+      tags:
+      - Environment
+      summary: Creates an endpoint
+      operationId: create
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/EndpointForm'
+      responses:
+        '200':
+          description: If creation is successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEndpointView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '400':
+          description: If the endpoint already exits
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/environments/endpoints/{id}:
+    put:
+      tags:
+      - Environment
+      summary: Updates an endpoint
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/EndpointForm'
+      responses:
+        '200':
+          description: If update is success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEndpointView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '400':
+          description: If the environment already exits
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      tags:
+      - Environment
+      summary: Deletes an endpoint
+      operationId: delete_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: If deletion is successfully endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '404':
+          description: If the endpoint does not exits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoesNotExistException'
+  /api/v1/environments/endpoints/{endpointId}:
+    get:
+      tags:
+      - Environment
+      summary: Returns the endpoint by id
+      operationId: getEndpoint
+      parameters:
+      - name: endpointId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Collection of environments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEndpointView'
+  /api/v1/environments/endpoints/environment/{environmentId}:
+    get:
+      tags:
+      - Environment
+      summary: Returns the endpoints
+      operationId: getEndpointsByEnvironmentId
+      parameters:
+      - name: environmentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Collection of environments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEndpointsView'
+  /api/environment:
+    get:
+      tags:
+      - Environment
+      summary: Returns the environments
+      operationId: loadAllEnvironments
+      responses:
+        '200':
+          description: Collection of environments.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEnvironmentsView'
+    post:
+      tags:
+      - Environment
+      summary: Creates an environment
+      operationId: create_1
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/EnvironmentForm'
+      responses:
+        '200':
+          description: If creation is successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEnvironmentView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '400':
+          description: If the environment already exits
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/environment/{id}:
+    put:
+      tags:
+      - Environment
+      summary: Updates an environment
+      operationId: update_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/EnvironmentForm'
+      responses:
+        '200':
+          description: If update is success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityEnvironmentView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '400':
+          description: If the environment already exits
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      tags:
+      - Environment
+      summary: Deletes an environment
+      operationId: delete_4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: If deletion is successfully environment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityBooleanView'
+        '403':
+          description: If the user is not an admin or access to the configuration layout or does have permission, it will return a 403.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenException'
+        '404':
+          description: If the environment does not exits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoesNotExistException'
+  /api/environment/loadenvironments/{params}:
+    get:
+      tags:
+      - Environment
+      operationId: loadEnvironments
+      parameters:
+      - name: params
+        in: path
+        required: true
+        schema:
+          pattern: .*
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+      summary: Load environments
+      x-summary-source: derived
+components:
+  schemas:
+    ResponseEntityEndpointsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityEnvironmentsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityEndpointView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    PublishingEndPoint:
+      type: object
+      properties:
+        id:
+          type: string
+        groupId:
+          type: string
+        serverName:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        address:
+          type: string
+        port:
+          type: string
+        protocol:
+          type: string
+        enabled:
+          type: boolean
+        authKey:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        sending:
+          type: boolean
+        tokenExpired:
+          type: boolean
+        tokenInvalid:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    DoesNotExistException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName:
+                    type: string
+                  moduleName:
+                    type: string
+                  moduleVersion:
+                    type: string
+                  methodName:
+                    type: string
+                  fileName:
+                    type: string
+                  lineNumber:
+                    type: integer
+                    format: int32
+                  className:
+                    type: string
+                  nativeMethod:
+                    type: boolean
+            message:
+              type: string
+            localizedMessage:
+              type: string
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        message:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    ForbiddenException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName:
+                    type: string
+                  moduleName:
+                    type: string
+                  moduleVersion:
+                    type: string
+                  methodName:
+                    type: string
+                  fileName:
+                    type: string
+                  lineNumber:
+                    type: integer
+                    format: int32
+                  className:
+                    type: string
+                  nativeMethod:
+                    type: boolean
+            message:
+              type: string
+            localizedMessage:
+              type: string
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        response:
+          type: object
+          properties:
+            allowedMethods:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            entityTag:
+              type: object
+              properties:
+                value:
+                  type: string
+                weak:
+                  type: boolean
+            stringHeaders:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+            metadata:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: object
+            mediaType:
+              type: object
+              properties:
+                type:
+                  type: string
+                subtype:
+                  type: string
+                parameters:
+                  type: object
+                  additionalProperties:
+                    type: string
+                wildcardType:
+                  type: boolean
+                wildcardSubtype:
+                  type: boolean
+            statusInfo:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  format: int32
+                reasonPhrase:
+                  type: string
+                family:
+                  type: string
+                  enum:
+                  - INFORMATIONAL
+                  - SUCCESSFUL
+                  - REDIRECTION
+                  - CLIENT_ERROR
+                  - SERVER_ERROR
+                  - OTHER
+            cookies:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  version:
+                    type: integer
+                    format: int32
+                  path:
+                    type: string
+                  domain:
+                    type: string
+                  comment:
+                    type: string
+                  maxAge:
+                    type: integer
+                    format: int32
+                  expiry:
+                    type: string
+                    format: date-time
+                  secure:
+                    type: boolean
+                  httpOnly:
+                    type: boolean
+            headers:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: object
+            date:
+              type: string
+              format: date-time
+            lastModified:
+              type: string
+              format: date-time
+            status:
+              type: integer
+              format: int32
+            entity:
+              type: object
+            length:
+              type: integer
+              format: int32
+            location:
+              type: string
+              format: uri
+            language:
+              type: object
+              properties:
+                script:
+                  type: string
+                variant:
+                  type: string
+                unicodeLocaleAttributes:
+                  uniqueItems: true
+                  type: array
+                  items:
+                    type: string
+                unicodeLocaleKeys:
+                  uniqueItems: true
+                  type: array
+                  items:
+                    type: string
+                displayLanguage:
+                  type: string
+                displayScript:
+                  type: string
+                displayCountry:
+                  type: string
+                displayVariant:
+                  type: string
+                displayName:
+                  type: string
+                country:
+                  type: string
+                extensionKeys:
+                  uniqueItems: true
+                  type: array
+                  items:
+                    type: string
+                iso3Language:
+                  type: string
+                iso3Country:
+                  type: string
+                language:
+                  type: string
+            links:
+              uniqueItems: true
+              type: array
+              items:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    format: uri
+                  uriBuilder:
+                    type: object
+                  rel:
+                    type: string
+                  rels:
+                    type: array
+                    items:
+                      type: string
+                  params:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  title:
+                    type: string
+                  type:
+                    type: string
+        message:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    EndpointForm:
+      required:
+      - address
+      - environmentId
+      - name
+      - port
+      - protocol
+      type: object
+      properties:
+        name:
+          type: string
+        protocol:
+          type: string
+        address:
+          type: string
+        port:
+          type: string
+        authorizationToken:
+          type: string
+        enabled:
+          type: boolean
+        sending:
+          type: boolean
+        environmentId:
+          type: string
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        pushToAll:
+          type: boolean
+        permissionId:
+          type: string
+        owner:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityEnvironmentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EnvironmentForm:
+      required:
+      - name
+      - pushMode
+      type: object
+      properties:
+        name:
+          type: string
+        pushMode:
+          type: string
+          enum:
+          - PUSH_TO_ONE
+          - PUSH_TO_ALL
+        whoCanSend:
+          type: array
+          items:
+            type: string

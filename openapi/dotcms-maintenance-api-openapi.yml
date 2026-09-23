@@ -1,0 +1,1232 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Maintenance API
+  version: '3'
+  description: System maintenance and administration operations
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Maintenance
+  description: System maintenance and administration operations
+paths:
+  /api/v1/maintenance/_contentlets:
+    delete:
+      tags:
+      - Maintenance
+      summary: Bulk delete contentlets by identifier
+      description: Permanently destroys contentlets and all their language siblings. Bypasses trash. Each contentlet is destroyed independently — one failure does not block others.
+      operationId: deleteContentlets
+      requestBody:
+        description: List of contentlet identifiers to permanently destroy
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContentletsForm'
+        required: true
+      responses:
+        '200':
+          description: Bulk deletion completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityDeleteContentletsResultView'
+        '400':
+          description: Bad request - missing or empty identifiers
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_pushedAssets:
+    delete:
+      tags:
+      - Maintenance
+      summary: Delete all pushed assets records
+      description: Deletes ALL records from the pushed assets tracking table. Clears push publishing history, making all assets appear as "never pushed" to all endpoints.
+      operationId: deletePushedAssets
+      responses:
+        '200':
+          description: Pushed assets deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_systemJobs/{group}/{name}:
+    delete:
+      tags:
+      - Maintenance
+      summary: Delete a Quartz scheduler job
+      description: Removes a Quartz scheduler job (and all associated triggers) from the scheduler by its group and name. Used to clean up errored or orphaned jobs after upgrades. Returns 404 if no matching job exists in the scheduler.
+      operationId: deleteSystemJob
+      parameters:
+      - name: group
+        in: path
+        description: Quartz job group name
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: path
+        description: Quartz job name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Job deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySystemJobDeleteView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role and Maintenance portlet access required
+          content:
+            application/json: {}
+        '404':
+          description: No job matches the supplied group and name
+          content:
+            application/json: {}
+  /api/v1/maintenance/_downloadAssets:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadAssets
+      parameters:
+      - name: oldAssets
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: maxSize
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download assets
+      x-summary-source: derived
+  /api/v1/maintenance/_downloadClusterLog/{fileName}:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadClusterLogFile
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download cluster log file
+      x-summary-source: derived
+  /api/v1/maintenance/_downloadDb:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadDb
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download db
+      x-summary-source: derived
+  /api/v1/maintenance/_downloadLog/{fileName}:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadLogFile
+      parameters:
+      - name: fileName
+        in: path
+        required: true
+        schema:
+          pattern: .+
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download log file
+      x-summary-source: derived
+  /api/v1/maintenance/_downloadStarter:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadStarter
+      parameters:
+      - name: maxSize
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download starter
+      x-summary-source: derived
+  /api/v1/maintenance/_downloadStarterWithAssets:
+    get:
+      tags:
+      - Maintenance
+      operationId: downloadStarterWithAssets
+      parameters:
+      - name: oldAssets
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: maxSize
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/octet-stream: {}
+            application/json: {}
+      summary: Download starter with assets
+      x-summary-source: derived
+  /api/v1/maintenance/_oldVersions:
+    delete:
+      tags:
+      - Maintenance
+      summary: Drop old asset versions
+      description: Deletes all versions of versionable objects (contentlets, containers, templates, links, workflow history) older than the specified date. Can take minutes on large datasets.
+      operationId: dropOldVersions
+      parameters:
+      - name: date
+        in: query
+        description: Cutoff date in yyyy-MM-dd format. Versions older than this are deleted.
+        required: true
+        schema:
+          type: string
+        example: '2025-06-15'
+      responses:
+        '200':
+          description: Old versions deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityDropOldVersionsResultView'
+        '400':
+          description: Bad request - missing or invalid date format
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/assets/_clean:
+    get:
+      tags:
+      - Maintenance
+      summary: Get latest clean-assets job
+      description: Returns the most recent clean-assets job (active, or most recently completed). Returns null entity if no clean-assets job has ever run.
+      operationId: getLatestCleanAssetsJob
+      responses:
+        '200':
+          description: Latest job status
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ResponseEntityView wrapping the latest Job (id, state, progress, result) or null if none exists
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Maintenance
+      summary: Request a clean-assets job
+      description: Enqueues a clean orphan assets job on the cluster job queue. Returns immediately with {jobId, statusUrl}. Rejects with 409 Conflict if a clean-assets job is already pending or running anywhere in the cluster.
+      operationId: requestCleanAssetsJob
+      responses:
+        '200':
+          description: Job enqueued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - a clean-assets job is already running
+          content:
+            application/json: {}
+  /api/v1/maintenance/assets/_fix:
+    get:
+      tags:
+      - Maintenance
+      summary: Get latest fix-assets job
+      description: Returns the most recent fix-assets job (active, or most recently completed). Returns null entity if no fix-assets job has ever run.
+      operationId: getLatestFixAssetsJob
+      responses:
+        '200':
+          description: Latest job status
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ResponseEntityView wrapping the latest Job (id, state, progress, result) or null if none exists
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Maintenance
+      summary: Request a fix-assets job
+      description: Enqueues a fix-assets inconsistencies job on the cluster job queue. Returns immediately with {jobId, statusUrl}. Rejects with 409 Conflict if a fix-assets job is already pending or running anywhere in the cluster.
+      operationId: requestFixAssetsJob
+      responses:
+        '200':
+          description: Job enqueued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityJobStatusView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+        '409':
+          description: Conflict - a fix-assets job is already running
+          content:
+            application/json: {}
+  /api/v1/maintenance/_threads:
+    get:
+      tags:
+      - Maintenance
+      summary: JVM thread dump
+      description: Returns a full JVM thread dump as structured JSON, including state, priority, stack traces, locked monitors/synchronizers, and deadlock detection. Use hideSystem=true (default) to filter to dotCMS threads only.
+      operationId: getThreadDump
+      parameters:
+      - name: hideSystem
+        in: query
+        description: When true (default), only return threads with com.dotmarketing or com.dotcms frames
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: Thread dump captured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityThreadDumpView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_threads/info:
+    get:
+      tags:
+      - Maintenance
+      summary: JVM thread info
+      description: Returns lightweight JVM startup and thread-count summary (start time, uptime, current and peak thread count).
+      operationId: getThreadInfo
+      responses:
+        '200':
+          description: JVM thread info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityThreadSystemInfoView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_pgDumpAvailable:
+    get:
+      tags:
+      - Maintenance
+      operationId: isPgDumpAvailable
+      responses:
+        default:
+          description: default response
+          content:
+            text/plain: {}
+      summary: Is pg dump available
+      x-summary-source: derived
+  /api/v1/maintenance/_sessions:
+    get:
+      tags:
+      - Maintenance
+      summary: List active HTTP sessions
+      description: Returns every active HTTP session tracked by SessionMonitor. Real session ids are never exposed; each entry instead carries a short HMAC-derived token that must be passed back to DELETE /v1/maintenance/_sessions/{token} to invalidate the session. The CSRF secret used to derive these tokens is stored in the caller's HTTP session and is valid for 15 minutes — re-call this endpoint to refresh.
+      operationId: listSessions
+      responses:
+        '200':
+          description: List of active sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySessionListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Maintenance
+      summary: Invalidate all sessions except the caller's
+      description: Walks every active HTTP session tracked by SessionMonitor, skips the caller's own session, and invalidates the rest. Returns the count of invalidated sessions.
+      operationId: killAllSessions
+      responses:
+        '200':
+          description: Sessions invalidated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityKillSessionsResultView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_sessions/{token}:
+    delete:
+      tags:
+      - Maintenance
+      summary: Invalidate a single session
+      description: Invalidates the session whose HMAC-obfuscated token is supplied. The caller's own session cannot be invalidated this way. The CSRF secret must have been issued by GET /v1/maintenance/_sessions within the last 15 minutes — otherwise this endpoint returns 403 and the client must re-list to refresh.
+      operationId: killSession
+      parameters:
+      - name: token
+        in: path
+        description: HMAC-obfuscated session token returned by GET /_sessions
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Session invalidated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '400':
+          description: Bad request - attempting to invalidate caller's own session
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - missing or expired CSRF token, or insufficient role
+          content:
+            application/json: {}
+        '404':
+          description: No active session matches the supplied token
+          content:
+            application/json: {}
+  /api/v1/maintenance/_systemJobs:
+    get:
+      tags:
+      - Maintenance
+      summary: List Quartz scheduler jobs
+      description: 'Returns every Quartz scheduler job across all job groups, with trigger details (next fire time, misfire instruction) and current running status. Errored jobs (e.g. class not found after upgrade) are returned with an ''error'' field so admins can clean them up. Note: these are Quartz scheduler jobs, NOT the JobQueueManager jobs exposed at /api/v1/jobs — those are a separate system.'
+      operationId: listSystemJobs
+      responses:
+        '200':
+          description: List of Quartz scheduler jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySystemJobListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role and Maintenance portlet access required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_searchAndReplace:
+    post:
+      tags:
+      - Maintenance
+      summary: Database-wide search and replace
+      description: Performs a find/replace across text content in contentlets, containers, templates, fields, and links. Only affects working/live versions. This is a dangerous, irreversible operation. Returns 200 with hasErrors=true if some tables failed — check the response body.
+      operationId: searchAndReplace
+      requestBody:
+        description: Search and replace parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchAndReplaceForm'
+        required: true
+      responses:
+        '200':
+          description: Search and replace completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntitySearchAndReplaceResultView'
+        '400':
+          description: Bad request - searchString is empty or missing
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - CMS Administrator role required
+          content:
+            application/json: {}
+  /api/v1/maintenance/_shutdown:
+    delete:
+      tags:
+      - Maintenance
+      operationId: shutdown
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Shutdown
+      x-summary-source: derived
+  /api/v1/maintenance/_shutdownCluster:
+    delete:
+      tags:
+      - Maintenance
+      operationId: shutdownCluster
+      parameters:
+      - name: rollingDelay
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 60
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Shutdown cluster
+      x-summary-source: derived
+  /api/v1/upgradetask:
+    post:
+      tags:
+      - Maintenance
+      operationId: upgrade
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/UpgradeTaskForm'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Upgrade
+      x-summary-source: derived
+  /api/v1/caches/menucache:
+    delete:
+      tags:
+      - Maintenance
+      summary: Deletes the menu cache
+      description: Just deletes the menu cache by request
+      operationId: deleteMenuCache
+      responses:
+        '200':
+          description: Action(s) returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '500':
+          description: General Error
+components:
+  schemas:
+    KillSessionsResultView:
+      required:
+      - killedCount
+      type: object
+      properties:
+        killedCount:
+          type: integer
+          description: Number of sessions invalidated (the caller's own session is always skipped).
+          format: int32
+          example: 5
+    ResponseEntitySessionListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    DeleteContentletsForm:
+      required:
+      - identifiers
+      type: object
+      properties:
+        identifiers:
+          type: array
+          description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
+          example:
+          - abc123
+          - def456
+          - ghi789
+          items:
+            type: string
+            description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
+            example: '["abc123","def456","ghi789"]'
+      description: List of contentlet identifiers to permanently destroy
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ThreadSystemInfoView:
+      required:
+      - currentThreadCount
+      - peakThreadCount
+      - serverId
+      - startTimeMillis
+      - systemStartupTime
+      - uptimeMillis
+      type: object
+      properties:
+        serverId:
+          type: string
+          description: Identifier of the cluster node serving this request
+          example: 01HXX2J3K4M5N6P7Q8R9S0T1U2
+        serverName:
+          type: string
+          description: Human-readable name of the cluster node, when configured
+          example: node-1
+        systemStartupTime:
+          type: string
+          description: JVM startup time formatted as 'dd MMM yyyy HH:mm:ss' (server local time)
+          example: 03 Apr 2026 08:15:30
+        startTimeMillis:
+          type: integer
+          description: JVM startup time as epoch milliseconds
+          format: int64
+          example: 1775376930000
+        uptimeMillis:
+          type: integer
+          description: JVM uptime in milliseconds
+          format: int64
+          example: 7830000
+        currentThreadCount:
+          type: integer
+          description: Current live thread count (daemon and non-daemon)
+          format: int32
+          example: 187
+        peakThreadCount:
+          type: integer
+          description: Peak live thread count since the JVM started
+          format: int32
+          example: 245
+    ResponseEntitySystemJobListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SessionView:
+      required:
+      - isCurrent
+      - token
+      - userId
+      type: object
+      properties:
+        token:
+          type: string
+          description: HMAC-obfuscated session token. Pass this value back to DELETE /v1/maintenance/_sessions/{token} to invalidate the session.
+          example: a1b2c3d4e5f6g7h8
+        userId:
+          type: string
+          description: User id associated with the session (anonymous user id if no login).
+          example: dotcms.org.1
+        userEmail:
+          type: string
+          description: Email of the user associated with the session. Null for sessions without an associated user account.
+          example: admin@dotcms.com
+        userFullName:
+          type: string
+          description: Full name of the user associated with the session. Null for sessions without an associated user account.
+          example: Admin User
+        address:
+          type: string
+          description: Remote IP address recorded when the session was created. Null if the address was never captured (e.g. the session was created outside the servlet request pipeline that records it).
+          example: 192.168.1.100
+        sessionTime:
+          type: string
+          description: Human-readable elapsed time since the session was created.
+          example: 2 hours ago
+        isCurrent:
+          type: boolean
+          description: True if this entry represents the caller's own session.
+          example: true
+    SearchAndReplaceResultView:
+      required:
+      - hasErrors
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation completed without errors
+          example: true
+        hasErrors:
+          type: boolean
+          description: Whether any table updates encountered errors. When true, some tables may not have been updated.
+          example: false
+    ResponseEntityKillSessionsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/KillSessionsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySearchAndReplaceResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SearchAndReplaceResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    DeleteContentletsResultView:
+      required:
+      - deleted
+      - errors
+      type: object
+      properties:
+        deleted:
+          type: integer
+          description: Number of contentlets successfully destroyed
+          format: int32
+          example: 6
+        errors:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Identifiers of contentlets that failed to be destroyed
+          items:
+            type: string
+            description: Identifiers of contentlets that failed to be destroyed
+    ResponseEntityThreadDumpView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ThreadDumpView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    DropOldVersionsResultView:
+      required:
+      - deletedCount
+      - success
+      type: object
+      properties:
+        deletedCount:
+          type: integer
+          description: Number of asset versions deleted
+          format: int32
+          example: 1523
+        success:
+          type: boolean
+          description: Whether the operation completed successfully
+          example: true
+    ResponseEntityThreadSystemInfoView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ThreadSystemInfoView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    UpgradeTaskForm:
+      required:
+      - upgradeTaskClass
+      type: object
+      properties:
+        upgradeTaskClass:
+          type: string
+    ThreadDumpView:
+      required:
+      - deadlockedCount
+      - serverId
+      - threadCount
+      - threads
+      - timestamp
+      - vmInfo
+      type: object
+      properties:
+        serverId:
+          type: string
+          description: Identifier of the cluster node that produced this dump
+          example: 01HXX2J3K4M5N6P7Q8R9S0T1U2
+        serverName:
+          type: string
+          description: Human-readable name of the cluster node, when configured
+          example: node-1
+        timestamp:
+          type: string
+          description: Wall-clock timestamp when the dump was captured
+          example: Thu Apr 03 10:30:00 UTC 2026
+        vmInfo:
+          type: string
+          description: 'JVM identification: vm name and runtime version'
+          example: OpenJDK 64-Bit Server VM 21.0.2+13-58
+        threadCount:
+          type: integer
+          description: Number of threads included in the response (after filtering)
+          format: int32
+          example: 42
+        deadlockedCount:
+          type: integer
+          description: Total number of deadlocked threads detected JVM-wide
+          format: int32
+          example: 0
+        threads:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/ThreadDescriptorView'
+            last:
+              $ref: '#/components/schemas/ThreadDescriptorView'
+          description: Per-thread descriptors
+          items:
+            $ref: '#/components/schemas/ThreadDescriptorView'
+    ThreadDescriptorView:
+      required:
+      - daemon
+      - deadlocked
+      - id
+      - lockedMonitors
+      - lockedSynchronizers
+      - name
+      - priority
+      - stackTrace
+      - state
+      type: object
+      properties:
+        name:
+          type: string
+          description: Thread name
+          example: http-nio-8080-exec-1
+        id:
+          type: integer
+          description: JVM-assigned thread id
+          format: int64
+          example: 142
+        daemon:
+          type: boolean
+          description: Whether this is a daemon thread
+          example: true
+        priority:
+          type: integer
+          description: Thread priority (1-10)
+          format: int32
+          example: 5
+        state:
+          type: string
+          description: Thread state name (e.g. RUNNABLE, WAITING, TIMED_WAITING, BLOCKED)
+          example: RUNNABLE
+        deadlocked:
+          type: boolean
+          description: Whether this thread is part of a detected deadlock cycle
+          example: false
+        stackTrace:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Stack trace as a list of formatted frames
+          items:
+            type: string
+            description: Stack trace as a list of formatted frames
+        lockedMonitors:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Locked monitors held by this thread, formatted as 'ClassName at depth N'
+          items:
+            type: string
+            description: Locked monitors held by this thread, formatted as 'ClassName at depth N'
+        lockedSynchronizers:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Locked ownable synchronizers held by this thread (LockInfo.toString())
+          items:
+            type: string
+            description: Locked ownable synchronizers held by this thread (LockInfo.toString())
+        lockInfo:
+          type: string
+          description: String form of the lock the thread is currently waiting on; null if none
+          example: java.util.concurrent.locks.ReentrantLock$NonfairSync@1a2b3c
+        lockOwnerName:
+          type: string
+          description: Name of the thread that owns the lock this thread is waiting on; null if none
+          example: http-nio-8080-exec-7
+        lockOwnerId:
+          type: integer
+          description: Id of the thread that owns the lock this thread is waiting on; null if none
+          format: int64
+          example: 187
+    ResponseEntityDropOldVersionsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DropOldVersionsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySystemJobDeleteView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityDeleteContentletsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DeleteContentletsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    SearchAndReplaceForm:
+      required:
+      - replaceString
+      - searchString
+      type: object
+      properties:
+        searchString:
+          type: string
+          description: Text to search for across all content tables. Must not be empty.
+          example: http://old-domain.com
+        replaceString:
+          type: string
+          description: Replacement text. Can be empty to delete all occurrences of searchString.
+          example: https://new-domain.com
+      description: Database-wide search and replace parameters

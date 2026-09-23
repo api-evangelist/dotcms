@@ -1,0 +1,1703 @@
+openapi: 3.2.0
+info:
+  title: dotCMS REST Content Type Field API
+  version: '3'
+  description: Content type field definitions and configuration
+servers:
+- url: /
+  description: dotCMS Server
+tags:
+- name: Content Type Field
+  description: Content type field definitions and configuration
+paths:
+  /api/v1/fieldTypes:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get field types
+      description: Retrieves all available field types in dotCMS for content type configuration
+      operationId: getFieldTypes
+      responses:
+        '200':
+          description: Field types retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityFieldTypeListView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+  /api/v1/contenttype/{typeId}/fields:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get content type fields (deprecated)
+      description: Retrieves all fields for a specific content type. Use v2 API instead for new implementations.
+      operationId: getContentTypeFieldsV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fields retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+    put:
+      tags:
+      - Content Type Field
+      summary: Update content type fields (deprecated)
+      description: Updates multiple fields for a content type. Use v2 API instead.
+      operationId: updateContentTypeFieldsV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Array of field objects to save on the content type.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContentTypeFieldView'
+        required: true
+      responses:
+        '200':
+          description: Fields updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityListMapView'
+        '400':
+          description: Bad request - invalid field data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - content type not found
+          content:
+            application/json: {}
+      deprecated: true
+    post:
+      tags:
+      - Content Type Field
+      summary: Create content type field (deprecated)
+      description: Creates a new field for a content type. Use v2 API instead.
+      operationId: createContentTypeFieldV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'A SINGLE field object to create on the content type. This endpoint creates exactly one field: if you pass a JSON array, only the first element is saved (it returns 200 and silently drops the rest). To add multiple fields at once, use PUT /api/v1/contenttype/{typeId}/fields (which takes an array), or include them inline as the ''fields'' array when creating the content type via POST /api/v1/contenttype.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentTypeFieldView'
+        required: true
+      responses:
+        '200':
+          description: Field created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '400':
+          description: Bad request - invalid field data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - content type not found
+          content:
+            application/json: {}
+      deprecated: true
+    delete:
+      tags:
+      - Content Type Field
+      summary: Delete multiple fields (deprecated)
+      description: Deletes multiple fields from a content type by their field IDs. Use v2 API instead for new implementations.
+      operationId: deleteContentTypeFieldsV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Array of field IDs to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: Fields deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapView'
+        '400':
+          description: Bad request - invalid field IDs
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or one or more fields not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/contenttype/{typeId}/fields/id/{fieldId}:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get content type field by ID (deprecated)
+      description: Retrieves a specific field from a content type by its unique field ID. Use v2 API instead for new implementations.
+      operationId: getContentTypeFieldByIdV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+    put:
+      tags:
+      - Content Type Field
+      summary: Update content type field by ID (deprecated)
+      description: Updates a specific field in a content type by its field ID. Use v2 API instead for new implementations.
+      operationId: updateContentTypeFieldByIdV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Field JSON data with updates
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '400':
+          description: Bad request - invalid field data or missing field ID
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+    delete:
+      tags:
+      - Content Type Field
+      summary: Delete content type field by ID (deprecated)
+      description: Deletes a specific field from a content type by its field ID. Use v2 API instead for new implementations.
+      operationId: deleteContentTypeFieldByIdV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/contenttype/{typeId}/fields/var/{fieldVar}:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get content type field by variable name (deprecated)
+      description: Retrieves a specific field from a content type by its variable name. Use v2 API instead for new implementations.
+      operationId: getContentTypeFieldByVariableV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field variable name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+    put:
+      tags:
+      - Content Type Field
+      summary: Update content type field by variable name (deprecated)
+      description: Updates a specific field in a content type by its variable name. Use v2 API instead for new implementations.
+      operationId: updateContentTypeFieldByVariableV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field variable name to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Field JSON data with updates
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityMapStringObjectView'
+        '400':
+          description: Bad request - invalid field data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+    delete:
+      tags:
+      - Content Type Field
+      summary: Delete content type field by variable name (deprecated)
+      description: Deletes a specific field from a content type by its variable name. Use v2 API instead for new implementations.
+      operationId: deleteContentTypeFieldByVariableV1
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field variable name to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntityStringView'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Content type or field not found
+          content:
+            application/json: {}
+        '500':
+          description: Internal server error
+          content:
+            application/json: {}
+      deprecated: true
+  /api/v1/contenttype/{typeId}/fields/id/{fieldId}/variables:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get field variables by field ID
+      description: Retrieves all field variables for a specific field identified by its ID
+      operationId: getFieldVariablesByFieldId
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variables retrieved successfully
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field not found
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Content Type Field
+      summary: Create field variable by field ID
+      description: Creates a new field variable for a specific field identified by its ID
+      operationId: createFieldVariableByFieldId
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Field variable data
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field variable created successfully
+          content:
+            application/json: {}
+        '400':
+          description: Bad request - invalid field variable data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field not found
+          content:
+            application/json: {}
+  /api/v1/contenttype/{typeId}/fields/var/{fieldVar}/variables:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get field variables by field variable name
+      description: Retrieves all field variables for a specific field identified by its velocity variable name
+      operationId: getFieldVariablesByFieldVar
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field velocity variable name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variables retrieved successfully
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field not found
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Content Type Field
+      summary: Create field variable by field variable name
+      description: Creates a new field variable for a specific field identified by its velocity variable name
+      operationId: createFieldVariableByFieldVar
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field velocity variable name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Field variable data
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field variable created successfully
+          content:
+            application/json: {}
+        '400':
+          description: Bad request - invalid field variable data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field not found
+          content:
+            application/json: {}
+  /api/v1/contenttype/{typeId}/fields/id/{fieldId}/variables/id/{fieldVarId}:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get specific field variable by field ID
+      description: Retrieves a specific field variable by field ID and variable ID
+      operationId: getFieldVariableByFieldId
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variable retrieved successfully
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Content Type Field
+      summary: Update field variable by field ID
+      description: Updates an existing field variable for a specific field identified by its ID
+      operationId: updateFieldVariableByFieldId
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated field variable data
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field variable updated successfully
+          content:
+            application/json: {}
+        '400':
+          description: Bad request - invalid field variable data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Content Type Field
+      summary: Delete field variable by field ID
+      description: Deletes a specific field variable for a field identified by its ID
+      operationId: deleteFieldVariableByFieldId
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldId
+        in: path
+        description: Field ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variable deleted successfully
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+  /api/v1/contenttype/{typeId}/fields/var/{fieldVar}/variables/id/{fieldVarId}:
+    get:
+      tags:
+      - Content Type Field
+      summary: Get specific field variable by field variable name
+      description: Retrieves a specific field variable by field velocity variable name and variable ID
+      operationId: getFieldVariableByFieldVar
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field velocity variable name
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variable retrieved successfully
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Content Type Field
+      summary: Update field variable by field variable name
+      description: Updates an existing field variable for a specific field identified by its velocity variable name
+      operationId: updateFieldVariableByFieldVar
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field velocity variable name
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated field variable data
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Field variable updated successfully
+          content:
+            application/json: {}
+        '400':
+          description: Bad request - invalid field variable data
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Content Type Field
+      summary: Delete field variable by field variable name
+      description: Deletes a specific field variable for a field identified by its velocity variable name
+      operationId: deleteFieldVariableByFieldVar
+      parameters:
+      - name: typeId
+        in: path
+        description: Content type ID
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        description: Field velocity variable name
+        required: true
+        schema:
+          type: string
+      - name: fieldVarId
+        in: path
+        description: Field variable ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Field variable deleted successfully
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json: {}
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json: {}
+        '404':
+          description: Not found - field or field variable not found
+          content:
+            application/json: {}
+  /api/v2/contenttype/{typeIdOrVarName}/fields:
+    get:
+      tags:
+      - Content Type Field
+      operationId: getContentTypeFields
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Get content type fields
+      x-summary-source: derived
+    put:
+      tags:
+      - Content Type Field
+      operationId: updateFields
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Update fields
+      x-summary-source: derived
+    post:
+      tags:
+      - Content Type Field
+      operationId: createContentTypeField
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Create content type field
+      x-summary-source: derived
+    delete:
+      tags:
+      - Content Type Field
+      operationId: deleteFields
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      deprecated: true
+      summary: Delete fields
+      x-summary-source: derived
+  /api/v2/contenttype/{typeIdOrVarName}/fields/id/{fieldId}:
+    get:
+      tags:
+      - Content Type Field
+      operationId: getContentTypeFieldById
+      parameters:
+      - name: fieldId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get content type field by id
+      x-summary-source: derived
+    put:
+      tags:
+      - Content Type Field
+      operationId: updateContentTypeFieldById
+      parameters:
+      - name: fieldId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Update content type field by id
+      x-summary-source: derived
+    delete:
+      tags:
+      - Content Type Field
+      operationId: deleteContentTypeFieldById
+      parameters:
+      - name: fieldId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete content type field by id
+      x-summary-source: derived
+  /api/v2/contenttype/{typeIdOrVarName}/fields/var/{fieldVar}:
+    get:
+      tags:
+      - Content Type Field
+      operationId: getContentTypeFieldByVar
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Get content type field by var
+      x-summary-source: derived
+    put:
+      tags:
+      - Content Type Field
+      operationId: updateContentTypeFieldByVar
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Update content type field by var
+      x-summary-source: derived
+    delete:
+      tags:
+      - Content Type Field
+      operationId: deleteContentTypeFieldByVar
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: fieldVar
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+            application/javascript: {}
+      summary: Delete content type field by var
+      x-summary-source: derived
+  /api/v3/contenttype/{typeIdOrVarName}/fields/allfields:
+    get:
+      tags:
+      - Content Type Field
+      summary: Returns filtered Content Type fields
+      description: Returns the list of fields in a Content Type that meet the specified criteria.
+      operationId: allfields
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: filter
+        in: query
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - REQUIRED
+            - USER_SEARCHABLE
+            - SYSTEM_INDEXED
+            - SHOW_IN_LIST
+            - UNIQUE
+      requestBody:
+        content:
+          application/json:
+            examples:
+              filter:
+                summary: Filter fields by one or more of the specified criteria
+                description: filter
+                value: REQUIRED,SYSTEM_INDEXED,UNIQUE,SHOW_IN_LIST,USER_SEARCHABLE
+      responses:
+        '200':
+          description: Content type retrieved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - clazz: com.dotcms.contenttype.model.field.ImmutableTextField
+                  contentTypeId: 3b70f386cf65117a675f284eea928415
+                  dataType: TEXT
+                  dbColumn: text2
+                  defaultValue: null
+                  fixed: false
+                  forceIncludeInApi: false
+                  hint: null
+                  iDate: 1732992811000
+                  id: e39533a92ee05d8c083f7e6a1a5ee5e5
+                  indexed: true
+                  listed: false
+                  modDate: 1732992838000
+                  name: Description
+                  owner: null
+                  readOnly: false
+                  regexCheck: null
+                  relationType: null
+                  required: true
+                  searchable: false
+                  sortOrder: 3
+                  unique: true
+                  values: null
+                  variable: description
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Bad Request, when using invalid filter names
+        '401':
+          description: Invalid User
+        '404':
+          description: Content Type was not found
+        '500':
+          description: Internal Server Error
+  /api/v3/contenttype/{typeIdOrVarName}/fields:
+    get:
+      tags:
+      - Content Type Field
+      summary: Gets a Content Type's field layout
+      description: Returns the Content Type's current field layout (rows, columns and the fields within them). If the layout is invalid it is repaired before being returned; this endpoint does not modify data in the database.
+      operationId: getContentTypeFieldLayout
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        description: The ID or Velocity Variable Name of the Content Type.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The Content Type's field layout
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Content Type not found
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+      - Content Type Field
+      summary: Deletes fields from a Content Type
+      description: Deletes one or more fields from a Content Type and returns the updated field layout together with the IDs that were actually deleted. A field being used as the Content Type's Publish or Expire date field cannot be deleted until it is unlinked.
+      operationId: deleteContentTypeFields
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        description: The ID or Velocity Variable Name of the Content Type.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The IDs of the fields to delete.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFieldsForm'
+        required: true
+      responses:
+        '200':
+          description: Fields deleted; returns the new layout and deleted IDs
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Content Type not found
+        '500':
+          description: Internal Server Error
+  /api/v3/contenttype/{typeIdOrVarName}/fields/move:
+    put:
+      tags:
+      - Content Type Field
+      summary: Moves or adds a field to a Content Type
+      description: Moves or adds a field to a Content Type. This endpoint is called when dragging-and-dropping a new field to a Content Type, or when moving such a field around in the Content Type's layout.
+      operationId: moveOrAddContentTypeField
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveFieldsForm'
+      responses:
+        '200':
+          description: Field was added or moved successfully
+          content:
+            application/json:
+              example:
+                entity:
+                - divider:
+                    clazz: com.dotcms.contenttype.model.field.ImmutableRowField
+                    contentTypeId: 3b70f386cf65117a675f284eea928415
+                    dataType: SYSTEM
+                    fieldContentTypeProperties: []
+                    fieldType: Row
+                    fieldTypeLabel: Row
+                    fieldVariables: []
+                    fixed: false
+                    forceIncludeInApi: false
+                    iDate: 1763758144000
+                    id: 1b950209ec7b1a5e6901f7fe277e0a6a
+                    indexed: false
+                    listed: false
+                    modDate: 1763758164000
+                    name: fields-0
+                    readOnly: false
+                    required: false
+                    searchable: false
+                    sortOrder: 0
+                    unique: false
+                    variable: fields0
+                  columns:
+                  - columnDivider:
+                      clazz: com.dotcms.contenttype.model.field.ImmutableColumnField
+                      contentTypeId: 3b70f386cf65117a675f284eea928415
+                      dataType: SYSTEM
+                      fieldContentTypeProperties: []
+                      fieldType: Column
+                      fieldTypeLabel: Column
+                      fieldVariables: []
+                      fixed: false
+                      forceIncludeInApi: false
+                      iDate: 1763758144000
+                      id: 6515a7a25deb3b99711398c14bfe3062
+                      indexed: false
+                      listed: false
+                      modDate: 1763758164000
+                      name: fields-1
+                      readOnly: false
+                      required: false
+                      searchable: false
+                      sortOrder: 1
+                      unique: false
+                      variable: fields1
+                    fields:
+                    - clazz: com.dotcms.contenttype.model.field.ImmutableTextField
+                      contentTypeId: 3b70f386cf65117a675f284eea928415
+                      dataType: TEXT
+                      fieldType: Text
+                      fieldTypeLabel: Text
+                      fieldVariables: []
+                      fixed: false
+                      forceIncludeInApi: false
+                      iDate: 1763758164000
+                      id: ba34f109c9e86793384387e2619267ea
+                      indexed: false
+                      listed: false
+                      modDate: 1763761740000
+                      name: title
+                      readOnly: false
+                      required: false
+                      searchable: false
+                      sortOrder: 2
+                      unique: false
+                      variable: title
+                    - clazz: com.dotcms.contenttype.model.field.ImmutableTextField
+                      contentTypeId: 3b70f386cf65117a675f284eea928415
+                      dataType: TEXT
+                      fieldType: Text
+                      fieldTypeLabel: Text
+                      fieldVariables:
+                      - clazz: com.dotcms.contenttype.model.field.ImmutableFieldVariable
+                        fieldId: e39533a92ee05d8c083f7e6a1a5ee5e5
+                        id: 7844f04c-0481-4b0d-aa22-95e1a097bb30
+                        key: My Field Var
+                        value: My value
+                      fixed: false
+                      forceIncludeInApi: false
+                      iDate: 1764008792000
+                      id: e39533a92ee05d8c083f7e6a1a5ee5e5
+                      indexed: true
+                      listed: true
+                      modDate: 1764018597000
+                      name: Description
+                      readOnly: false
+                      required: false
+                      searchable: false
+                      sortOrder: 7
+                      unique: false
+                      variable: description
+                errors: []
+                i18nMessagesMap: {}
+                messages: []
+                pagination: null
+                permissions: []
+        '400':
+          description: Invalid JSON body
+        '401':
+          description: User not specified
+        '404':
+          description: Content Type ID not found
+        '415':
+          description: Body must be a JSON object
+        '500':
+          description: Internal Server Error
+  /api/v3/contenttype/{typeIdOrVarName}/fields/{id}:
+    put:
+      tags:
+      - Content Type Field
+      summary: Updates a field in a Content Type
+      description: Updates a field in a Content Type. The request body is wrapped in a required top-level `field` property. To update a constant field such as a WIDGET's `widgetCode`, fetch the existing field, preserve its attributes, change `values`, and send `{"field":{...}}`.
+      operationId: updateContentTypeField
+      parameters:
+      - name: typeIdOrVarName
+        in: path
+        description: The ID or Velocity Variable Name of the Content Type that the updated field belongs to.
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The ID of the Field that is being updated.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Field update wrapper. The top-level `field` property is required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFieldRequestView'
+            example:
+              field:
+                id: <widgetCode-field-id>
+                contentTypeId: <widget-content-type-id>
+                clazz: com.dotcms.contenttype.model.field.ImmutableConstantField
+                name: Widget Code
+                variable: widgetCode
+                dataType: LONG_TEXT
+                values: '#dotParse(''/application/vtl/widget.vtl'')'
+        required: true
+      responses:
+        '200':
+          description: The updated Content Type's layout.
+          content:
+            application/json:
+              example: "{\n    \"entity\": [\n        {\n            \"divider\": {\n                \"clazz\": \"com.dotcms.contenttype.model.field.ImmutableRowField\",\n                \"contentTypeId\": \"3b70f386cf65117a675f284eea928415\",\n                \"dataType\": \"SYSTEM\",\n                \"fieldContentTypeProperties\": [],\n                \"fieldType\": \"Row\",\n                \"fieldTypeLabel\": \"Row\",\n                \"fieldVariables\": [],\n                \"fixed\": false,\n                \"forceIncludeInApi\": false,\n                \"iDate\": 1764268372000,\n                \"id\": \"1b950209ec7b1a5e6901f7fe277e0a6a\",\n                \"indexed\": false,\n                \"listed\": false,\n                \"modDate\": 1764268380000,\n                \"name\": \"fields-0\",\n                \"readOnly\": false,\n                \"required\": false,\n                \"searchable\": false,\n                \"sortOrder\": 0,\n                \"unique\": false,\n                \"variable\": \"fields0\"\n            },\n            \"columns\": [\n                {\n                    \"columnDivider\": {\n                        \"clazz\": \"com.dotcms.contenttype.model.field.ImmutableColumnField\",\n                        \"contentTypeId\": \"3b70f386cf65117a675f284eea928415\",\n                        \"dataType\": \"SYSTEM\",\n                        \"fieldContentTypeProperties\": [],\n                        \"fieldType\": \"Column\",\n                        \"fieldTypeLabel\": \"Column\",\n                        \"fieldVariables\": [],\n                        \"fixed\": false,\n                        \"forceIncludeInApi\": false,\n                        \"iDate\": 1764268372000,\n                        \"id\": \"6515a7a25deb3b99711398c14bfe3062\",\n                        \"indexed\": false,\n                        \"listed\": false,\n                        \"modDate\": 1764268380000,\n                        \"name\": \"fields-1\",\n                        \"readOnly\": false,\n                        \"required\": false,\n                        \"searchable\": false,\n                        \"sortOrder\": 1,\n                        \"unique\": false,\n                        \"variable\": \"fields1\"\n                    },\n                    \"fields\": [\n                        {\n                            \"clazz\": \"com.dotcms.contenttype.model.field.ImmutableTextField\",\n                            \"contentTypeId\": \"3b70f386cf65117a675f284eea928415\",\n                            \"dataType\": \"TEXT\",\n                            \"fieldType\": \"Text\",\n                            \"fieldTypeLabel\": \"Text\",\n                            \"fieldVariables\": [],\n                            \"fixed\": false,\n                            \"forceIncludeInApi\": false,\n                            \"iDate\": 1764268380000,\n                            \"id\": \"ba34f109c9e86793384387e2619267ea\",\n                            \"indexed\": true,\n                            \"listed\": true,\n                            \"modDate\": 1764277924000,\n                            \"name\": \"Title\",\n                            \"readOnly\": false,\n                            \"required\": false,\n                            \"searchable\": false,\n                            \"sortOrder\": 2,\n                            \"unique\": false,\n                            \"variable\": \"title\"\n                        },\n                        {\n                            \"clazz\": \"com.dotcms.contenttype.model.field.ImmutableCustomField\",\n                            \"contentTypeId\": \"3b70f386cf65117a675f284eea928415\",\n                            \"dataType\": \"LONG_TEXT\",\n                            \"fieldType\": \"Custom-Field\",\n                            \"fieldTypeLabel\": \"Custom Field\",\n                            \"fieldVariables\": [\n                                {\n                                    \"clazz\": \"com.dotcms.contenttype.model.field.ImmutableFieldVariable\",\n                                    \"fieldId\": \"803d40e80721ae61196dc566a15c7ea5\",\n                                    \"id\": \"6f96be03-6c35-4ced-b825-dd52715b9b06\",\n                                    \"key\": \"newRenderMode\",\n                                    \"value\": \"component\"\n                                }\n                            ],\n                            \"fixed\": false,\n                            \"forceIncludeInApi\": false,\n                            \"iDate\": 1764433985000,\n                            \"id\": \"803d40e80721ae61196dc566a15c7ea5\",\n                            \"indexed\": false,\n                            \"listed\": false,\n                            \"modDate\": 1764687322000,\n                            \"name\": \"My Custom Field\",\n                            \"readOnly\": false,\n                            \"required\": false,\n                            \"searchable\": false,\n                            \"sortOrder\": 3,\n                            \"unique\": false,\n                            \"values\": \"## This is a VTL comment block                            \"variable\": \"myCustomField\"\n                        }\n                    ]\n                }\n            ]\n        }\n    ],\n    \"errors\": [],\n    \"i18nMessagesMap\": {},\n    \"messages\": [],\n    \"pagination\": null,\n    \"permissions\": []\n}"
+        '401':
+          description: Unauthorized access
+        '404':
+          description: The ID of the specified Field was not found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UpdateFieldRequestView:
+      required:
+      - field
+      type: object
+      properties:
+        field:
+          $ref: '#/components/schemas/ContentTypeFieldView'
+      description: Request body for updating one content-type field. The field object must be wrapped in the top-level `field` property.
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ContentTypeFieldView:
+      required:
+      - clazz
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Field identifier. Preserve this when updating an existing field.
+        contentTypeId:
+          type: string
+          description: Identifier of the content type that owns this field.
+        clazz:
+          type: string
+          description: 'Field type, as a case-insensitive short field-type name (the discriminator that selects the concrete field). The fully-qualified ''Immutable*'' class name and the bare simple class name (e.g. ''TextField'') are also still accepted, but the short names below are the preferred form. Example: "TEXT".'
+          example: TEXT
+          enum:
+          - TEXT
+          - TEXT_AREA
+          - STORY_BLOCK_FIELD
+          - WYSIWYG
+          - CONSTANT
+          - HIDDEN
+          - CUSTOM_FIELD
+          - JSON_FIELD
+          - BINARY
+          - IMAGE
+          - FILE
+          - TAG
+          - CATEGORY
+          - CHECKBOX
+          - RADIO
+          - SELECT
+          - MULTI_SELECT
+          - DATE
+          - TIME
+          - DATE_TIME
+          - KEY_VALUE
+          - HOST_OR_FOLDER
+          - RELATIONSHIP
+          - RELATIONSHIPS_TAB
+          - PERMISSIONS_TAB
+          - LINE_DIVIDER
+          - TAB_DIVIDER
+          - ROW_FIELD
+          - COLUMN_FIELD
+        name:
+          type: string
+          description: Display name of the field.
+        variable:
+          type: string
+          description: Velocity variable name of the field (unique within the content type; auto-generated from 'name' if omitted).
+        dataType:
+          type: string
+          description: Storage/column data type backing the field. This is the **storage** type, which often differs from the field's UI class. In particular, fields that store their payload elsewhere — such as 'ImmutableImageField', 'ImmutableFileField', and 'ImmutableBinaryField' — use dataType 'TEXT' (they keep an asset reference in a text column), **not** 'SYSTEM'. Reserve 'SYSTEM' for true layout/tab/relationship system fields. Use 'LONG_TEXT' for text-area/story-block/WYSIWYG content.
+          enum:
+          - TEXT
+          - LONG_TEXT
+          - SYSTEM
+          - BOOL
+          - INTEGER
+          - FLOAT
+          - DATE
+        required:
+          type: boolean
+          description: Whether a value is required to save content.
+        indexed:
+          type: boolean
+          description: Whether the field is added to the search index.
+        listed:
+          type: boolean
+          description: Whether the field appears in content list/table views.
+        unique:
+          type: boolean
+          description: Whether the field is unique across content of this type.
+        sortOrder:
+          type: integer
+          description: Position of the field within the 'fields[]' array (also drives row/column layout order).
+          format: int32
+        values:
+          type: string
+          description: 'Options for Radio/Select/Checkbox/Multi-Select fields: newline-separated ''Display|value'' pairs. For a boolean choice use ImmutableRadioField + dataType ''BOOL'' + values ''True|true\r\nFalse|false'' (there is no dedicated boolean field class).'
+        defaultValue:
+          type: string
+          description: Default value applied when content is created.
+        hint:
+          type: string
+          description: Help text shown beneath the field in the editor.
+        regexCheck:
+          type: string
+          description: Regular expression used to validate the field value.
+      description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
+    MoveFieldsForm:
+      type: object
+    ResponseEntityMapStringObjectView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    DeleteFieldsForm:
+      type: object
+      properties:
+        fieldsID:
+          type: array
+          items:
+            type: string
+    ResponseEntityFieldTypeListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
