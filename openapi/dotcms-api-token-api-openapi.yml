@@ -474,16 +474,35 @@ paths:
           description: Unexpected server error
 components:
   schemas:
-    ErrorEntity:
+    Pagination:
       type: object
       properties:
-        errorCode:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ApiTokenForm:
+      type: object
+      properties:
+        userId:
           type: string
-        message:
+        expirationSeconds:
+          type: integer
+          format: int32
+        network:
           type: string
-        fieldName:
-          type: string
-    ResponseEntityApiTokenWithJwtView:
+        claims:
+          type: object
+          additionalProperties:
+            type: object
+        shouldBeAdmin:
+          type: boolean
+    ResponseEntityMapView:
       type: object
       properties:
         errors:
@@ -508,7 +527,12 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityJwtView:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityApiTokenWithJwtView:
       type: object
       properties:
         errors:
@@ -540,7 +564,7 @@ components:
           type: object
           additionalProperties:
             type: object
-    ResponseEntityMapView:
+    ResponseEntityJwtView:
       type: object
       properties:
         errors:
@@ -565,36 +589,12 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    ErrorEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    MessageEntity:
-      type: object
-      properties:
+        errorCode:
+          type: string
         message:
           type: string
-    ApiTokenForm:
-      type: object
-      properties:
-        userId:
+        fieldName:
           type: string
-        expirationSeconds:
-          type: integer
-          format: int32
-        network:
-          type: string
-        claims:
-          type: object
-          additionalProperties:
-            type: object
-        shouldBeAdmin:
-          type: boolean

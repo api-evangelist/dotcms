@@ -1439,7 +1439,27 @@ paths:
           description: Internal Server Error
 components:
   schemas:
-    ResponseEntityStringView:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    UpdateFieldRequestView:
+      required:
+      - field
+      type: object
+      properties:
+        field:
+          $ref: '#/components/schemas/ContentTypeFieldView'
+      description: Request body for updating one content-type field. The field object must be wrapped in the top-level `field` property.
+    ResponseEntityMapView:
       type: object
       properties:
         errors:
@@ -1447,7 +1467,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: string
+          type: object
+          additionalProperties:
+            type: object
         messages:
           type: array
           items:
@@ -1462,23 +1484,20 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    UpdateFieldRequestView:
-      required:
-      - field
+    MoveFieldsForm:
+      type: object
+    MessageEntity:
       type: object
       properties:
-        field:
-          $ref: '#/components/schemas/ContentTypeFieldView'
-      description: Request body for updating one content-type field. The field object must be wrapped in the top-level `field` property.
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
         message:
           type: string
-        fieldName:
-          type: string
+    DeleteFieldsForm:
+      type: object
+      properties:
+        fieldsID:
+          type: array
+          items:
+            type: string
     ContentTypeFieldView:
       required:
       - clazz
@@ -1571,33 +1590,6 @@ components:
           type: string
           description: Regular expression used to validate the field value.
       description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
-    MoveFieldsForm:
-      type: object
-    ResponseEntityMapStringObjectView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ResponseEntityListMapView:
       type: object
       properties:
@@ -1625,7 +1617,30 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityMapView:
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityMapStringObjectView:
       type: object
       properties:
         errors:
@@ -1650,25 +1665,15 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    ErrorEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    DeleteFieldsForm:
-      type: object
-      properties:
-        fieldsID:
-          type: array
-          items:
-            type: string
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     ResponseEntityFieldTypeListView:
       type: object
       properties:
@@ -1696,8 +1701,3 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string

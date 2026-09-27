@@ -302,7 +302,19 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ResponseEntityStringView:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityListStringView:
       type: object
       properties:
         errors:
@@ -310,7 +322,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: string
+          type: array
+          items:
+            type: string
         messages:
           type: array
           items:
@@ -354,14 +368,10 @@ components:
           format: int64
           example: 6442450944
       description: JVM memory statistics
-    ErrorEntity:
+    MessageEntity:
       type: object
       properties:
-        errorCode:
-          type: string
         message:
-          type: string
-        fieldName:
           type: string
     ResponseEntityCacheStatsView:
       type: object
@@ -372,6 +382,29 @@ components:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
           $ref: '#/components/schemas/CacheStatsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
         messages:
           type: array
           items:
@@ -421,22 +454,14 @@ components:
           description: Per-provider cache statistics
           items:
             $ref: '#/components/schemas/CacheProviderStatsView'
-    Pagination:
+    ErrorEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    MessageEntity:
-      type: object
-      properties:
+        errorCode:
+          type: string
         message:
+          type: string
+        fieldName:
           type: string
     CacheProviderStatsView:
       required:
@@ -490,28 +515,3 @@ components:
               type: string
               description: Per-region statistics, each row keyed by column name
             description: Per-region statistics, each row keyed by column name
-    ResponseEntityListStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'

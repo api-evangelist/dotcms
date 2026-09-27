@@ -202,70 +202,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    LanguageView:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        displayName:
-          type: string
-    ResponseEntityLoginFormView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/LoginFormResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     I18NForm:
       type: object
       properties:
@@ -277,24 +213,18 @@ components:
           type: array
           items:
             type: string
-    AuthenticationForm:
-      required:
-      - password
-      - userId
+    Pagination:
       type: object
       properties:
-        userId:
-          type: string
-        password:
-          type: string
-        rememberMe:
-          type: boolean
-        backEndLogin:
-          type: boolean
-        language:
-          type: string
-        country:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResetPasswordForm:
       required:
       - password
@@ -304,6 +234,15 @@ components:
         token:
           type: string
         password:
+          type: string
+    LanguageView:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        displayName:
           type: string
     ResponseEntityMapMapView:
       type: object
@@ -357,18 +296,54 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    ForgotPasswordForm:
+      required:
+      - userId
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        userId:
+          type: string
+    AuthenticationForm:
+      required:
+      - password
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+        backEndLogin:
+          type: boolean
+        language:
+          type: string
+        country:
+          type: string
+    ResponseEntityForgotPasswordView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntityPasswordResetView:
       type: object
       properties:
@@ -392,6 +367,34 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ResponseEntityLoginFormView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/LoginFormResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     LoginFormResultView:
       type: object
       properties:
@@ -419,7 +422,7 @@ components:
           $ref: '#/components/schemas/LanguageView'
         companyEmail:
           type: string
-    ResponseEntityForgotPasswordView:
+    ResponseEntityStringView:
       type: object
       properties:
         errors:
@@ -442,15 +445,12 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ForgotPasswordForm:
-      required:
-      - userId
+    ErrorEntity:
       type: object
       properties:
-        userId:
+        errorCode:
           type: string
-    MessageEntity:
-      type: object
-      properties:
         message:
+          type: string
+        fieldName:
           type: string

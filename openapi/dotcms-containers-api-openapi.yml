@@ -729,70 +729,18 @@ paths:
           description: Internal server error
 components:
   schemas:
-    ResponseEntityBooleanView:
+    Pagination:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityContainerObjectMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ContainerView:
-      type: object
-      properties:
-        container:
-          $ref: '#/components/schemas/Container'
-        path:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityBulkResultView:
       type: object
       properties:
@@ -816,56 +764,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntitySingleContainerView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ContainerView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ContainerStructure:
-      type: object
-      properties:
-        id:
-          type: string
-        structureId:
-          type: string
-        containerInode:
-          type: string
-        containerId:
-          type: string
-        code:
-          type: string
-        contentTypeVar:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     Container:
       type: object
       properties:
@@ -951,6 +849,149 @@ components:
             type: object
         new:
           type: boolean
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    ResponseEntityContainerObjectMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntitySingleContainerView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ContainerView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContainerView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Container'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContainerStructure:
+      type: object
+      properties:
+        id:
+          type: string
+        structureId:
+          type: string
+        containerInode:
+          type: string
+        containerId:
+          type: string
+        code:
+          type: string
+        contentTypeVar:
+          type: string
     ResponseEntityPaginatedArrayListMapView:
       type: object
       properties:
@@ -994,13 +1035,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
     ContainerForm:
       required:
       - title
@@ -1065,46 +1099,12 @@ components:
           type: boolean
           description: Whether this container uses dynamic content type resolution
       description: Form used to create or update a Container in dotCMS
-    MessageEntity:
+    ErrorEntity:
       type: object
       properties:
+        errorCode:
+          type: string
         message:
           type: string
-    BulkResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
-    ResponseEntityContainerView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/Container'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+        fieldName:
+          type: string

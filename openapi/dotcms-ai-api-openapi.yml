@@ -557,52 +557,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    AIImageRequestDTO:
-      type: object
-      properties:
-        prompt:
-          type: string
-        numberOfImages:
-          type: integer
-          format: int32
-        size:
-          type: string
-        model:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ResponseEntityAiProviderListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProviderMetadata'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     Pagination:
       type: object
       properties:
@@ -648,135 +602,6 @@ components:
           type: string
         user:
           type: boolean
-    TestConnectionResult:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-    EmbeddingsForm:
-      type: object
-      properties:
-        query:
-          type: string
-        limit:
-          maximum: 1000
-          minimum: 1
-          type: integer
-          format: int32
-        offset:
-          minimum: 0
-          type: integer
-          format: int32
-        indexName:
-          type: string
-        model:
-          type: string
-        velocityTemplate:
-          type: string
-        fields:
-          type: array
-          items:
-            type: string
-        userId:
-          type: string
-        requestHostId:
-          type: string
-    ProviderMetadata:
-      type: object
-      properties:
-        provider:
-          type: string
-        supportedCapabilities:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-            enum:
-            - CHAT
-            - EMBEDDINGS
-            - IMAGE
-        fields:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ProviderField'
-    ResponseEntityAiTestConnectionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/TestConnectionResult'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CompletionsForm:
-      type: object
-      properties:
-        prompt:
-          type: string
-        searchLimit:
-          maximum: 1000
-          minimum: 1
-          type: integer
-          format: int32
-        searchOffset:
-          minimum: 0
-          type: integer
-          format: int32
-        responseLengthTokens:
-          minimum: 128
-          type: integer
-          format: int32
-        language:
-          type: integer
-          format: int64
-        stream:
-          type: boolean
-        fieldVar:
-          type: string
-        indexName:
-          type: string
-        contentType:
-          type: array
-          items:
-            type: string
-        threshold:
-          type: number
-          format: float
-        temperature:
-          maximum: 2
-          minimum: 0
-          type: number
-          format: float
-        model:
-          type: string
-        operator:
-          type: string
-        site:
-          type: string
-        user:
-          $ref: '#/components/schemas/User'
-        responseFormat:
-          type: object
-          additionalProperties:
-            type: object
     MessageEntity:
       type: object
       properties:
@@ -983,3 +808,178 @@ components:
           type: string
         requiredUnless:
           type: string
+    AIImageRequestDTO:
+      type: object
+      properties:
+        prompt:
+          type: string
+        numberOfImages:
+          type: integer
+          format: int32
+        size:
+          type: string
+        model:
+          type: string
+    ProviderMetadata:
+      type: object
+      properties:
+        provider:
+          type: string
+        supportedCapabilities:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - CHAT
+            - EMBEDDINGS
+            - IMAGE
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProviderField'
+    EmbeddingsForm:
+      type: object
+      properties:
+        query:
+          type: string
+        limit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+        offset:
+          minimum: 0
+          type: integer
+          format: int32
+        indexName:
+          type: string
+        model:
+          type: string
+        velocityTemplate:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+        userId:
+          type: string
+        requestHostId:
+          type: string
+    ResponseEntityAiTestConnectionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TestConnectionResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityAiProviderListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderMetadata'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TestConnectionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    CompletionsForm:
+      type: object
+      properties:
+        prompt:
+          type: string
+        searchLimit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+        searchOffset:
+          minimum: 0
+          type: integer
+          format: int32
+        responseLengthTokens:
+          minimum: 128
+          type: integer
+          format: int32
+        language:
+          type: integer
+          format: int64
+        stream:
+          type: boolean
+        fieldVar:
+          type: string
+        indexName:
+          type: string
+        contentType:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: number
+          format: float
+        temperature:
+          maximum: 2
+          minimum: 0
+          type: number
+          format: float
+        model:
+          type: string
+        operator:
+          type: string
+        site:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        responseFormat:
+          type: object
+          additionalProperties:
+            type: object

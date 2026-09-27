@@ -304,7 +304,7 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    FormDataMultiPart:
+    FormDataBodyPart:
       type: object
       properties:
         contentDisposition:
@@ -338,16 +338,14 @@ components:
           $ref: '#/components/schemas/MultiPart'
         providers:
           type: object
-        bodyParts:
-          type: array
-          items:
-            $ref: '#/components/schemas/BodyPart'
-        fields:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/FormDataBodyPart'
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
         parameterizedHeaders:
           type: object
           additionalProperties:
@@ -401,39 +399,7 @@ components:
           type: array
           items:
             type: string
-    ParameterizedHeader:
-      type: object
-      properties:
-        value:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-    ContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-    FormDataBodyPart:
+    FormDataMultiPart:
       type: object
       properties:
         contentDisposition:
@@ -467,14 +433,16 @@ components:
           $ref: '#/components/schemas/MultiPart'
         providers:
           type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
-          type: string
-        value:
-          type: string
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FormDataBodyPart'
         parameterizedHeaders:
           type: object
           additionalProperties:
@@ -483,6 +451,38 @@ components:
               $ref: '#/components/schemas/ParameterizedHeader'
     MessageBodyWorkers:
       type: object
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
     GenerateBundleForm:
       type: object
       properties:

@@ -256,6 +256,94 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
     FormDataMultiPart:
       type: object
       properties:
@@ -306,55 +394,26 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    BodyPart:
+    SecretForm:
+      type: object
+    DeleteSecretForm:
+      required:
+      - key
+      - params
+      - siteId
       type: object
       properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    ParameterizedHeader:
-      type: object
-      properties:
-        value:
+        key:
           type: string
-        parameters:
-          type: object
-          additionalProperties:
+        siteId:
+          type: string
+        params:
+          uniqueItems: true
+          type: array
+          items:
             type: string
+    MessageBodyWorkers:
+      type: object
     ExportSecretForm:
       required:
       - appKeysBySite
@@ -381,8 +440,6 @@ components:
             type: array
             items:
               type: string
-    SecretForm:
-      type: object
     ContentDisposition:
       type: object
       properties:
@@ -406,56 +463,15 @@ components:
         size:
           type: integer
           format: int64
-    FormDataBodyPart:
+    ParameterizedHeader:
       type: object
       properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
-          type: string
         value:
           type: string
-        parameterizedHeaders:
+        parameters:
           type: object
           additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    MessageBodyWorkers:
-      type: object
+            type: string
     FormDataContentDisposition:
       type: object
       properties:
@@ -525,19 +541,3 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    DeleteSecretForm:
-      required:
-      - key
-      - params
-      - siteId
-      type: object
-      properties:
-        key:
-          type: string
-        siteId:
-          type: string
-        params:
-          uniqueItems: true
-          type: array
-          items:
-            type: string

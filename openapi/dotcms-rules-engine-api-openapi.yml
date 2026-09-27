@@ -667,22 +667,18 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    RestRuleAction:
+    RestConditionValue:
       required:
-      - owningRule
+      - key
       type: object
       properties:
-        owningRule:
+        key:
+          type: string
+        value:
           type: string
         priority:
           type: integer
           format: int32
-        actionlet:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ParameterModel'
     ParameterModel:
       type: object
       properties:
@@ -697,40 +693,6 @@ components:
         priority:
           type: integer
           format: int32
-    RestConditionValue:
-      required:
-      - key
-      type: object
-      properties:
-        key:
-          type: string
-        value:
-          type: string
-        priority:
-          type: integer
-          format: int32
-    RestRule:
-      type: object
-      properties:
-        name:
-          type: string
-        fireOn:
-          type: string
-        shortCircuit:
-          type: boolean
-        priority:
-          type: integer
-          format: int32
-        enabled:
-          type: boolean
-        conditionGroups:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/RestConditionGroup'
-        ruleActions:
-          type: object
-          additionalProperties:
-            type: boolean
     RestConditionGroup:
       required:
       - operator
@@ -765,3 +727,41 @@ components:
         priority:
           type: integer
           format: int32
+    RestRuleAction:
+      required:
+      - owningRule
+      type: object
+      properties:
+        owningRule:
+          type: string
+        priority:
+          type: integer
+          format: int32
+        actionlet:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ParameterModel'
+    RestRule:
+      type: object
+      properties:
+        name:
+          type: string
+        fireOn:
+          type: string
+        shortCircuit:
+          type: boolean
+        priority:
+          type: integer
+          format: int32
+        enabled:
+          type: boolean
+        conditionGroups:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestConditionGroup'
+        ruleActions:
+          type: object
+          additionalProperties:
+            type: boolean

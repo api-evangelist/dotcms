@@ -480,6 +480,18 @@ paths:
             application/json: {}
 components:
   schemas:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ContainerUUID:
       type: object
       properties:
@@ -501,48 +513,6 @@ components:
           type: array
           items:
             type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
-    BodyView:
-      type: object
-      properties:
-        rows:
-          type: array
-          items:
-            $ref: '#/components/schemas/TemplateLayoutRowView'
-    SidebarView:
-      type: object
-      properties:
-        containers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContainerUUID'
-        location:
-          type: string
-        width:
-          type: string
-    TemplateImageForm:
-      type: object
-      properties:
-        templateId:
-          type: string
     BulkResultView:
       type: object
       properties:
@@ -579,6 +549,347 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    SidebarView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        location:
+          type: string
+        width:
+          type: string
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    TemplateImageForm:
+      type: object
+      properties:
+        templateId:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    TemplateView:
+      type: object
+      properties:
+        identifier:
+          type: string
+        inode:
+          type: string
+        categoryId:
+          type: string
+        body:
+          type: string
+        selectedimage:
+          type: string
+        image:
+          type: string
+        drawed:
+          type: boolean
+        deleted:
+          type: boolean
+        live:
+          type: boolean
+        locked:
+          type: boolean
+        lockedBy:
+          type: string
+        working:
+          type: boolean
+        hasLiveVersion:
+          type: boolean
+        showOnMenu:
+          type: boolean
+        drawedBody:
+          type: string
+        countAddContainer:
+          type: integer
+          format: int32
+        countContainers:
+          type: integer
+          format: int32
+        headCode:
+          type: string
+        theme:
+          type: string
+        themeName:
+          type: string
+        footer:
+          type: string
+        friendlyName:
+          type: string
+        header:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        canRead:
+          type: boolean
+        canWrite:
+          type: boolean
+        canPublish:
+          type: boolean
+        layout:
+          $ref: '#/components/schemas/TemplateLayoutView'
+        containers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ContainerView'
+        themeInfo:
+          $ref: '#/components/schemas/ThemeView'
+        hostName:
+          type: string
+        hostId:
+          type: string
+        fullTitle:
+          type: string
+        htmlTitle:
+          type: string
+        new:
+          type: boolean
+    BodyView:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutRowView'
+    TemplateForm:
+      required:
+      - title
+      type: object
+      properties:
+        siteId:
+          type: string
+          description: Identifier of the site (host) where this template will be created. This is a site identifier UUID, not 'hostId'. If not provided, the template is assigned to the site resolved from the current HTTP request context.
+        identifier:
+          type: string
+          description: Identifier of the template. Required for updates, ignored on creation.
+        inode:
+          type: string
+          description: Inode (version identifier) of the template. Server-managed; typically omitted on input.
+        body:
+          type: string
+          description: Raw Velocity markup that renders the template. Required even when 'drawed:true' — send an empty string ('') when using the layout builder ('layout') instead of hand-written body.
+        selectedimage:
+          type: string
+          description: Identifier of the image asset currently selected as the template thumbnail in the UI.
+        image:
+          type: string
+          description: Identifier of the image asset used as the template thumbnail.
+        drawed:
+          type: boolean
+          description: Whether this template was built with the visual layout builder. When true, provide 'layout' (the row/column/container structure); when false, provide 'body'.
+        showOnMenu:
+          type: boolean
+          description: Whether this template should appear in navigation menus.
+        drawedBody:
+          type: string
+          description: Velocity body generated by the layout builder for a drawn template. Server-managed.
+        countAddContainer:
+          type: integer
+          description: Count of 'add container' placeholders in the layout. Server-managed; typically omitted.
+          format: int32
+        countContainers:
+          type: integer
+          description: Count of containers in the layout. Server-managed; typically omitted.
+          format: int32
+        headCode:
+          type: string
+          description: Velocity/HTML injected into the page <head> for pages using this template.
+        theme:
+          type: string
+          description: Theme folder identifier (not a path) that supplies the template's CSS/JS and VTL fragments. Resolve the folder identifier from a path via GET /api/v1/folder/sitename/{site}/uri/{uri}.
+        themeName:
+          type: string
+          description: Display name of the theme. Informational; 'theme' (the folder identifier) is authoritative.
+        footer:
+          type: string
+          description: Velocity/HTML footer fragment for pages using this template.
+        friendlyName:
+          type: string
+          description: Friendly (human-readable) name of the template.
+        header:
+          type: string
+          description: Velocity/HTML header fragment for pages using this template.
+        name:
+          type: string
+          description: Internal/asset name of the template.
+        title:
+          type: string
+          description: Title of the template (displayed in the UI).
+        sortOrder:
+          type: integer
+          description: Sort order for display purposes.
+          format: int32
+        headerCheck:
+          type: boolean
+          description: Whether the header fragment is enabled for this template.
+        footerCheck:
+          type: boolean
+          description: Whether the footer fragment is enabled for this template.
+        layout:
+          $ref: '#/components/schemas/TemplateLayoutView'
+      description: Form used to create or update a Template in dotCMS. A Template can be either drawn with the layout builder (set 'drawed:true' and provide 'layout') or authored as raw Velocity markup (provide 'body').
+    Container:
+      type: object
+      properties:
+        getiDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        owner:
+          type: string
+        inode:
+          type: string
+        identifier:
+          type: string
+        source:
+          type: string
+          enum:
+          - UNKNOWN
+          - DB
+          - FILE
+        title:
+          type: string
+        friendlyName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modUser:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        code:
+          type: string
+        maxContentlets:
+          type: integer
+          format: int32
+        useDiv:
+          type: boolean
+        preLoop:
+          type: string
+        postLoop:
+          type: string
+        notes:
+          type: string
+        hostName:
+          type: string
+        hostId:
+          type: string
+        variant:
+          type: string
+        archived:
+          type: boolean
+        versionType:
+          type: string
+        permissionId:
+          type: string
+        deleted:
+          type: boolean
+        working:
+          type: boolean
+        versionId:
+          type: string
+        live:
+          type: boolean
+        name:
+          type: string
+        locked:
+          type: boolean
+        permissionType:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        categoryId:
+          type: string
+        parents:
+          type: array
+          writeOnly: true
+          items:
+            type: object
+        new:
+          type: boolean
+    ThemeView:
+      type: object
+      properties:
+        path:
+          type: string
+        defaultFileType:
+          type: string
+        filesMasks:
+          type: string
+        getiDate:
+          type: string
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+    TemplateLayoutView:
+      type: object
+      properties:
+        width:
+          type: string
+        title:
+          type: string
+        header:
+          type: boolean
+        footer:
+          type: boolean
+        body:
+          $ref: '#/components/schemas/BodyView'
+        sidebar:
+          $ref: '#/components/schemas/SidebarView'
+      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
     Template:
       type: object
       properties:
@@ -678,6 +989,48 @@ components:
             type: object
         new:
           type: boolean
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    TemplateLayoutColumnView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        width:
+          type: integer
+          format: int32
+        leftOffset:
+          type: integer
+          format: int32
+        styleClass:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
     ResponseEntityListTemplateView:
       type: object
       properties:
@@ -703,30 +1056,15 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
+    ErrorEntity:
       type: object
       properties:
+        errorCode:
+          type: string
         message:
           type: string
-    TemplateLayoutColumnView:
-      type: object
-      properties:
-        containers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContainerUUID'
-        width:
-          type: integer
-          format: int32
-        leftOffset:
-          type: integer
-          format: int32
-        styleClass:
+        fieldName:
           type: string
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
     TemplateLayoutRowView:
       type: object
       properties:
@@ -740,341 +1078,3 @@ components:
           type: object
           additionalProperties:
             type: object
-    TemplateForm:
-      required:
-      - title
-      type: object
-      properties:
-        siteId:
-          type: string
-          description: Identifier of the site (host) where this template will be created. This is a site identifier UUID, not 'hostId'. If not provided, the template is assigned to the site resolved from the current HTTP request context.
-        identifier:
-          type: string
-          description: Identifier of the template. Required for updates, ignored on creation.
-        inode:
-          type: string
-          description: Inode (version identifier) of the template. Server-managed; typically omitted on input.
-        body:
-          type: string
-          description: Raw Velocity markup that renders the template. Required even when 'drawed:true' — send an empty string ('') when using the layout builder ('layout') instead of hand-written body.
-        selectedimage:
-          type: string
-          description: Identifier of the image asset currently selected as the template thumbnail in the UI.
-        image:
-          type: string
-          description: Identifier of the image asset used as the template thumbnail.
-        drawed:
-          type: boolean
-          description: Whether this template was built with the visual layout builder. When true, provide 'layout' (the row/column/container structure); when false, provide 'body'.
-        showOnMenu:
-          type: boolean
-          description: Whether this template should appear in navigation menus.
-        drawedBody:
-          type: string
-          description: Velocity body generated by the layout builder for a drawn template. Server-managed.
-        countAddContainer:
-          type: integer
-          description: Count of 'add container' placeholders in the layout. Server-managed; typically omitted.
-          format: int32
-        countContainers:
-          type: integer
-          description: Count of containers in the layout. Server-managed; typically omitted.
-          format: int32
-        headCode:
-          type: string
-          description: Velocity/HTML injected into the page <head> for pages using this template.
-        theme:
-          type: string
-          description: Theme folder identifier (not a path) that supplies the template's CSS/JS and VTL fragments. Resolve the folder identifier from a path via GET /api/v1/folder/sitename/{site}/uri/{uri}.
-        themeName:
-          type: string
-          description: Display name of the theme. Informational; 'theme' (the folder identifier) is authoritative.
-        footer:
-          type: string
-          description: Velocity/HTML footer fragment for pages using this template.
-        friendlyName:
-          type: string
-          description: Friendly (human-readable) name of the template.
-        header:
-          type: string
-          description: Velocity/HTML header fragment for pages using this template.
-        name:
-          type: string
-          description: Internal/asset name of the template.
-        title:
-          type: string
-          description: Title of the template (displayed in the UI).
-        sortOrder:
-          type: integer
-          description: Sort order for display purposes.
-          format: int32
-        headerCheck:
-          type: boolean
-          description: Whether the header fragment is enabled for this template.
-        footerCheck:
-          type: boolean
-          description: Whether the footer fragment is enabled for this template.
-        layout:
-          $ref: '#/components/schemas/TemplateLayoutView'
-      description: Form used to create or update a Template in dotCMS. A Template can be either drawn with the layout builder (set 'drawed:true' and provide 'layout') or authored as raw Velocity markup (provide 'body').
-    ThemeView:
-      type: object
-      properties:
-        path:
-          type: string
-        defaultFileType:
-          type: string
-        filesMasks:
-          type: string
-        getiDate:
-          type: string
-          format: date-time
-        hostId:
-          type: string
-        identifier:
-          type: string
-        inode:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        name:
-          type: string
-        showOnMenu:
-          type: boolean
-        sortOrder:
-          type: integer
-          format: int32
-        title:
-          type: string
-        type:
-          type: string
-    TemplateLayoutView:
-      type: object
-      properties:
-        width:
-          type: string
-        title:
-          type: string
-        header:
-          type: boolean
-        footer:
-          type: boolean
-        body:
-          $ref: '#/components/schemas/BodyView'
-        sidebar:
-          $ref: '#/components/schemas/SidebarView'
-      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
-    ContainerView:
-      type: object
-      properties:
-        container:
-          $ref: '#/components/schemas/Container'
-        path:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ResponseEntityBulkResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Container:
-      type: object
-      properties:
-        getiDate:
-          type: string
-          format: date-time
-        type:
-          type: string
-        owner:
-          type: string
-        inode:
-          type: string
-        identifier:
-          type: string
-        source:
-          type: string
-          enum:
-          - UNKNOWN
-          - DB
-          - FILE
-        title:
-          type: string
-        friendlyName:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        modUser:
-          type: string
-        sortOrder:
-          type: integer
-          format: int32
-        showOnMenu:
-          type: boolean
-        code:
-          type: string
-        maxContentlets:
-          type: integer
-          format: int32
-        useDiv:
-          type: boolean
-        preLoop:
-          type: string
-        postLoop:
-          type: string
-        notes:
-          type: string
-        hostName:
-          type: string
-        hostId:
-          type: string
-        variant:
-          type: string
-        archived:
-          type: boolean
-        versionType:
-          type: string
-        permissionId:
-          type: string
-        deleted:
-          type: boolean
-        working:
-          type: boolean
-        versionId:
-          type: string
-        live:
-          type: boolean
-        name:
-          type: string
-        locked:
-          type: boolean
-        permissionType:
-          type: string
-        idate:
-          type: string
-          format: date-time
-        categoryId:
-          type: string
-        parents:
-          type: array
-          writeOnly: true
-          items:
-            type: object
-        new:
-          type: boolean
-    TemplateView:
-      type: object
-      properties:
-        identifier:
-          type: string
-        inode:
-          type: string
-        categoryId:
-          type: string
-        body:
-          type: string
-        selectedimage:
-          type: string
-        image:
-          type: string
-        drawed:
-          type: boolean
-        deleted:
-          type: boolean
-        live:
-          type: boolean
-        locked:
-          type: boolean
-        lockedBy:
-          type: string
-        working:
-          type: boolean
-        hasLiveVersion:
-          type: boolean
-        showOnMenu:
-          type: boolean
-        drawedBody:
-          type: string
-        countAddContainer:
-          type: integer
-          format: int32
-        countContainers:
-          type: integer
-          format: int32
-        headCode:
-          type: string
-        theme:
-          type: string
-        themeName:
-          type: string
-        footer:
-          type: string
-        friendlyName:
-          type: string
-        header:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        modUser:
-          type: string
-        owner:
-          type: string
-        name:
-          type: string
-        title:
-          type: string
-        sortOrder:
-          type: integer
-          format: int32
-        canRead:
-          type: boolean
-        canWrite:
-          type: boolean
-        canPublish:
-          type: boolean
-        layout:
-          $ref: '#/components/schemas/TemplateLayoutView'
-        containers:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ContainerView'
-        themeInfo:
-          $ref: '#/components/schemas/ThemeView'
-        hostName:
-          type: string
-        hostId:
-          type: string
-        fullTitle:
-          type: string
-        htmlTitle:
-          type: string
-        new:
-          type: boolean

@@ -295,15 +295,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     I18NForm:
       type: object
       properties:
@@ -315,6 +306,66 @@ components:
           type: array
           items:
             type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    LanguageForm:
+      type: object
+      properties:
+        languageCode:
+          type: string
+        countryCode:
+          type: string
+        language:
+          type: string
+        country:
+          type: string
+        isoCode:
+          type: string
+    MakeDefaultLangForm:
+      type: object
+      properties:
+        fireTransferAssetsJob:
+          type: boolean
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        languageCode:
+          type: string
+        countryCode:
+          type: string
+        language:
+          type: string
+        country:
+          type: string
+        isoCode:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     ResponseEntityViewLanguage:
       type: object
       properties:
@@ -338,54 +389,3 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Language:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        languageCode:
-          type: string
-        countryCode:
-          type: string
-        language:
-          type: string
-        country:
-          type: string
-        isoCode:
-          type: string
-    LanguageForm:
-      type: object
-      properties:
-        languageCode:
-          type: string
-        countryCode:
-          type: string
-        language:
-          type: string
-        country:
-          type: string
-        isoCode:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    MakeDefaultLangForm:
-      type: object
-      properties:
-        fireTransferAssetsJob:
-          type: boolean

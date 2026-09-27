@@ -554,6 +554,116 @@ paths:
                 $ref: '#/components/schemas/ResponseEntityStringView'
 components:
   schemas:
+    KeyValueForm:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    CompanyLocaleForm:
+      required:
+      - languageId
+      - timeZoneId
+      type: object
+      properties:
+        languageId:
+          type: string
+          description: Java locale string
+          example: en_US
+        timeZoneId:
+          type: string
+          description: Java TimeZone ID
+          example: America/New_York
+      description: Company locale settings (language and timezone)
+    CompanyAuthTypeForm:
+      required:
+      - authType
+      type: object
+      properties:
+        authType:
+          type: string
+          description: 'Authentication type: ''emailAddress'' or ''userId'''
+          example: emailAddress
+          enum:
+          - emailAddress
+          - userId
+          - emailAddress
+          - userId
+      description: Company authentication type setting
+    ResponseEntityCompanyConfigView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CompanyConfigView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CompanyEmailForm:
+      type: object
+      properties:
+        senderAndEmail:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityViewMapStringString:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntityStringView:
       type: object
       properties:
@@ -577,20 +687,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    CompanyEmailForm:
-      type: object
-      properties:
-        senderAndEmail:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     CompanyBasicInfoForm:
       required:
       - emailAddress
@@ -636,6 +732,40 @@ components:
           description: Navigation bar logo path (dotAsset path starting with /dA, Enterprise only). Cleared if omitted.
           example: /dA/abc123/nav-logo.png
       description: Company basic information and branding settings
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     CompanyConfigView:
       required:
       - authType
@@ -708,133 +838,3 @@ components:
           type: string
           description: System default timezone ID
           example: America/New_York
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    CompanyLocaleForm:
-      required:
-      - languageId
-      - timeZoneId
-      type: object
-      properties:
-        languageId:
-          type: string
-          description: Java locale string
-          example: en_US
-        timeZoneId:
-          type: string
-          description: Java TimeZone ID
-          example: America/New_York
-      description: Company locale settings (language and timezone)
-    CompanyAuthTypeForm:
-      required:
-      - authType
-      type: object
-      properties:
-        authType:
-          type: string
-          description: 'Authentication type: ''emailAddress'' or ''userId'''
-          example: emailAddress
-          enum:
-          - emailAddress
-          - userId
-          - emailAddress
-          - userId
-      description: Company authentication type setting
-    ResponseEntityCompanyConfigView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CompanyConfigView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    FormDataContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-        name:
-          type: string
-    ResponseEntityViewMapStringString:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    KeyValueForm:
-      required:
-      - key
-      - value
-      type: object
-      properties:
-        key:
-          type: string
-        value:
-          type: string

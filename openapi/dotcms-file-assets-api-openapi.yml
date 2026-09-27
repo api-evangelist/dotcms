@@ -210,15 +210,18 @@ paths:
             application/json: {}
 components:
   schemas:
-    ErrorEntity:
+    Pagination:
       type: object
       properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityFileAssetView:
       type: object
       properties:
@@ -243,18 +246,6 @@ components:
         pagination:
           $ref: '#/components/schemas/Pagination'
       description: Response entity wrapping a FileAssetView after a save or publish operation
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     MessageEntity:
       type: object
       properties:
@@ -297,3 +288,12 @@ components:
           format: int64
           example: 4096
       description: File asset view returned after a save or publish operation
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

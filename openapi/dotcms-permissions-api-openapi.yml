@@ -462,115 +462,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    UpdateRolePermissionsView:
-      required:
-      - asset
-      - roleId
-      - roleName
-      type: object
-      properties:
-        roleId:
-          type: string
-          description: Role identifier
-          example: abc-123-def-456
-        roleName:
-          type: string
-          description: Role name
-          example: Content Editor
-        asset:
-          $ref: '#/components/schemas/RolePermissionAssetView'
-    UpdateRolePermissionsForm:
-      required:
-      - permissions
-      type: object
-      properties:
-        permissions:
-          type: object
-          additionalProperties:
-            type: array
-            description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
-            example:
-              INDIVIDUAL:
-              - READ
-              - WRITE
-              CONTENT:
-              - READ
-              - PUBLISH
-            items:
-              type: string
-              description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
-              example: '{"INDIVIDUAL":["READ","WRITE"],"CONTENT":["READ","PUBLISH"]}'
-          description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
-          example:
-            INDIVIDUAL:
-            - READ
-            - WRITE
-            CONTENT:
-            - READ
-            - PUBLISH
-    RolePermissionForm:
-      required:
-      - roleId
-      type: object
-      properties:
-        roleId:
-          type: string
-          description: Role identifier. Can be role ID or role key.
-          example: abc-123-def-456
-        individual:
-          uniqueItems: true
-          type: array
-          description: 'Individual permission levels for this asset. Valid values: READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN'
-          example:
-          - READ
-          - WRITE
-          - PUBLISH
-          items:
-            type: string
-            description: 'Individual permission levels for this asset. Valid values: READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN'
-            example: '["READ","WRITE","PUBLISH"]'
-            enum:
-            - READ
-            - USE
-            - EDIT
-            - WRITE
-            - PUBLISH
-            - EDIT_PERMISSIONS
-            - CAN_ADD_CHILDREN
-        inheritable:
-          type: object
-          additionalProperties:
-            uniqueItems: true
-            type: array
-            description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
-            example:
-              FOLDER:
-              - READ
-              - CAN_ADD_CHILDREN
-              CONTENT:
-              - READ
-              - WRITE
-            items:
-              type: string
-              description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
-              example: '{"FOLDER":["READ","CAN_ADD_CHILDREN"],"CONTENT":["READ","WRITE"]}'
-              enum:
-              - READ
-              - USE
-              - EDIT
-              - WRITE
-              - PUBLISH
-              - EDIT_PERMISSIONS
-              - CAN_ADD_CHILDREN
-          description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
-          example:
-            FOLDER:
-            - READ
-            - CAN_ADD_CHILDREN
-            CONTENT:
-            - READ
-            - WRITE
-      description: Permission assignment for a single role on an asset
     Pagination:
       type: object
       properties:
@@ -583,313 +474,6 @@ components:
         totalEntries:
           type: integer
           format: int64
-    ResponseEntityPaginatedDataView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityUpdatePermissionsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/UpdateAssetPermissionsView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    PermissionView:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        inode:
-          type: string
-        roleId:
-          type: string
-        permission:
-          type: string
-          enum:
-          - READ
-          - USE
-          - EDIT
-          - WRITE
-          - PUBLISH
-          - EDIT_PERMISSIONS
-          - CAN_ADD_CHILDREN
-        type:
-          type: string
-        bitPermission:
-          type: boolean
-    RolePermissionsView:
-      required:
-      - assets
-      - roleId
-      - roleName
-      type: object
-      properties:
-        roleId:
-          type: string
-          description: Role identifier
-          example: abc-123-def-456
-        roleName:
-          type: string
-          description: Role display name
-          example: CMS Administrator
-        assets:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/UserPermissionAssetView'
-            last:
-              $ref: '#/components/schemas/UserPermissionAssetView'
-          description: List of permission assets (hosts and folders) with their permission assignments
-          items:
-            $ref: '#/components/schemas/UserPermissionAssetView'
-    ResponseEntityPermissionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/PermissionView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResetAssetPermissionsView:
-      required:
-      - assetId
-      - message
-      - previousPermissionCount
-      type: object
-      properties:
-        message:
-          type: string
-          description: Success message describing the operation result
-          example: Individual permissions removed. Asset now inherits from parent.
-        assetId:
-          type: string
-          description: The identifier of the asset whose permissions were reset
-          example: abc123-def456
-        previousPermissionCount:
-          type: integer
-          description: Number of individual permissions that were removed during the reset operation
-          format: int32
-          example: 5
-    ResponseEntityPermissionsByTypeView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-            additionalProperties:
-              type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityUpdateRolePermissionsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/UpdateRolePermissionsView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityPermissionMetadataView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PermissionMetadataView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    SaveUserPermissionsView:
-      required:
-      - asset
-      - cascadeInitiated
-      - roleId
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-          description: User identifier
-          example: admin@dotcms.com
-        roleId:
-          type: string
-          description: User's individual role identifier
-          example: abc-123-def-456
-        asset:
-          $ref: '#/components/schemas/UserPermissionAssetView'
-        cascadeInitiated:
-          type: boolean
-          description: Whether permission cascade to children was initiated
-    RolePermissionAssetView:
-      required:
-      - canEditPermissions
-      - hostId
-      - id
-      - inheritsPermissions
-      - name
-      - path
-      - permissions
-      - type
-      type: object
-      properties:
-        id:
-          type: string
-          description: Asset identifier (host identifier for HOST type, folder inode for FOLDER type)
-          example: abc-123-def-456
-        type:
-          type: string
-          description: Asset type
-          example: HOST
-          enum:
-          - HOST
-          - FOLDER
-        name:
-          type: string
-          description: Asset name (hostname for HOST, folder name for FOLDER)
-          example: demo.dotcms.com
-        path:
-          type: string
-          description: Full path to the asset
-          example: /demo.dotcms.com/application
-        hostId:
-          type: string
-          description: Host identifier (same as id for HOST type, parent host for FOLDER type)
-          example: abc-123-def-456
-        canEditPermissions:
-          type: boolean
-          description: Whether the requesting user can edit permissions on this asset
-          example: true
-        inheritsPermissions:
-          type: boolean
-          description: Whether this asset inherits permissions from its parent
-          example: false
-        permissions:
-          type: object
-          properties:
-            empty:
-              type: boolean
-          additionalProperties:
-            type: array
-            description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-            example:
-              INDIVIDUAL:
-              - READ
-              - WRITE
-              - PUBLISH
-              CONTENT:
-              - READ
-            items:
-              type: string
-              description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-              example: '{"INDIVIDUAL":["READ","WRITE","PUBLISH"],"CONTENT":["READ"]}'
-          description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-          example:
-            INDIVIDUAL:
-            - READ
-            - WRITE
-            - PUBLISH
-            CONTENT:
-            - READ
-      description: The updated asset with new permission assignments for this role
     PermissionMetadataView:
       required:
       - levels
@@ -979,6 +563,164 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    RolePermissionAssetView:
+      required:
+      - canEditPermissions
+      - hostId
+      - id
+      - inheritsPermissions
+      - name
+      - path
+      - permissions
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Asset identifier (host identifier for HOST type, folder inode for FOLDER type)
+          example: abc-123-def-456
+        type:
+          type: string
+          description: Asset type
+          example: HOST
+          enum:
+          - HOST
+          - FOLDER
+        name:
+          type: string
+          description: Asset name (hostname for HOST, folder name for FOLDER)
+          example: demo.dotcms.com
+        path:
+          type: string
+          description: Full path to the asset
+          example: /demo.dotcms.com/application
+        hostId:
+          type: string
+          description: Host identifier (same as id for HOST type, parent host for FOLDER type)
+          example: abc-123-def-456
+        canEditPermissions:
+          type: boolean
+          description: Whether the requesting user can edit permissions on this asset
+          example: true
+        inheritsPermissions:
+          type: boolean
+          description: Whether this asset inherits permissions from its parent
+          example: false
+        permissions:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: array
+            description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+            example:
+              INDIVIDUAL:
+              - READ
+              - WRITE
+              - PUBLISH
+              CONTENT:
+              - READ
+            items:
+              type: string
+              description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+              example: '{"INDIVIDUAL":["READ","WRITE","PUBLISH"],"CONTENT":["READ"]}'
+          description: Map of permission scopes (INDIVIDUAL, CONTENT, FOLDER, HOST, etc.) to lists of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+          example:
+            INDIVIDUAL:
+            - READ
+            - WRITE
+            - PUBLISH
+            CONTENT:
+            - READ
+      description: The updated asset with new permission assignments for this role
+    ResponseEntityPermissionMetadataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PermissionMetadataView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResetAssetPermissionsView:
+      required:
+      - assetId
+      - message
+      - previousPermissionCount
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message describing the operation result
+          example: Individual permissions removed. Asset now inherits from parent.
+        assetId:
+          type: string
+          description: The identifier of the asset whose permissions were reset
+          example: abc123-def456
+        previousPermissionCount:
+          type: integer
+          description: Number of individual permissions that were removed during the reset operation
+          format: int32
+          example: 5
+    SaveUserPermissionsView:
+      required:
+      - asset
+      - cascadeInitiated
+      - roleId
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+          description: User identifier
+          example: admin@dotcms.com
+        roleId:
+          type: string
+          description: User's individual role identifier
+          example: abc-123-def-456
+        asset:
+          $ref: '#/components/schemas/UserPermissionAssetView'
+        cascadeInitiated:
+          type: boolean
+          description: Whether permission cascade to children was initiated
+    ResponseEntityRolePermissionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RolePermissionsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     UpdateAssetPermissionsView:
       required:
       - asset
@@ -1011,6 +753,220 @@ components:
             type: string
             description: Warnings from cascade operations that partially failed. Present only when cascade was requested and some role cascades failed.
             example: '["Failed to trigger cascade for role xyz123: Connection timeout"]'
+    ResponseEntitySaveUserPermissionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SaveUserPermissionsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    UserPermissionAssetView:
+      required:
+      - canEditPermissions
+      - hostId
+      - id
+      - inheritsPermissions
+      - name
+      - path
+      - permissions
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Asset identifier (host identifier for HOST type, folder inode for FOLDER type)
+          example: abc-123-def-456
+        type:
+          type: string
+          description: Asset type
+          example: HOST
+          enum:
+          - HOST
+          - FOLDER
+        name:
+          type: string
+          description: Asset name (hostname for HOST, folder name for FOLDER)
+          example: demo.dotcms.com
+        path:
+          type: string
+          description: Full path to the asset
+          example: /demo.dotcms.com/application
+        hostId:
+          type: string
+          description: Host identifier (same as id for HOST type, parent host for FOLDER type)
+          example: abc-123-def-456
+        canEditPermissions:
+          type: boolean
+          description: Whether the requesting user can edit permissions on this asset
+          example: true
+        inheritsPermissions:
+          type: boolean
+          description: Whether this asset inherits permissions from its parent
+          example: false
+        permissions:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            uniqueItems: true
+            type: array
+            description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+            example:
+              INDIVIDUAL:
+              - READ
+              - WRITE
+              - PUBLISH
+              HOST:
+              - READ
+            items:
+              type: string
+              description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+              example: '{"INDIVIDUAL":["READ","WRITE","PUBLISH"],"HOST":["READ"]}'
+          description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
+          example:
+            INDIVIDUAL:
+            - READ
+            - WRITE
+            - PUBLISH
+            HOST:
+            - READ
+      description: The updated asset with new permission assignments
+    ResponseEntityPermissionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RolePermissionForm:
+      required:
+      - roleId
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Role identifier. Can be role ID or role key.
+          example: abc-123-def-456
+        individual:
+          uniqueItems: true
+          type: array
+          description: 'Individual permission levels for this asset. Valid values: READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN'
+          example:
+          - READ
+          - WRITE
+          - PUBLISH
+          items:
+            type: string
+            description: 'Individual permission levels for this asset. Valid values: READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN'
+            example: '["READ","WRITE","PUBLISH"]'
+            enum:
+            - READ
+            - USE
+            - EDIT
+            - WRITE
+            - PUBLISH
+            - EDIT_PERMISSIONS
+            - CAN_ADD_CHILDREN
+        inheritable:
+          type: object
+          additionalProperties:
+            uniqueItems: true
+            type: array
+            description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
+            example:
+              FOLDER:
+              - READ
+              - CAN_ADD_CHILDREN
+              CONTENT:
+              - READ
+              - WRITE
+            items:
+              type: string
+              description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
+              example: '{"FOLDER":["READ","CAN_ADD_CHILDREN"],"CONTENT":["READ","WRITE"]}'
+              enum:
+              - READ
+              - USE
+              - EDIT
+              - WRITE
+              - PUBLISH
+              - EDIT_PERMISSIONS
+              - CAN_ADD_CHILDREN
+          description: Inheritable permissions by scope for child assets. Keys are permission scopes (FOLDER, CONTENT, PAGE, etc.), values are sets of permission levels.
+          example:
+            FOLDER:
+            - READ
+            - CAN_ADD_CHILDREN
+            CONTENT:
+            - READ
+            - WRITE
+      description: Permission assignment for a single role on an asset
+    UpdateRolePermissionsView:
+      required:
+      - asset
+      - roleId
+      - roleName
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Role identifier
+          example: abc-123-def-456
+        roleName:
+          type: string
+          description: Role name
+          example: Content Editor
+        asset:
+          $ref: '#/components/schemas/RolePermissionAssetView'
     AssetPermissionsView:
       required:
       - assetId
@@ -1085,6 +1041,116 @@ components:
           description: Whether this asset can have child permissionables (e.g., hosts and folders)
           example: true
       description: The updated asset with its new permission assignments
+    ResponseEntityUpdateRolePermissionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/UpdateRolePermissionsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UpdateAssetPermissionsForm:
+      required:
+      - permissions
+      type: object
+      properties:
+        permissions:
+          type: array
+          description: List of role permission entries. Each entry defines permissions for a specific role on the asset.
+          items:
+            $ref: '#/components/schemas/RolePermissionForm'
+    ResponseEntityPermissionsByTypeView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RolePermissionsView:
+      required:
+      - assets
+      - roleId
+      - roleName
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Role identifier
+          example: abc-123-def-456
+        roleName:
+          type: string
+          description: Role display name
+          example: CMS Administrator
+        assets:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/UserPermissionAssetView'
+            last:
+              $ref: '#/components/schemas/UserPermissionAssetView'
+          description: List of permission assets (hosts and folders) with their permission assignments
+          items:
+            $ref: '#/components/schemas/UserPermissionAssetView'
+    ResponseEntityPaginatedDataView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     RolePermissionView:
       required:
       - individual
@@ -1162,87 +1228,6 @@ components:
             - WRITE
             CONTENT:
             - READ
-    UserPermissionAssetView:
-      required:
-      - canEditPermissions
-      - hostId
-      - id
-      - inheritsPermissions
-      - name
-      - path
-      - permissions
-      - type
-      type: object
-      properties:
-        id:
-          type: string
-          description: Asset identifier (host identifier for HOST type, folder inode for FOLDER type)
-          example: abc-123-def-456
-        type:
-          type: string
-          description: Asset type
-          example: HOST
-          enum:
-          - HOST
-          - FOLDER
-        name:
-          type: string
-          description: Asset name (hostname for HOST, folder name for FOLDER)
-          example: demo.dotcms.com
-        path:
-          type: string
-          description: Full path to the asset
-          example: /demo.dotcms.com/application
-        hostId:
-          type: string
-          description: Host identifier (same as id for HOST type, parent host for FOLDER type)
-          example: abc-123-def-456
-        canEditPermissions:
-          type: boolean
-          description: Whether the requesting user can edit permissions on this asset
-          example: true
-        inheritsPermissions:
-          type: boolean
-          description: Whether this asset inherits permissions from its parent
-          example: false
-        permissions:
-          type: object
-          properties:
-            empty:
-              type: boolean
-          additionalProperties:
-            uniqueItems: true
-            type: array
-            description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-            example:
-              INDIVIDUAL:
-              - READ
-              - WRITE
-              - PUBLISH
-              HOST:
-              - READ
-            items:
-              type: string
-              description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-              example: '{"INDIVIDUAL":["READ","WRITE","PUBLISH"],"HOST":["READ"]}'
-          description: Map of permission types (INDIVIDUAL, HOST, FOLDER, etc.) to sets of permission level names (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN)
-          example:
-            INDIVIDUAL:
-            - READ
-            - WRITE
-            - PUBLISH
-            HOST:
-            - READ
-      description: The updated asset with new permission assignments
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     SaveUserPermissionsForm:
       required:
       - permissions
@@ -1284,40 +1269,36 @@ components:
           description: Whether to cascade permissions to all children assets
           example: false
           default: false
-    ResponseEntityRolePermissionsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/RolePermissionsView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    UpdateAssetPermissionsForm:
+    UpdateRolePermissionsForm:
       required:
       - permissions
       type: object
       properties:
         permissions:
-          type: array
-          description: List of role permission entries. Each entry defines permissions for a specific role on the asset.
-          items:
-            $ref: '#/components/schemas/RolePermissionForm'
-    ResponseEntitySaveUserPermissionsView:
+          type: object
+          additionalProperties:
+            type: array
+            description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
+            example:
+              INDIVIDUAL:
+              - READ
+              - WRITE
+              CONTENT:
+              - READ
+              - PUBLISH
+            items:
+              type: string
+              description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
+              example: '{"INDIVIDUAL":["READ","WRITE"],"CONTENT":["READ","PUBLISH"]}'
+          description: Permission assignments by scope (INDIVIDUAL, HOST, FOLDER, CONTENT, etc.) with permission levels (READ, WRITE, PUBLISH, EDIT_PERMISSIONS, CAN_ADD_CHILDREN). Omitting a scope preserves existing permissions. Empty array [] removes permissions for that scope.
+          example:
+            INDIVIDUAL:
+            - READ
+            - WRITE
+            CONTENT:
+            - READ
+            - PUBLISH
+    ResponseEntityUpdatePermissionsView:
       type: object
       properties:
         errors:
@@ -1325,7 +1306,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/SaveUserPermissionsView'
+          $ref: '#/components/schemas/UpdateAssetPermissionsView'
         messages:
           type: array
           items:
@@ -1340,8 +1321,27 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
+    PermissionView:
       type: object
       properties:
-        message:
+        id:
+          type: integer
+          format: int64
+        inode:
           type: string
+        roleId:
+          type: string
+        permission:
+          type: string
+          enum:
+          - READ
+          - USE
+          - EDIT
+          - WRITE
+          - PUBLISH
+          - EDIT_PERMISSIONS
+          - CAN_ADD_CHILDREN
+        type:
+          type: string
+        bitPermission:
+          type: boolean

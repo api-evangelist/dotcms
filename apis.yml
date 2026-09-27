@@ -536,9 +536,10 @@ apis:
   humanURL: https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis
   baseURL: https://demo.dotcms.com/api
   tags:
-  - ContentType
+  - Content Type
   tags_raw:
   - Content Type
+  - ContentType
   properties:
   - type: OpenAPI
     url: openapi/dotcms-content-type-api-openapi.yml

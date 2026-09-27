@@ -219,15 +219,18 @@ paths:
                 $ref: '#/components/schemas/ResponseEntityMetricsSnapshotView'
 components:
   schemas:
-    ErrorEntity:
+    Pagination:
       type: object
       properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     MetricTiming:
       type: object
       properties:
@@ -245,107 +248,11 @@ components:
           type: boolean
         slow:
           type: boolean
-    MetricsSnapshot:
+    MessageEntity:
       type: object
       properties:
-        stats:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricValue'
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricCalculationError'
-        timings:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricTiming'
-        notNumericMetricValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricValue'
-    MetricValue:
-      type: object
-      properties:
-        name:
+        message:
           type: string
-        description:
-          type: string
-        category:
-          type: string
-          enum:
-          - DIFFERENTIATING_FEATURES
-          - PAID_FEATURES
-          - PLATFORM_SPECIFIC_CUSTOMIZATION
-          - SOPHISTICATED_CONTENT_ARCHITECTURE
-          - POSITIVE_USER_EXPERIENCE
-          - PLATFORM_SPECIFIC_DEVELOPMENT
-          - RECENT_ACTIVITY
-          - HISTORY_LEGACY_DEPRECATED_FEATURES
-        feature:
-          type: string
-          enum:
-          - CONTENTLETS
-          - LANGUAGES
-          - CONTENT_TYPES
-          - SITES
-          - URL_MAPS
-          - WORKFLOW
-          - USERS
-          - SITE_SEARCH
-          - IMAGE_API
-          - LAYOUT
-          - CONTENT_TYPE_FIELDS
-          - AI
-          - EXPERIMENTS
-        value:
-          type: object
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Metric:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-          enum:
-          - DIFFERENTIATING_FEATURES
-          - PAID_FEATURES
-          - PLATFORM_SPECIFIC_CUSTOMIZATION
-          - SOPHISTICATED_CONTENT_ARCHITECTURE
-          - POSITIVE_USER_EXPERIENCE
-          - PLATFORM_SPECIFIC_DEVELOPMENT
-          - RECENT_ACTIVITY
-          - HISTORY_LEGACY_DEPRECATED_FEATURES
-        feature:
-          type: string
-          enum:
-          - CONTENTLETS
-          - LANGUAGES
-          - CONTENT_TYPES
-          - SITES
-          - URL_MAPS
-          - WORKFLOW
-          - USERS
-          - SITE_SEARCH
-          - IMAGE_API
-          - LAYOUT
-          - CONTENT_TYPE_FIELDS
-          - AI
-          - EXPERIMENTS
     ResponseEntityMetricsSnapshotView:
       type: object
       properties:
@@ -369,11 +276,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     MetricCalculationError:
       type: object
       properties:
@@ -412,3 +314,101 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/Metric'
+    MetricsSnapshot:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricValue'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricCalculationError'
+        timings:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricTiming'
+        notNumericMetricValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricValue'
+    Metric:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum:
+          - DIFFERENTIATING_FEATURES
+          - PAID_FEATURES
+          - PLATFORM_SPECIFIC_CUSTOMIZATION
+          - SOPHISTICATED_CONTENT_ARCHITECTURE
+          - POSITIVE_USER_EXPERIENCE
+          - PLATFORM_SPECIFIC_DEVELOPMENT
+          - RECENT_ACTIVITY
+          - HISTORY_LEGACY_DEPRECATED_FEATURES
+        feature:
+          type: string
+          enum:
+          - CONTENTLETS
+          - LANGUAGES
+          - CONTENT_TYPES
+          - SITES
+          - URL_MAPS
+          - WORKFLOW
+          - USERS
+          - SITE_SEARCH
+          - IMAGE_API
+          - LAYOUT
+          - CONTENT_TYPE_FIELDS
+          - AI
+          - EXPERIMENTS
+    MetricValue:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum:
+          - DIFFERENTIATING_FEATURES
+          - PAID_FEATURES
+          - PLATFORM_SPECIFIC_CUSTOMIZATION
+          - SOPHISTICATED_CONTENT_ARCHITECTURE
+          - POSITIVE_USER_EXPERIENCE
+          - PLATFORM_SPECIFIC_DEVELOPMENT
+          - RECENT_ACTIVITY
+          - HISTORY_LEGACY_DEPRECATED_FEATURES
+        feature:
+          type: string
+          enum:
+          - CONTENTLETS
+          - LANGUAGES
+          - CONTENT_TYPES
+          - SITES
+          - URL_MAPS
+          - WORKFLOW
+          - USERS
+          - SITE_SEARCH
+          - IMAGE_API
+          - LAYOUT
+          - CONTENT_TYPE_FIELDS
+          - AI
+          - EXPERIMENTS
+        value:
+          type: object
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

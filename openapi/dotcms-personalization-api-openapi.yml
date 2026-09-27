@@ -146,29 +146,45 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ResponseEntityStringView:
+    Field:
+      required:
+      - clazz
       type: object
       properties:
-        errors:
+        fieldContentTypeProperties:
           type: array
           items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
           type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+      discriminator:
+        propertyName: clazz
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     UserAPI:
       type: object
       properties:
@@ -184,6 +200,39 @@ components:
             $ref: '#/components/schemas/User'
         anonymousUserNoThrow:
           $ref: '#/components/schemas/User'
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
     PersonalizationPersonaPageForm:
       required:
       - pageId
@@ -194,6 +243,31 @@ components:
           type: string
         personaTag:
           type: string
+    ResponseEntityPersonalizationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     Persona:
       type: object
       properties:
@@ -286,112 +360,6 @@ components:
           type: string
         new:
           type: boolean
-    Field:
-      required:
-      - clazz
-      type: object
-      properties:
-        fieldContentTypeProperties:
-          type: array
-          items:
-            type: string
-            enum:
-            - NAME
-            - VALUES
-            - CATEGORIES
-            - RELATIONSHIPS
-            - REGEX_CHECK
-            - HINT
-            - REQUIRED
-            - SEARCHABLE
-            - INDEXED
-            - LISTED
-            - UNIQUE
-            - DEFAULT_VALUE
-            - DATA_TYPE
-        clazz:
-          type: string
-      discriminator:
-        propertyName: clazz
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        roleKey:
-          type: string
-        parent:
-          type: string
-        editPermissions:
-          type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
-          type: array
-          items:
-            type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
-    ResponseEntityPersonalizationView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     MessageEntity:
       type: object
       properties:
@@ -581,3 +549,35 @@ components:
           type: boolean
         new:
           type: boolean
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

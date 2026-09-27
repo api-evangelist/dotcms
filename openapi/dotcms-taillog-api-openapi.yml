@@ -60,25 +60,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    EventOutput:
-      type: object
-      properties:
-        type:
-          type: object
-          properties:
-            typeName:
-              type: string
-        closed:
-          type: boolean
     Pagination:
       type: object
       properties:
@@ -91,11 +72,6 @@ components:
         totalEntries:
           type: integer
           format: int64
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     ResponseEntityListStringView:
       type: object
       properties:
@@ -121,3 +97,27 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

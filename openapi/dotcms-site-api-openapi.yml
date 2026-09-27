@@ -546,36 +546,6 @@ paths:
           description: Site not found
 components:
   schemas:
-    SearchSiteByNameForm:
-      type: object
-      properties:
-        siteName:
-          type: string
-    ResponseSiteVariablesEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteVariableView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     Pagination:
       type: object
       properties:
@@ -588,52 +558,6 @@ components:
         totalEntries:
           type: integer
           format: int64
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        roleKey:
-          type: string
-        parent:
-          type: string
-        editPermissions:
-          type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
-          type: array
-          items:
-            type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
-    SiteVariableForm:
-      type: object
-      properties:
-        id:
-          type: string
-        siteId:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
     UserAPI:
       type: object
       properties:
@@ -649,192 +573,6 @@ components:
             $ref: '#/components/schemas/User'
         anonymousUserNoThrow:
           $ref: '#/components/schemas/User'
-    SiteVariableView:
-      type: object
-      properties:
-        id:
-          type: string
-        hostId:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-        lastModifierId:
-          type: string
-        lastModDate:
-          type: string
-          format: date-time
-        lastModifierFullName:
-          type: string
-    ResponseEntityBooleanView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CopySiteForm:
-      type: object
-      properties:
-        copyFromSiteId:
-          type: string
-        copyAll:
-          type: boolean
-        copyTemplatesContainers:
-          type: boolean
-        copyContentOnPages:
-          type: boolean
-        copyFolders:
-          type: boolean
-        copyContentOnSite:
-          type: boolean
-        copyLinks:
-          type: boolean
-        copySiteVariables:
-          type: boolean
-        copyContentTypes:
-          type: boolean
-        site:
-          $ref: '#/components/schemas/SiteForm'
-    Host:
-      type: object
-      properties:
-        lowIndexPriority:
-          type: boolean
-        variantId:
-          type: string
-        inode:
-          type: string
-        hostname:
-          type: string
-        systemHost:
-          type: boolean
-        hostThumbnail:
-          type: string
-          format: binary
-        structureInode:
-          type: string
-        tagStorage:
-          type: string
-        parent:
-          type: boolean
-        aliases:
-          type: string
-        default:
-          type: boolean
-        name:
-          type: string
-        permissionId:
-          type: string
-        permissionType:
-          type: string
-        owner:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        identifier:
-          type: string
-        type:
-          type: string
-        languageId:
-          type: integer
-          format: int64
-        sortOrder:
-          type: integer
-          format: int64
-        archived:
-          type: boolean
-        folder:
-          type: string
-        htmlpage:
-          type: boolean
-        vanityUrl:
-          type: boolean
-        userAPI:
-          $ref: '#/components/schemas/UserAPI'
-        contentTypeId:
-          type: string
-        host:
-          type: string
-        modUser:
-          type: string
-        working:
-          type: boolean
-        keyValue:
-          type: boolean
-        categoryId:
-          type: string
-        versionId:
-          type: string
-        titleImage:
-          $ref: '#/components/schemas/Field'
-        dotAsset:
-          type: boolean
-        persona:
-          type: boolean
-        form:
-          type: boolean
-        languageVariable:
-          type: boolean
-        indexPolicyDependencies:
-          type: string
-          enum:
-          - DEFER
-          - WAIT_FOR
-          - FORCE
-        fileAsset:
-          type: boolean
-        title:
-          type: string
-        live:
-          type: boolean
-        new:
-          type: boolean
-        locked:
-          type: boolean
-    ResponseHostVariableEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/HostVariable'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ResponseEntitySiteView:
       type: object
       properties:
@@ -858,237 +596,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    SimpleSiteVariableForm:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-      description: Optional list of site variables (key/value pairs) to create alongside the site.
-    HostVariable:
-      type: object
-      properties:
-        id:
-          type: string
-        hostId:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-        lastModifierId:
-          type: string
-        lastModDate:
-          type: string
-          format: date-time
-    SiteForm:
-      required:
-      - siteName
-      type: object
-      properties:
-        aliases:
-          type: string
-          description: Comma- or newline-separated list of host aliases (alternate hostnames) for this site.
-        siteName:
-          type: string
-          description: The hostname of the site, e.g. 'www.example.com'. This is the site's primary name.
-        tagStorage:
-          type: string
-          description: Identifier of the site whose tag storage this site shares. Defaults to this site itself when omitted.
-        siteThumbnail:
-          type: string
-          description: Identifier of the image asset used as the site thumbnail.
-        runDashboard:
-          type: boolean
-          description: Whether the analytics dashboard runs for this site.
-        keywords:
-          type: string
-          description: Default meta keywords applied to pages on this site.
-        description:
-          type: string
-          description: Default meta description applied to pages on this site.
-        googleMap:
-          type: string
-          description: Google Maps API key for this site.
-        googleAnalytics:
-          type: string
-          description: Google Analytics tracking ID for this site.
-        addThis:
-          type: string
-          description: AddThis sharing-widget account ID for this site.
-        proxyUrlForEditMode:
-          type: string
-          description: Proxy URL used to render the site in edit mode.
-        embeddedDashboard:
-          type: string
-          description: Embedded dashboard markup for this site.
-        languageId:
-          type: integer
-          description: Default language ID for this site. Defaults to the system default language when 0/omitted.
-          format: int64
-        identifier:
-          type: string
-          description: Identifier of the site. Ignored on creation; server-generated.
-        inode:
-          type: string
-          description: Inode (version identifier) of the site. Ignored on creation; server-generated.
-        default:
-          type: boolean
-        forceExecution:
-          type: boolean
-          description: Whether to force creation even when validation would otherwise warn (e.g. a duplicate alias).
-        variables:
-          type: array
-          description: Optional list of site variables (key/value pairs) to create alongside the site.
-          items:
-            $ref: '#/components/schemas/SimpleSiteVariableForm'
-      description: Form used to create a Site (Host) in dotCMS. 'siteName' (the hostname) is the only required field; the new site is created unpublished and must be published separately.
-    Field:
-      required:
-      - clazz
-      type: object
-      properties:
-        fieldContentTypeProperties:
-          type: array
-          items:
-            type: string
-            enum:
-            - NAME
-            - VALUES
-            - CATEGORIES
-            - RELATIONSHIPS
-            - REGEX_CHECK
-            - HINT
-            - REQUIRED
-            - SEARCHABLE
-            - INDEXED
-            - LISTED
-            - UNIQUE
-            - DEFAULT_VALUE
-            - DATA_TYPE
-        clazz:
-          type: string
-      discriminator:
-        propertyName: clazz
-    ResponseEntityListMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntitySiteSwitchView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityHostView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Host'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ResponseEntitySiteSetupProgressView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     User:
       type: object
       properties:
@@ -1273,3 +780,496 @@ components:
           type: boolean
         new:
           type: boolean
+    ResponseHostVariableEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/HostVariable'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SimpleSiteVariableForm:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+      description: Optional list of site variables (key/value pairs) to create alongside the site.
+    HostVariable:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    SiteVariableView:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+        lastModifierFullName:
+          type: string
+    ResponseEntityHostView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Host'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    CopySiteForm:
+      type: object
+      properties:
+        copyFromSiteId:
+          type: string
+        copyAll:
+          type: boolean
+        copyTemplatesContainers:
+          type: boolean
+        copyContentOnPages:
+          type: boolean
+        copyFolders:
+          type: boolean
+        copyContentOnSite:
+          type: boolean
+        copyLinks:
+          type: boolean
+        copySiteVariables:
+          type: boolean
+        copyContentTypes:
+          type: boolean
+        site:
+          $ref: '#/components/schemas/SiteForm'
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    SearchSiteByNameForm:
+      type: object
+      properties:
+        siteName:
+          type: string
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySiteSwitchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Host:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        inode:
+          type: string
+        hostname:
+          type: string
+        systemHost:
+          type: boolean
+        hostThumbnail:
+          type: string
+          format: binary
+        structureInode:
+          type: string
+        tagStorage:
+          type: string
+        parent:
+          type: boolean
+        aliases:
+          type: string
+        default:
+          type: boolean
+        name:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        identifier:
+          type: string
+        type:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        new:
+          type: boolean
+        locked:
+          type: boolean
+    ResponseSiteVariablesEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteVariableView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SiteVariableForm:
+      type: object
+      properties:
+        id:
+          type: string
+        siteId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySiteSetupProgressView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SiteForm:
+      required:
+      - siteName
+      type: object
+      properties:
+        aliases:
+          type: string
+          description: Comma- or newline-separated list of host aliases (alternate hostnames) for this site.
+        siteName:
+          type: string
+          description: The hostname of the site, e.g. 'www.example.com'. This is the site's primary name.
+        tagStorage:
+          type: string
+          description: Identifier of the site whose tag storage this site shares. Defaults to this site itself when omitted.
+        siteThumbnail:
+          type: string
+          description: Identifier of the image asset used as the site thumbnail.
+        runDashboard:
+          type: boolean
+          description: Whether the analytics dashboard runs for this site.
+        keywords:
+          type: string
+          description: Default meta keywords applied to pages on this site.
+        description:
+          type: string
+          description: Default meta description applied to pages on this site.
+        googleMap:
+          type: string
+          description: Google Maps API key for this site.
+        googleAnalytics:
+          type: string
+          description: Google Analytics tracking ID for this site.
+        addThis:
+          type: string
+          description: AddThis sharing-widget account ID for this site.
+        proxyUrlForEditMode:
+          type: string
+          description: Proxy URL used to render the site in edit mode.
+        embeddedDashboard:
+          type: string
+          description: Embedded dashboard markup for this site.
+        languageId:
+          type: integer
+          description: Default language ID for this site. Defaults to the system default language when 0/omitted.
+          format: int64
+        identifier:
+          type: string
+          description: Identifier of the site. Ignored on creation; server-generated.
+        inode:
+          type: string
+          description: Inode (version identifier) of the site. Ignored on creation; server-generated.
+        default:
+          type: boolean
+        forceExecution:
+          type: boolean
+          description: Whether to force creation even when validation would otherwise warn (e.g. a duplicate alias).
+        variables:
+          type: array
+          description: Optional list of site variables (key/value pairs) to create alongside the site.
+          items:
+            $ref: '#/components/schemas/SimpleSiteVariableForm'
+      description: Form used to create a Site (Host) in dotCMS. 'siteName' (the hostname) is the only required field; the new site is created unpublished and must be published separately.
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

@@ -742,6 +742,131 @@ paths:
                 $ref: '#/components/schemas/ResponseEntitySmallRoleView'
 components:
   schemas:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    SkippedUserView:
+      required:
+      - reason
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Id of the skipped user, as submitted in the request
+          example: dotcms.org.2807
+        reason:
+          type: string
+          description: Why the user was skipped
+          example: inherited
+          enum:
+          - not_found
+          - inherited
+          - error
+      description: Users that could not be removed, each with a reason
+    RoleUsersRemovalView:
+      required:
+      - removedUserIds
+      - skipped
+      type: object
+      properties:
+        removedUserIds:
+          type: array
+          description: Ids of the users whose direct membership in the role was removed
+          items:
+            type: string
+            description: Ids of the users whose direct membership in the role was removed
+        skipped:
+          type: array
+          description: Users that could not be removed, each with a reason
+          items:
+            $ref: '#/components/schemas/SkippedUserView'
+    ResponseEntityRoleDeletionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/RoleDeletionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityRoleOperationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RoleForm:
+      required:
+      - roleName
+      type: object
+      properties:
+        roleName:
+          type: string
+        roleKey:
+          type: string
+        parentRoleId:
+          type: string
+        canEditUsers:
+          type: boolean
+        canEditPermissions:
+          type: boolean
+        canEditLayouts:
+          type: boolean
+        description:
+          type: string
+    RoleLayoutForm:
+      type: object
+      properties:
+        roleId:
+          type: string
+        layoutIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
     Layout:
       type: object
       properties:
@@ -758,7 +883,7 @@ components:
           type: array
           items:
             type: string
-    ResponseEntityRoleViewListView:
+    ResponseEntityRoleUsersRemovalView:
       type: object
       properties:
         errors:
@@ -766,9 +891,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/RoleView'
+          $ref: '#/components/schemas/RoleUsersRemovalView'
         messages:
           type: array
           items:
@@ -783,39 +906,38 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    MessageEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    RoleDeletionView:
-      required:
-      - deleted
-      - roleId
-      - usersAffected
-      type: object
-      properties:
-        deleted:
-          type: boolean
-          description: Whether the role was deleted
-          example: true
-        roleId:
+        message:
           type: string
-          description: Id of the deleted role
-          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
-        usersAffected:
-          type: integer
-          description: Number of users the role was removed from by the cascading deletion. Counts direct assignments only; users inheriting the role through the role hierarchy are not included
-          format: int32
-          example: 3
-    ResponseEntityPaginatedDataView:
+    SmallRoleView:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        roleKey:
+          type: string
+        user:
+          type: boolean
+    RoleUsersForm:
+      required:
+      - userIds
+      type: object
+      properties:
+        userIds:
+          uniqueItems: true
+          type: array
+          description: Ids of the users to remove from the role
+          example:
+          - dotcms.org.2807
+          items:
+            type: string
+            description: Ids of the users to remove from the role
+            example: '["dotcms.org.2807"]'
+    RoleResponseEntityView:
       type: object
       properties:
         errors:
@@ -824,6 +946,8 @@ components:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
           type: object
+          additionalProperties:
+            type: object
         messages:
           type: array
           items:
@@ -884,6 +1008,83 @@ components:
           type: string
         fqn:
           type: string
+    LayoutMapResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityLayoutList:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Layout'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityRoleListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     Role:
       type: object
       properties:
@@ -917,41 +1118,43 @@ components:
           type: string
         user:
           type: boolean
-    ResponseEntityRoleOperationView:
+    RoleDeletionView:
+      required:
+      - deleted
+      - roleId
+      - usersAffected
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    RoleLayoutForm:
-      type: object
-      properties:
+        deleted:
+          type: boolean
+          description: Whether the role was deleted
+          example: true
         roleId:
           type: string
-        layoutIds:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
+          description: Id of the deleted role
+          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+        usersAffected:
+          type: integer
+          description: Number of users the role was removed from by the cascading deletion. Counts direct assignments only; users inheriting the role through the role hierarchy are not included
+          format: int32
+          example: 3
+    RoleUserGrantView:
+      required:
+      - granted
+      - roleId
+      - user
+      type: object
+      properties:
+        granted:
+          type: boolean
+          description: Whether the user holds the role after the call. The grant is idempotent, so this is also true when the user already held the role and nothing changed
+          example: true
+        roleId:
+          type: string
+          description: Id of the granted role
+          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
+        user:
+          $ref: '#/components/schemas/RoleMemberUserView'
     RoleMemberUserView:
       required:
       - email
@@ -972,7 +1175,7 @@ components:
           description: Full name of the user
           example: Jane Doe
       description: The user the role was granted to
-    ResponseEntityLayoutList:
+    ResponseEntityPaginatedDataView:
       type: object
       properties:
         errors:
@@ -980,9 +1183,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/Layout'
+          type: object
         messages:
           type: array
           items:
@@ -997,22 +1198,7 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    RoleUsersForm:
-      required:
-      - userIds
-      type: object
-      properties:
-        userIds:
-          uniqueItems: true
-          type: array
-          description: Ids of the users to remove from the role
-          example:
-          - dotcms.org.2807
-          items:
-            type: string
-            description: Ids of the users to remove from the role
-            example: '["dotcms.org.2807"]'
-    ResponseEntityRoleListView:
+    ResponseEntityRoleViewListView:
       type: object
       properties:
         errors:
@@ -1022,7 +1208,7 @@ components:
         entity:
           type: array
           items:
-            $ref: '#/components/schemas/Role'
+            $ref: '#/components/schemas/RoleView'
         messages:
           type: array
           items:
@@ -1037,7 +1223,7 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityRoleDetailView:
+    ResponseEntityRoleUserGrantView:
       type: object
       properties:
         errors:
@@ -1045,78 +1231,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/RoleView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityRoleUsersRemovalView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/RoleUsersRemovalView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    RoleResponseEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityRoleDeletionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/RoleDeletionView'
+          $ref: '#/components/schemas/RoleUserGrantView'
         messages:
           type: array
           items:
@@ -1156,46 +1271,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    RoleUsersRemovalView:
-      required:
-      - removedUserIds
-      - skipped
-      type: object
-      properties:
-        removedUserIds:
-          type: array
-          description: Ids of the users whose direct membership in the role was removed
-          items:
-            type: string
-            description: Ids of the users whose direct membership in the role was removed
-        skipped:
-          type: array
-          description: Users that could not be removed, each with a reason
-          items:
-            $ref: '#/components/schemas/SkippedUserView'
-    ResponseEntityRoleUserGrantView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/RoleUserGrantView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ErrorEntity:
       type: object
       properties:
@@ -1205,54 +1280,7 @@ components:
           type: string
         fieldName:
           type: string
-    SmallRoleView:
-      type: object
-      properties:
-        name:
-          type: string
-        id:
-          type: string
-        roleKey:
-          type: string
-        user:
-          type: boolean
-    RoleUserGrantView:
-      required:
-      - granted
-      - roleId
-      - user
-      type: object
-      properties:
-        granted:
-          type: boolean
-          description: Whether the user holds the role after the call. The grant is idempotent, so this is also true when the user already held the role and nothing changed
-          example: true
-        roleId:
-          type: string
-          description: Id of the granted role
-          example: 48190c8c-42c4-46af-8d1a-0cd5db894797
-        user:
-          $ref: '#/components/schemas/RoleMemberUserView'
-    RoleForm:
-      required:
-      - roleName
-      type: object
-      properties:
-        roleName:
-          type: string
-        roleKey:
-          type: string
-        parentRoleId:
-          type: string
-        canEditUsers:
-          type: boolean
-        canEditPermissions:
-          type: boolean
-        canEditLayouts:
-          type: boolean
-        description:
-          type: string
-    LayoutMapResponseEntityView:
+    ResponseEntityRoleDetailView:
       type: object
       properties:
         errors:
@@ -1260,11 +1288,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
+          $ref: '#/components/schemas/RoleView'
         messages:
           type: array
           items:
@@ -1279,27 +1303,3 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    SkippedUserView:
-      required:
-      - reason
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-          description: Id of the skipped user, as submitted in the request
-          example: dotcms.org.2807
-        reason:
-          type: string
-          description: Why the user was skipped
-          example: inherited
-          enum:
-          - not_found
-          - inherited
-          - error
-      description: Users that could not be removed, each with a reason
