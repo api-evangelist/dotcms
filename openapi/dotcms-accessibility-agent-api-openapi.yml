@@ -93,43 +93,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    A11yAgentFixForm:
-      required:
-      - identifier
-      type: object
-      properties:
-        identifier:
-          type: string
-          description: dotCMS content identifier of the page to fix
-          example: a9f30020-54ef-494e-92ed-645e757171c2
-        languageId:
-          type: integer
-          description: Language id of the page version to fix
-          format: int32
-          example: 1
-          default: 1
-        skipCss:
-          type: boolean
-          description: When true the agent fixes only VTL and reports CSS contrast issues instead of editing stylesheets
-          example: false
-          default: false
     ResponseEntityView:
       type: object
       properties:
@@ -153,15 +116,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     A11yAgentStopForm:
       required:
       - runId
@@ -171,3 +125,49 @@ components:
           type: string
           description: Run id returned by /fix (report) or /fix/stream (the `run` event)
           example: r_1f0c2b7d9a4e4c1fb0d5e6a7c8b9d0e1
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    A11yAgentFixForm:
+      required:
+      - identifier
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: dotCMS content identifier of the page to fix
+          example: a9f30020-54ef-494e-92ed-645e757171c2
+        languageId:
+          type: integer
+          description: Language id of the page version to fix
+          format: int32
+          example: 1
+          default: 1
+        skipCss:
+          type: boolean
+          description: When true the agent fixes only VTL and reports CSS contrast issues instead of editing stylesheets
+          example: false
+          default: false
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

@@ -360,232 +360,6 @@ paths:
           description: Session invalidated (or was unknown)
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    FormDataBodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
-          type: string
-        value:
-          type: string
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    MessageBodyWorkers:
-      type: object
-    OAuthExchangeView:
-      type: object
-      properties:
-        sessionRef:
-          type: string
-        expiresAt:
-          type: string
-        expirationDays:
-          type: integer
-          format: int32
-        user:
-          $ref: '#/components/schemas/UserSummary'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    FormDataContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-        name:
-          type: string
-    ResponseEntityOAuthExchangeView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/OAuthExchangeView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    OAuthExchangeForm:
-      required:
-      - idToken
-      - nonce
-      type: object
-      properties:
-        idToken:
-          type: string
-        nonce:
-          type: string
-        expirationDays:
-          type: integer
-          format: int32
-    BodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
     UserSummary:
       type: object
       properties:
@@ -603,6 +377,43 @@ components:
           type: array
           items:
             type: string
+    DotAuthConfigForm:
+      required:
+      - values
+      type: object
+      properties:
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        values:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityDotAuthSitesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DotAuthSitesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     FormDataMultiPart:
       type: object
       properties:
@@ -653,29 +464,11 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    ResponseEntityDotAuthSitesView:
+    MessageEntity:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/DotAuthSitesView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+        message:
+          type: string
     SiteRowView:
       type: object
       properties:
@@ -694,6 +487,211 @@ components:
           enum:
           - OAUTH
           - SAML
+    SystemView:
+      type: object
+      properties:
+        configured:
+          type: boolean
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        headlessConfigured:
+          type: boolean
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    ResponseEntityDotAuthConfigView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DotAuthConfigView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    OAuthExchangeForm:
+      required:
+      - idToken
+      - nonce
+      type: object
+      properties:
+        idToken:
+          type: string
+        nonce:
+          type: string
+        expirationDays:
+          type: integer
+          format: int32
     MultiPart:
       type: object
       properties:
@@ -738,27 +736,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    SystemView:
-      type: object
-      properties:
-        configured:
-          type: boolean
-        protocol:
-          type: string
-          enum:
-          - OAUTH
-          - SAML
-        headlessConfigured:
-          type: boolean
-    DotAuthSitesView:
-      type: object
-      properties:
-        system:
-          $ref: '#/components/schemas/SystemView'
-        sites:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteRowView'
     ParameterizedHeader:
       type: object
       properties:
@@ -768,20 +745,73 @@ components:
           type: object
           additionalProperties:
             type: string
-    DotAuthConfigForm:
-      required:
-      - values
+    ResponseEntityOAuthExchangeView:
       type: object
       properties:
-        protocol:
-          type: string
-          enum:
-          - OAUTH
-          - SAML
-        values:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/OAuthExchangeView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
           type: object
           additionalProperties:
-            type: object
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    OAuthExchangeView:
+      type: object
+      properties:
+        sessionRef:
+          type: string
+        expiresAt:
+          type: string
+        expirationDays:
+          type: integer
+          format: int32
+        user:
+          $ref: '#/components/schemas/UserSummary'
+    DotAuthSitesView:
+      type: object
+      properties:
+        system:
+          $ref: '#/components/schemas/SystemView'
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteRowView'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     DotAuthConfigView:
       type: object
       properties:
@@ -804,35 +834,5 @@ components:
           type: object
           additionalProperties:
             type: object
-    ErrorEntity:
+    MessageBodyWorkers:
       type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ResponseEntityDotAuthConfigView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/DotAuthConfigView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'

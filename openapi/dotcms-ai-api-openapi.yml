@@ -557,55 +557,65 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
+    ResponseEntityAiTestConnectionView:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        roleKey:
-          type: string
-        parent:
-          type: string
-        editPermissions:
-          type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TestConnectionResult'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
             type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
-    MessageEntity:
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityAiProviderListView:
       type: object
       properties:
-        message:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderMetadata'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AIImageRequestDTO:
+      type: object
+      properties:
+        prompt:
+          type: string
+        numberOfImages:
+          type: integer
+          format: int32
+        size:
+          type: string
+        model:
           type: string
     User:
       type: object
@@ -791,6 +801,60 @@ components:
           type: boolean
         new:
           type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
     ProviderField:
       type: object
       properties:
@@ -807,18 +871,6 @@ components:
         hint:
           type: string
         requiredUnless:
-          type: string
-    AIImageRequestDTO:
-      type: object
-      properties:
-        prompt:
-          type: string
-        numberOfImages:
-          type: integer
-          format: int32
-        size:
-          type: string
-        model:
           type: string
     ProviderMetadata:
       type: object
@@ -840,6 +892,18 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ProviderField'
+    TestConnectionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     EmbeddingsForm:
       type: object
       properties:
@@ -867,70 +931,6 @@ components:
         userId:
           type: string
         requestHostId:
-          type: string
-    ResponseEntityAiTestConnectionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/TestConnectionResult'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityAiProviderListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProviderMetadata'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    TestConnectionResult:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
           type: string
     CompletionsForm:
       type: object

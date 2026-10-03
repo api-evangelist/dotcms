@@ -497,54 +497,29 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    FormDataBodyPart:
+    ContentDisposition:
       type: object
       properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
+        type:
+          type: string
+        parameters:
           type: object
           additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
+            type: string
+        fileName:
           type: string
-        value:
+        creationDate:
           type: string
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
     BodyPart:
       type: object
       properties:
@@ -585,6 +560,59 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
     FormDataMultiPart:
       type: object
       properties:
@@ -635,66 +663,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    MessageBodyWorkers:
-      type: object
-    ParameterizedHeader:
-      type: object
-      properties:
-        value:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-    ContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-    FormDataContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-        name:
-          type: string
-    MultiPart:
+    FormDataBodyPart:
       type: object
       properties:
         contentDisposition:
@@ -728,13 +697,44 @@ components:
           $ref: '#/components/schemas/MultiPart'
         providers:
           type: object
-        bodyParts:
-          type: array
-          items:
-            $ref: '#/components/schemas/BodyPart'
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
         parameterizedHeaders:
           type: object
           additionalProperties:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    MessageBodyWorkers:
+      type: object

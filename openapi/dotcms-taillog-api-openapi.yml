@@ -60,18 +60,15 @@ paths:
             application/json: {}
 components:
   schemas:
-    Pagination:
+    ErrorEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     ResponseEntityListStringView:
       type: object
       properties:
@@ -112,12 +109,15 @@ components:
       properties:
         message:
           type: string
-    ErrorEntity:
+    Pagination:
       type: object
       properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

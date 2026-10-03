@@ -39,18 +39,42 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
+    ErrorEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Announcement:
+      type: object
+      properties:
+        identifier:
+          type: string
+        inode:
+          type: string
+        languageId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        announcementDate:
+          type: string
+          format: date-time
+        announcementDateAsISO8601:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        modDateAsISO8601:
+          type: string
     ResponseEntityViewListAnnouncement:
       type: object
       properties:
@@ -81,39 +105,15 @@ components:
       properties:
         message:
           type: string
-    Announcement:
+    Pagination:
       type: object
       properties:
-        identifier:
-          type: string
-        inode:
-          type: string
-        languageId:
-          type: string
-        type:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        url:
-          type: string
-        announcementDate:
-          type: string
-          format: date-time
-        announcementDateAsISO8601:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        modDateAsISO8601:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

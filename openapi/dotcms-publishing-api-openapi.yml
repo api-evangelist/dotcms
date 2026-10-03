@@ -493,97 +493,148 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    PublishingJobDetailView:
+    PushBundleResultView:
       required:
-      - assetCount
       - bundleId
       - environments
-      - numTries
-      - status
-      - timestamps
+      - filterKey
+      - operation
       type: object
       properties:
         bundleId:
           type: string
-          description: Unique bundle identifier
+          description: Bundle identifier
           example: 01KJWNJM2C67DM56GHBJ4S7B89
-        bundleName:
+        operation:
           type: string
-          description: Human-readable bundle name
-          example: bundle-testName
-        status:
+          description: Operation type performed
+          example: publish
+        publishDate:
           type: string
-          description: Current publishing status
-          example: SUCCESS
-          enum:
-          - BUNDLE_REQUESTED
-          - BUNDLING
-          - SENDING_TO_ENDPOINTS
-          - FAILED_TO_SEND_TO_ALL_GROUPS
-          - FAILED_TO_SEND_TO_SOME_GROUPS
-          - FAILED_TO_BUNDLE
-          - FAILED_TO_SENT
-          - FAILED_TO_PUBLISH
-          - SUCCESS
-          - BUNDLE_SENT_SUCCESSFULLY
-          - RECEIVED_BUNDLE
-          - PUBLISHING_BUNDLE
-          - WAITING_FOR_PUBLISHING
-          - BUNDLE_SAVED_SUCCESSFULLY
-          - INVALID_TOKEN
-          - LICENSE_REQUIRED
-          - SUCCESS_WITH_WARNINGS
-          - FAILED_INTEGRITY_CHECK
-          - SCHEDULED
-        filterName:
+          description: Scheduled publish date in ISO 8601 format
+          example: '2025-03-15T14:30:00-05:00'
+        expireDate:
           type: string
-          description: Publishing filter name used
-          example: Live to Staging
-        filterKey:
-          type: string
-          description: Publishing filter key (pass to POST /push/{bundleId} filterKey to reproduce this push)
-          example: ForcePush.yml
-        assetCount:
-          type: integer
-          description: Total number of assets in the bundle
-          format: int32
-          example: 47
+          description: Scheduled expire date in ISO 8601 format
+          example: '2025-04-15T14:30:00-05:00'
         environments:
           type: array
           properties:
             empty:
               type: boolean
             first:
-              $ref: '#/components/schemas/EnvironmentDetailView'
+              type: string
             last:
-              $ref: '#/components/schemas/EnvironmentDetailView'
-          description: Environments with their endpoints and status details
+              type: string
+          description: List of environment IDs the bundle was pushed to
           items:
-            $ref: '#/components/schemas/EnvironmentDetailView'
-        timestamps:
-          $ref: '#/components/schemas/TimestampsView'
-        numTries:
-          type: integer
-          description: Number of publish attempts
-          format: int32
-          example: 1
-        scheduledPublishDate:
+            type: string
+            description: List of environment IDs the bundle was pushed to
+        filterKey:
           type: string
-          description: Scheduled execution time (future publishDate) for SCHEDULED bundles; null for all other statuses
+          description: Filter key used for publishing
+          example: ForcePush.yml
+    PushBundleForm:
+      required:
+      - environments
+      - filterKey
+      - operation
+      type: object
+      properties:
+        operation:
+          type: string
+          description: 'Operation type: publish, expire, or publishexpire. Case-insensitive (PUBLISH, Publish, publish all accepted).'
+          example: publish
+          enum:
+          - publish
+          - expire
+          - publishexpire
+        publishDate:
+          type: string
+          description: Scheduled publish date in ISO 8601 format with timezone offset (required for publish/publishexpire). Dates without timezone offset are rejected.
           format: date-time
-          example: '2026-03-15T14:30:00Z'
+          example: '2025-03-15T14:30:00-05:00'
+        expireDate:
+          type: string
+          description: Scheduled expire date in ISO 8601 format with timezone offset (required for expire/publishexpire). Dates without timezone offset are rejected.
+          format: date-time
+          example: '2025-04-15T14:30:00-05:00'
+        environments:
+          type: array
+          description: List of environment IDs to push the bundle to
+          example:
+          - env-123
+          - env-456
+          items:
+            type: string
+            description: List of environment IDs to push the bundle to
+            example: '["env-123","env-456"]'
+        filterKey:
+          type: string
+          description: Push publishing filter key
+          example: ForcePush.yml
+      description: Form for pushing a bundle to environments
+    ResponseEntityAddAssetsToBundleView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/AddAssetsToBundleView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AddAssetsToBundleView:
+      required:
+      - bundleId
+      - created
+      - errors
+      - total
+      type: object
+      properties:
+        bundleId:
+          type: string
+          description: Bundle identifier (new or existing)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        bundleName:
+          type: string
+          description: Name of the bundle
+          example: My Content Bundle
+        created:
+          type: boolean
+          description: Whether a new bundle was created by this call
+          example: false
+        total:
+          type: integer
+          description: Total non-duplicate assets processed (subtract errors count for successful adds). Assets already in the bundle are skipped and excluded from this count.
+          format: int32
+          example: 5
+        errors:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Per-asset error messages as human-readable strings. Empty list = all assets added successfully
+          items:
+            type: string
+            description: Per-asset error messages as human-readable strings. Empty list = all assets added successfully
     RetryBundlesForm:
       required:
       - bundleIds
@@ -618,6 +669,50 @@ components:
           - ALL_ENDPOINTS
           - FAILED_ENDPOINTS
           default: ALL_ENDPOINTS
+    RemoveAssetResultView:
+      required:
+      - assetId
+      - message
+      - success
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: The asset identifier that was processed
+          example: 550e8400-e29b-41d4-a716-446655440000
+        success:
+          type: boolean
+          description: Whether the asset was successfully removed from the bundle
+          example: true
+        message:
+          type: string
+          description: Human-readable result message
+          example: Asset removed from bundle
+    ResponseEntityRetryBundlesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetryBundleResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     EnvironmentDetailView:
       required:
       - endpoints
@@ -645,49 +740,11 @@ components:
           description: Endpoints within this environment with their status
           items:
             $ref: '#/components/schemas/EndpointDetailView'
-    RetryBundleResultView:
-      required:
-      - bundleId
-      - deliveryStrategy
-      - message
-      - success
+    MessageEntity:
       type: object
       properties:
-        bundleId:
-          type: string
-          description: Bundle identifier that was processed
-          example: 01HQXYZ123456789ABCDEFGHIJ
-        success:
-          type: boolean
-          description: Whether the retry operation was successful
-          example: true
         message:
           type: string
-          description: Human-readable message describing the result
-          example: Bundle successfully re-queued for publishing
-        forcePush:
-          type: boolean
-          description: Whether force push was applied to this bundle
-          example: true
-        operation:
-          type: string
-          description: Publishing operation type
-          example: PUBLISH
-          enum:
-          - PUBLISH
-          - UNPUBLISH
-        deliveryStrategy:
-          type: string
-          description: 'Delivery strategy used: ALL_ENDPOINTS or FAILED_ENDPOINTS'
-          example: FAILED_ENDPOINTS
-          enum:
-          - ALL_ENDPOINTS
-          - FAILED_ENDPOINTS
-        assetCount:
-          type: integer
-          description: Number of assets in the bundle
-          format: int32
-          example: 47
     ResponseEntityPurgeView:
       type: object
       properties:
@@ -697,172 +754,6 @@ components:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
           $ref: '#/components/schemas/PurgeResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    AssetPreviewView:
-      required:
-      - id
-      - title
-      - type
-      type: object
-      properties:
-        id:
-          type: string
-          description: Asset identifier
-          example: abc123-content-id
-        title:
-          type: string
-          description: Human-readable asset title
-          example: Homepage Content Update
-        type:
-          type: string
-          description: Asset type (e.g., contentlet, template, container, folder, host)
-          example: contentlet
-    RemoveAssetResultView:
-      required:
-      - assetId
-      - message
-      - success
-      type: object
-      properties:
-        assetId:
-          type: string
-          description: The asset identifier that was processed
-          example: 550e8400-e29b-41d4-a716-446655440000
-        success:
-          type: boolean
-          description: Whether the asset was successfully removed from the bundle
-          example: true
-        message:
-          type: string
-          description: Human-readable result message
-          example: Asset removed from bundle
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntityAddAssetsToBundleView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/AddAssetsToBundleView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    RemoveAssetsFromBundleForm:
-      required:
-      - assetIds
-      type: object
-      properties:
-        assetIds:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              type: string
-            last:
-              type: string
-          description: List of asset identifiers to remove from the bundle
-          example:
-          - asset-123
-          - asset-456
-          items:
-            type: string
-            description: List of asset identifiers to remove from the bundle
-            example: '["asset-123","asset-456"]'
-    TimestampsView:
-      required:
-      - createDate
-      type: object
-      properties:
-        bundleStart:
-          type: string
-          description: When bundle creation started (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:30:00Z'
-        bundleEnd:
-          type: string
-          description: When bundle creation completed (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:31:22Z'
-        publishStart:
-          type: string
-          description: When publishing to endpoints started (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:30:05Z'
-        publishEnd:
-          type: string
-          description: When publishing to endpoints completed (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:31:18Z'
-        createDate:
-          type: string
-          description: When the audit record was created (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:29:55Z'
-        statusUpdated:
-          type: string
-          description: When the status was last updated (ISO 8601 format)
-          format: date-time
-          example: '2026-01-15T10:31:22Z'
-      description: Publishing job timestamps
-    FilterDescriptorForm:
-      type: object
-      properties:
-        key:
-          type: string
-        title:
-          type: string
-        sort:
-          type: string
-        defaultFilter:
-          type: boolean
-        roles:
-          type: string
-        filters:
-          type: object
-          additionalProperties:
-            type: object
-    ResponseEntityPublishingJobsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishingJobView'
         messages:
           type: array
           items:
@@ -938,52 +829,69 @@ components:
         stackTrace:
           type: string
           description: Stack trace for failed endpoints (only included for failures)
-    ResponseEntityPushBundleResultView:
+    PurgeResultView:
+      required:
+      - message
+      - statusesRequested
       type: object
       properties:
-        errors:
+        message:
+          type: string
+          description: Confirmation message indicating the purge operation has started
+          example: Purge operation started. Results will be notified when complete.
+        statusesRequested:
           type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: List of status names being purged
+          example:
+          - SUCCESS
+          - FAILED_TO_PUBLISH
           items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PushBundleResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
             type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityPublishingJobDetailView:
+            description: List of status names being purged
+            example: '["SUCCESS","FAILED_TO_PUBLISH"]'
+    TimestampsView:
+      required:
+      - createDate
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PublishingJobDetailView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+        bundleStart:
+          type: string
+          description: When bundle creation started (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:30:00Z'
+        bundleEnd:
+          type: string
+          description: When bundle creation completed (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:31:22Z'
+        publishStart:
+          type: string
+          description: When publishing to endpoints started (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:30:05Z'
+        publishEnd:
+          type: string
+          description: When publishing to endpoints completed (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:31:18Z'
+        createDate:
+          type: string
+          description: When the audit record was created (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:29:55Z'
+        statusUpdated:
+          type: string
+          description: When the status was last updated (ISO 8601 format)
+          format: date-time
+          example: '2026-01-15T10:31:22Z'
+      description: Publishing job timestamps
     AddAssetsToBundleForm:
       required:
       - assetIds
@@ -1008,31 +916,6 @@ components:
             description: List of asset identifiers to add to the bundle
             example: '["asset-123","asset-456"]'
       description: Form for adding assets to a bundle
-    ResponseEntityRemoveAssetsFromBundleView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/RemoveAssetResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     PublishingJobView:
       required:
       - assetCount
@@ -1126,177 +1009,6 @@ components:
           description: Scheduled execution time (future publishDate) for SCHEDULED bundles; null for all other statuses
           format: date-time
           example: '2026-03-15T14:30:00Z'
-    ResponseEntityRetryBundlesView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/RetryBundleResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    PushBundleForm:
-      required:
-      - environments
-      - filterKey
-      - operation
-      type: object
-      properties:
-        operation:
-          type: string
-          description: 'Operation type: publish, expire, or publishexpire. Case-insensitive (PUBLISH, Publish, publish all accepted).'
-          example: publish
-          enum:
-          - publish
-          - expire
-          - publishexpire
-        publishDate:
-          type: string
-          description: Scheduled publish date in ISO 8601 format with timezone offset (required for publish/publishexpire). Dates without timezone offset are rejected.
-          format: date-time
-          example: '2025-03-15T14:30:00-05:00'
-        expireDate:
-          type: string
-          description: Scheduled expire date in ISO 8601 format with timezone offset (required for expire/publishexpire). Dates without timezone offset are rejected.
-          format: date-time
-          example: '2025-04-15T14:30:00-05:00'
-        environments:
-          type: array
-          description: List of environment IDs to push the bundle to
-          example:
-          - env-123
-          - env-456
-          items:
-            type: string
-            description: List of environment IDs to push the bundle to
-            example: '["env-123","env-456"]'
-        filterKey:
-          type: string
-          description: Push publishing filter key
-          example: ForcePush.yml
-      description: Form for pushing a bundle to environments
-    PushBundleResultView:
-      required:
-      - bundleId
-      - environments
-      - filterKey
-      - operation
-      type: object
-      properties:
-        bundleId:
-          type: string
-          description: Bundle identifier
-          example: 01KJWNJM2C67DM56GHBJ4S7B89
-        operation:
-          type: string
-          description: Operation type performed
-          example: publish
-        publishDate:
-          type: string
-          description: Scheduled publish date in ISO 8601 format
-          example: '2025-03-15T14:30:00-05:00'
-        expireDate:
-          type: string
-          description: Scheduled expire date in ISO 8601 format
-          example: '2025-04-15T14:30:00-05:00'
-        environments:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              type: string
-            last:
-              type: string
-          description: List of environment IDs the bundle was pushed to
-          items:
-            type: string
-            description: List of environment IDs the bundle was pushed to
-        filterKey:
-          type: string
-          description: Filter key used for publishing
-          example: ForcePush.yml
-    PurgeResultView:
-      required:
-      - message
-      - statusesRequested
-      type: object
-      properties:
-        message:
-          type: string
-          description: Confirmation message indicating the purge operation has started
-          example: Purge operation started. Results will be notified when complete.
-        statusesRequested:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              type: string
-            last:
-              type: string
-          description: List of status names being purged
-          example:
-          - SUCCESS
-          - FAILED_TO_PUBLISH
-          items:
-            type: string
-            description: List of status names being purged
-            example: '["SUCCESS","FAILED_TO_PUBLISH"]'
-    AddAssetsToBundleView:
-      required:
-      - bundleId
-      - created
-      - errors
-      - total
-      type: object
-      properties:
-        bundleId:
-          type: string
-          description: Bundle identifier (new or existing)
-          example: 550e8400-e29b-41d4-a716-446655440000
-        bundleName:
-          type: string
-          description: Name of the bundle
-          example: My Content Bundle
-        created:
-          type: boolean
-          description: Whether a new bundle was created by this call
-          example: false
-        total:
-          type: integer
-          description: Total non-duplicate assets processed (subtract errors count for successful adds). Assets already in the bundle are skipped and excluded from this count.
-          format: int32
-          example: 5
-        errors:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              type: string
-            last:
-              type: string
-          description: Per-asset error messages as human-readable strings. Empty list = all assets added successfully
-          items:
-            type: string
-            description: Per-asset error messages as human-readable strings. Empty list = all assets added successfully
     ErrorEntity:
       type: object
       properties:
@@ -1313,3 +1025,291 @@ components:
           type: array
           items:
             type: string
+    ResponseEntityPushBundleResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PushBundleResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityPublishingJobsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishingJobView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FilterDescriptorForm:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        sort:
+          type: string
+        defaultFilter:
+          type: boolean
+        roles:
+          type: string
+        filters:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityPublishingJobDetailView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PublishingJobDetailView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RetryBundleResultView:
+      required:
+      - bundleId
+      - deliveryStrategy
+      - message
+      - success
+      type: object
+      properties:
+        bundleId:
+          type: string
+          description: Bundle identifier that was processed
+          example: 01HQXYZ123456789ABCDEFGHIJ
+        success:
+          type: boolean
+          description: Whether the retry operation was successful
+          example: true
+        message:
+          type: string
+          description: Human-readable message describing the result
+          example: Bundle successfully re-queued for publishing
+        forcePush:
+          type: boolean
+          description: Whether force push was applied to this bundle
+          example: true
+        operation:
+          type: string
+          description: Publishing operation type
+          example: PUBLISH
+          enum:
+          - PUBLISH
+          - UNPUBLISH
+        deliveryStrategy:
+          type: string
+          description: 'Delivery strategy used: ALL_ENDPOINTS or FAILED_ENDPOINTS'
+          example: FAILED_ENDPOINTS
+          enum:
+          - ALL_ENDPOINTS
+          - FAILED_ENDPOINTS
+        assetCount:
+          type: integer
+          description: Number of assets in the bundle
+          format: int32
+          example: 47
+    ResponseEntityRemoveAssetsFromBundleView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/RemoveAssetResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AssetPreviewView:
+      required:
+      - id
+      - title
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Asset identifier
+          example: abc123-content-id
+        title:
+          type: string
+          description: Human-readable asset title
+          example: Homepage Content Update
+        type:
+          type: string
+          description: Asset type (e.g., contentlet, template, container, folder, host)
+          example: contentlet
+    RemoveAssetsFromBundleForm:
+      required:
+      - assetIds
+      type: object
+      properties:
+        assetIds:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: List of asset identifiers to remove from the bundle
+          example:
+          - asset-123
+          - asset-456
+          items:
+            type: string
+            description: List of asset identifiers to remove from the bundle
+            example: '["asset-123","asset-456"]'
+    PublishingJobDetailView:
+      required:
+      - assetCount
+      - bundleId
+      - environments
+      - numTries
+      - status
+      - timestamps
+      type: object
+      properties:
+        bundleId:
+          type: string
+          description: Unique bundle identifier
+          example: 01KJWNJM2C67DM56GHBJ4S7B89
+        bundleName:
+          type: string
+          description: Human-readable bundle name
+          example: bundle-testName
+        status:
+          type: string
+          description: Current publishing status
+          example: SUCCESS
+          enum:
+          - BUNDLE_REQUESTED
+          - BUNDLING
+          - SENDING_TO_ENDPOINTS
+          - FAILED_TO_SEND_TO_ALL_GROUPS
+          - FAILED_TO_SEND_TO_SOME_GROUPS
+          - FAILED_TO_BUNDLE
+          - FAILED_TO_SENT
+          - FAILED_TO_PUBLISH
+          - SUCCESS
+          - BUNDLE_SENT_SUCCESSFULLY
+          - RECEIVED_BUNDLE
+          - PUBLISHING_BUNDLE
+          - WAITING_FOR_PUBLISHING
+          - BUNDLE_SAVED_SUCCESSFULLY
+          - INVALID_TOKEN
+          - LICENSE_REQUIRED
+          - SUCCESS_WITH_WARNINGS
+          - FAILED_INTEGRITY_CHECK
+          - SCHEDULED
+        filterName:
+          type: string
+          description: Publishing filter name used
+          example: Live to Staging
+        filterKey:
+          type: string
+          description: Publishing filter key (pass to POST /push/{bundleId} filterKey to reproduce this push)
+          example: ForcePush.yml
+        assetCount:
+          type: integer
+          description: Total number of assets in the bundle
+          format: int32
+          example: 47
+        environments:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/EnvironmentDetailView'
+            last:
+              $ref: '#/components/schemas/EnvironmentDetailView'
+          description: Environments with their endpoints and status details
+          items:
+            $ref: '#/components/schemas/EnvironmentDetailView'
+        timestamps:
+          $ref: '#/components/schemas/TimestampsView'
+        numTries:
+          type: integer
+          description: Number of publish attempts
+          format: int32
+          example: 1
+        scheduledPublishDate:
+          type: string
+          description: Scheduled execution time (future publishDate) for SCHEDULED bundles; null for all other statuses
+          format: date-time
+          example: '2026-03-15T14:30:00Z'

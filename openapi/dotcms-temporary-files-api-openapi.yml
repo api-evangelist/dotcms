@@ -106,21 +106,6 @@ paths:
           description: Temp file resource is not enabled
 components:
   schemas:
-    RemoteUrlForm:
-      type: object
-      properties:
-        remoteUrl:
-          type: string
-        fileName:
-          type: string
-        accessKey:
-          type: string
-        urlTimeoutSeconds:
-          type: integer
-          format: int32
-        maxFileLength:
-          type: integer
-          format: int64
     DotTempFile:
       type: object
       properties:
@@ -143,6 +128,21 @@ components:
           additionalProperties:
             type: object
         length:
+          type: integer
+          format: int64
+    RemoteUrlForm:
+      type: object
+      properties:
+        remoteUrl:
+          type: string
+        fileName:
+          type: string
+        accessKey:
+          type: string
+        urlTimeoutSeconds:
+          type: integer
+          format: int32
+        maxFileLength:
           type: integer
           format: int64
     TempFilesView:

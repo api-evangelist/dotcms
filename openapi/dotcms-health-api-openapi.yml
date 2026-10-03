@@ -172,6 +172,11 @@ paths:
           description: Internal Server Error
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ResponseEntityView:
       type: object
       properties:
@@ -215,9 +220,4 @@ components:
         message:
           type: string
         fieldName:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
           type: string

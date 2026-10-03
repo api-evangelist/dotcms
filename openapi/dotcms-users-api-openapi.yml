@@ -530,6 +530,54 @@ paths:
             application/json: {}
 components:
   schemas:
+    ResponseEntityLoginAsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseUserDeletedEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/UserDeletedView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     UpdateCurrentUserForm:
       type: object
       properties:
@@ -545,123 +593,56 @@ components:
           type: string
         newPassword:
           type: string
-    Pagination:
+    ResponseEntityListUserView:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        roleKey:
-          type: string
-        parent:
-          type: string
-        editPermissions:
-          type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
             type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
-    UserForm:
-      required:
-      - email
-      - firstName
-      - lastName
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityUserUpdateView:
       type: object
       properties:
-        userId:
-          type: string
-        active:
-          type: boolean
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
-        nickName:
-          type: string
-        email:
-          type: string
-        male:
-          type: boolean
-        birthday:
-          type: string
-        languageId:
-          type: string
-        timeZoneId:
-          type: string
-        password:
+        errors:
           type: array
           items:
-            type: string
-        additionalInfo:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
           type: object
           additionalProperties:
             type: object
-        roles:
+        messages:
           type: array
-          description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
-          example:
-          - DOTCMS_BACK_END_USER
-          - 48190c8c-42c4-46af-8d1a-0cd5db894797
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
           items:
             type: string
-            description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
-            example: '["DOTCMS_BACK_END_USER","48190c8c-42c4-46af-8d1a-0cd5db894797"]'
-    SiteVariableView:
-      type: object
-      properties:
-        id:
-          type: string
-        hostId:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-        lastModifierId:
-          type: string
-        lastModDate:
-          type: string
-          format: date-time
-        lastModifierFullName:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     User:
       type: object
       properties:
@@ -846,23 +827,6 @@ components:
           type: boolean
         new:
           type: boolean
-    RestUser:
-      type: object
-      properties:
-        userId:
-          type: string
-        givenName:
-          type: string
-        email:
-          type: string
-        surname:
-          type: string
-        roleId:
-          type: string
-        loginAs:
-          type: boolean
-        admin:
-          type: boolean
     ResponseUserMapEntityView:
       type: object
       properties:
@@ -888,31 +852,121 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityLoginAsView:
+    UserForm:
+      required:
+      - email
+      - firstName
+      - lastName
       type: object
       properties:
-        errors:
+        userId:
+          type: string
+        active:
+          type: boolean
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        nickName:
+          type: string
+        email:
+          type: string
+        male:
+          type: boolean
+        birthday:
+          type: string
+        languageId:
+          type: string
+        timeZoneId:
+          type: string
+        password:
           type: array
           items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
+            type: string
+        additionalInfo:
           type: object
           additionalProperties:
             type: object
-        messages:
+        roles:
           type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
+          description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
+          example:
+          - DOTCMS_BACK_END_USER
+          - 48190c8c-42c4-46af-8d1a-0cd5db894797
           items:
             type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+            description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
+            example: '["DOTCMS_BACK_END_USER","48190c8c-42c4-46af-8d1a-0cd5db894797"]'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    RestUser:
+      type: object
+      properties:
+        userId:
+          type: string
+        givenName:
+          type: string
+        email:
+          type: string
+        surname:
+          type: string
+        roleId:
+          type: string
+        loginAs:
+          type: boolean
+        admin:
+          type: boolean
+    UserDeletedView:
+      type: object
+      properties:
+        status:
+          type: string
+        deletedUser:
+          type: string
+        reassignedTo:
+          type: string
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
     LoginAsForm:
       required:
       - password
@@ -923,63 +977,6 @@ components:
           type: string
         password:
           type: string
-    UserDeletedView:
-      type: object
-      properties:
-        status:
-          type: string
-        deletedUser:
-          type: string
-        reassignedTo:
-          type: string
-    ResponseEntityListUserView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseUserDeletedEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/UserDeletedView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ResponseSiteVariablesEntityView:
       type: object
       properties:
@@ -1005,37 +1002,40 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityUserUpdateView:
+    MessageEntity:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
         message:
           type: string
-        fieldName:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    SiteVariableView:
+      type: object
+      properties:
+        id:
+          type: string
+        hostId:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        lastModifierId:
+          type: string
+        lastModDate:
+          type: string
+          format: date-time
+        lastModifierFullName:
           type: string

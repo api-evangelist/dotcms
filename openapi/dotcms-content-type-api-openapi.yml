@@ -1055,18 +1055,23 @@ paths:
           description: Internal server error
 components:
   schemas:
-    Pagination:
+    FilteredContentTypesForm:
       type: object
       properties:
-        currentPage:
+        filter:
+          type: object
+          additionalProperties:
+            type: object
+        page:
           type: integer
           format: int32
         perPage:
           type: integer
           format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        orderBy:
+          type: string
+        direction:
+          type: string
     ResponseEntityContentTypeJsonView:
       type: object
       properties:
@@ -1090,65 +1095,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityListContentTypeView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContentType'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CopyContentTypeForm:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        variable:
-          type: string
-        folder:
-          type: string
-        host:
-          type: string
-        icon:
-          type: string
-    BaseContentTypesView:
-      type: object
-      properties:
-        name:
-          type: string
-        label:
-          type: string
-        types:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContentTypeView'
-        index:
-          type: integer
-          format: int32
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     ContentTypeView:
       type: object
       properties:
@@ -1187,7 +1133,21 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityContentTypeDetailView:
+    BaseContentTypesView:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentTypeView'
+        index:
+          type: integer
+          format: int32
+    ResponseEntityListMapView:
       type: object
       properties:
         errors:
@@ -1195,9 +1155,11 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: object
-          additionalProperties:
+          type: array
+          items:
             type: object
+            additionalProperties:
+              type: object
         messages:
           type: array
           items:
@@ -1212,6 +1174,30 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    CopyContentTypeForm:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        variable:
+          type: string
+        folder:
+          type: string
+        host:
+          type: string
+        icon:
+          type: string
     ResponseEntityContentTypeOperationView:
       type: object
       properties:
@@ -1240,17 +1226,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ContentType:
-      required:
-      - clazz
-      type: object
-      properties:
-        owner:
-          type: string
-        clazz:
-          type: string
-      discriminator:
-        propertyName: clazz
     ContentTypeFieldView:
       required:
       - clazz
@@ -1343,33 +1318,6 @@ components:
           type: string
           description: Regular expression used to validate the field value.
       description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
-    ResponseEntityListMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ContentTypeRequestView:
       required:
       - clazz
@@ -1437,29 +1385,81 @@ components:
             description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
           description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
       description: 'A content-type object, posted directly (NOT wrapped in a ''contentType'' envelope). The endpoint also accepts an array of these objects to create several types in one call. Creating clazz `WIDGET` automatically adds `widgetTitle`, `widgetUsage`, `widgetCode`, and `widgetPreexecute`. `widgetCode` is an ImmutableConstantField: its shared code belongs in the field''s `values` property, not in individual widget contentlets.'
-    ErrorEntity:
+    ResponseEntityContentTypeDetailView:
       type: object
       properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    FilteredContentTypesForm:
-      type: object
-      properties:
-        filter:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
           type: object
           additionalProperties:
             type: object
-        page:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ContentType:
+      required:
+      - clazz
+      type: object
+      properties:
+        owner:
+          type: string
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ResponseEntityListContentTypeView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentType'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
           type: integer
           format: int32
         perPage:
           type: integer
           format: int32
-        orderBy:
-          type: string
-        direction:
-          type: string
+        totalEntries:
+          type: integer
+          format: int64

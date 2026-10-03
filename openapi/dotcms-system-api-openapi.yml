@@ -247,18 +247,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     SetForm:
       required:
       - key
@@ -269,23 +257,15 @@ components:
           type: string
         value:
           type: object
-    MessageEntity:
+    ErrorEntity:
       type: object
       properties:
+        errorCode:
+          type: string
         message:
           type: string
-    SetHashForm:
-      required:
-      - fields
-      - key
-      type: object
-      properties:
-        key:
+        fieldName:
           type: string
-        fields:
-          type: object
-          additionalProperties:
-            type: object
     ResponseEntityViewMapStringObject:
       type: object
       properties:
@@ -311,12 +291,32 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
+    MessageEntity:
       type: object
       properties:
-        errorCode:
-          type: string
         message:
           type: string
-        fieldName:
+    SetHashForm:
+      required:
+      - fields
+      - key
+      type: object
+      properties:
+        key:
           type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

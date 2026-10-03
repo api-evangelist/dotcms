@@ -202,47 +202,12 @@ paths:
             application/json: {}
 components:
   schemas:
-    I18NForm:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        messagesKey:
-          type: array
-          items:
-            type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResetPasswordForm:
+    ForgotPasswordForm:
       required:
-      - password
-      - token
+      - userId
       type: object
       properties:
-        token:
-          type: string
-        password:
-          type: string
-    LanguageView:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        displayName:
+        userId:
           type: string
     ResponseEntityMapMapView:
       type: object
@@ -271,56 +236,35 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityMapView:
+    LanguageView:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ForgotPasswordForm:
-      required:
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-    AuthenticationForm:
-      required:
-      - password
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-        password:
-          type: string
-        rememberMe:
-          type: boolean
-        backEndLogin:
-          type: boolean
         language:
           type: string
         country:
           type: string
+        displayName:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    I18NForm:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string
     ResponseEntityForgotPasswordView:
       type: object
       properties:
@@ -367,6 +311,16 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ResetPasswordForm:
+      required:
+      - password
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+        password:
+          type: string
     ResponseEntityLoginFormView:
       type: object
       properties:
@@ -390,6 +344,84 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    AuthenticationForm:
+      required:
+      - password
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+        backEndLogin:
+          type: boolean
+        language:
+          type: string
+        country:
+          type: string
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     MessageEntity:
       type: object
       properties:
@@ -421,36 +453,4 @@ components:
         currentLanguage:
           $ref: '#/components/schemas/LanguageView'
         companyEmail:
-          type: string
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
           type: string

@@ -108,22 +108,22 @@ paths:
                 $ref: '#/components/schemas/ResponseSiteVariablesEntityView'
 components:
   schemas:
-    Pagination:
+    ContentReportView:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
+        contentTypeName:
+          type: string
+        entries:
           type: integer
           format: int64
-    MessageEntity:
+    ErrorEntity:
       type: object
       properties:
+        errorCode:
+          type: string
         message:
+          type: string
+        fieldName:
           type: string
     ResponseSiteVariablesEntityView:
       type: object
@@ -150,6 +150,23 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     SiteVariableView:
       type: object
       properties:
@@ -170,20 +187,3 @@ components:
           format: date-time
         lastModifierFullName:
           type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ContentReportView:
-      type: object
-      properties:
-        contentTypeName:
-          type: string
-        entries:
-          type: integer
-          format: int64

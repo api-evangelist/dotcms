@@ -125,18 +125,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     ResponseEntityVariantView:
       type: object
       properties:
@@ -160,11 +148,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     Variant:
       type: object
       properties:
@@ -174,13 +157,6 @@ components:
           type: string
         archived:
           type: boolean
-    VariantForm:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
     ErrorEntity:
       type: object
       properties:
@@ -189,4 +165,28 @@ components:
         message:
           type: string
         fieldName:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    VariantForm:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
           type: string

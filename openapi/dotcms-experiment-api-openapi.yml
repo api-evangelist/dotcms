@@ -472,134 +472,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    Goals:
-      type: object
-      properties:
-        primary:
-          $ref: '#/components/schemas/Goal'
-    RunningId:
-      type: object
-      properties:
-        id:
-          type: string
-        startDate:
-          type: string
-          format: date-time
-        endDate:
-          type: string
-          format: date-time
-    ExperimentVariantForm:
-      type: object
-      properties:
-        description:
-          type: string
-    GoalResults:
-      type: object
-      properties:
-        goal:
-          $ref: '#/components/schemas/Goal'
-        variants:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/VariantResults'
-    Experiment:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        id:
-          type: string
-        status:
-          type: string
-          enum:
-          - RUNNING
-          - SCHEDULED
-          - ENDED
-          - DRAFT
-          - ARCHIVED
-        trafficProportion:
-          $ref: '#/components/schemas/TrafficProportion'
-        scheduling:
-          $ref: '#/components/schemas/Scheduling'
-        trafficAllocation:
-          type: number
-          format: float
-        creationDate:
-          type: string
-          format: date-time
-        modDate:
-          type: string
-          format: date-time
-        pageId:
-          type: string
-        createdBy:
-          type: string
-        lastModifiedBy:
-          type: string
-        goals:
-          $ref: '#/components/schemas/Goals'
-        targetingConditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/TargetingCondition'
-        lookBackWindowExpireTime:
-          type: integer
-          format: int64
-        runningIds:
-          $ref: '#/components/schemas/RunningIds'
-    SampleData:
-      type: object
-      properties:
-        x:
-          type: number
-          format: double
-        y:
-          type: number
-          format: double
-    Goal:
-      type: object
-      properties:
-        metric:
-          $ref: '#/components/schemas/Metric'
-        type:
-          type: string
-          writeOnly: true
-          enum:
-          - MINIMIZE
-          - MAXIMIZE
-    SelectedExperiments:
-      type: object
-      properties:
-        experiments:
-          type: array
-          items:
-            $ref: '#/components/schemas/SelectedExperiment'
-        includedExperimentIds:
-          type: array
-          items:
-            type: string
-        excludedExperimentIds:
-          type: array
-          items:
-            type: string
-        excludedExperimentIdsEnded:
-          type: array
-          items:
-            type: string
     ExperimentResults:
       type: object
       properties:
@@ -611,54 +483,77 @@ components:
             $ref: '#/components/schemas/GoalResults'
         bayesianResult:
           $ref: '#/components/schemas/BayesianResult'
-    ExcludedExperimentListForm:
+    ResultResumeItem:
       type: object
       properties:
-        exclude:
-          type: array
-          items:
-            type: string
-    ResponseEntityExperimentView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/Experiment'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    VariantResults:
-      type: object
-      properties:
-        weight:
+        uniqueBySession:
+          type: integer
+          format: int64
+        totalSessions:
+          type: integer
+          format: int64
+        conversionRate:
           type: number
           format: float
-        variantName:
+    QuantilePair:
+      type: object
+      properties:
+        quantile:
+          type: number
+          format: double
+        formatted:
+          type: number
+          format: double
+    CredibilityInterval:
+      type: object
+      properties:
+        lower:
+          type: number
+          format: double
+        upper:
+          type: number
+          format: double
+    BayesianResult:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        results:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/VariantResult'
+            last:
+              $ref: '#/components/schemas/VariantResult'
+          items:
+            $ref: '#/components/schemas/VariantResult'
+        distributionPdfs:
+          $ref: '#/components/schemas/SampleGroup'
+        differenceData:
+          $ref: '#/components/schemas/DifferenceData'
+        quantiles:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            $ref: '#/components/schemas/QuantilePair'
+        suggestedWinner:
           type: string
-        variantDescription:
-          type: string
-        uniqueBySession:
-          $ref: '#/components/schemas/UniqueBySessionResume'
-        details:
+    TotalSession:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        variants:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/ResultResumeItem'
+            type: integer
+            format: int64
     ResponseEntityViewString:
       type: object
       properties:
@@ -682,18 +577,112 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResultResumeItem:
+    Scheduling:
       type: object
       properties:
-        uniqueBySession:
-          type: integer
-          format: int64
-        totalSessions:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    DifferenceData:
+      type: object
+      properties:
+        controlData:
+          type: array
+          items:
+            type: number
+            format: double
+        testData:
+          type: array
+          items:
+            type: number
+            format: double
+        differences:
+          type: array
+          items:
+            type: number
+            format: double
+        relativeDifference:
+          type: number
+          format: double
+    ResponseEntityExperimentResults:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ExperimentResults'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Goal:
+      type: object
+      properties:
+        metric:
+          $ref: '#/components/schemas/Metric'
+        type:
+          type: string
+          writeOnly: true
+          enum:
+          - MINIMIZE
+          - MAXIMIZE
+    UniqueBySessionResume:
+      type: object
+      properties:
+        count:
           type: integer
           format: int64
         conversionRate:
           type: number
           format: float
+    Goals:
+      type: object
+      properties:
+        primary:
+          $ref: '#/components/schemas/Goal'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     RunningIds:
       type: object
       properties:
@@ -701,20 +690,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RunningId'
-    QuantilePair:
+    RunningId:
       type: object
       properties:
-        quantile:
-          type: number
-          format: double
-        formatted:
-          type: number
-          format: double
-    MessageEntity:
-      type: object
-      properties:
-        message:
+        id:
           type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
     ResponseEntitySingleExperimentView:
       type: object
       properties:
@@ -772,7 +758,21 @@ components:
           - CONTENT_TYPE_FIELDS
           - AI
           - EXPERIMENTS
-    ResponseEntityView:
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    AddVariantForm:
+      type: object
+      properties:
+        description:
+          type: string
+    ResponseEntityExperimentSelectedView:
       type: object
       properties:
         errors:
@@ -780,7 +780,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: object
+          $ref: '#/components/schemas/SelectedExperiments'
         messages:
           type: array
           items:
@@ -795,75 +795,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    TargetingCondition:
-      type: object
-      properties:
-        id:
-          type: string
-        conditionKey:
-          type: string
-        values:
-          type: object
-          properties:
-            empty:
-              type: boolean
-          additionalProperties:
-            type: string
-        operator:
-          type: string
-          enum:
-          - AND
-          - OR
-    Scheduling:
-      type: object
-      properties:
-        startDate:
-          type: string
-          format: date-time
-        endDate:
-          type: string
-          format: date-time
-    ExperimentVariant:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        weight:
-          type: number
-          format: float
-        url:
-          type: string
-        promoted:
-          type: boolean
-    UniqueBySessionResume:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int64
-        conversionRate:
-          type: number
-          format: float
-    SelectedVariant:
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-    TotalSession:
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int64
-        variants:
-          type: object
-          additionalProperties:
-            type: integer
-            format: int64
     ExperimentForm:
       type: object
       properties:
@@ -889,78 +820,6 @@ components:
         lookbackWindow:
           type: integer
           format: int32
-    TrafficProportion:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - SPLIT_EVENLY
-          - CUSTOM_PERCENTAGES
-        variants:
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/ExperimentVariant'
-    SelectedExperiment:
-      type: object
-      properties:
-        name:
-          type: string
-        id:
-          type: string
-        runningId:
-          type: string
-        pageUrl:
-          type: string
-        variant:
-          $ref: '#/components/schemas/SelectedVariant'
-        lookBackWindow:
-          $ref: '#/components/schemas/LookBackWindow'
-        regexs:
-          type: object
-          additionalProperties:
-            type: string
-    LookBackWindow:
-      type: object
-      properties:
-        value:
-          type: string
-        expireMillis:
-          type: integer
-          format: int64
-    CredibilityInterval:
-      type: object
-      properties:
-        lower:
-          type: number
-          format: double
-        upper:
-          type: number
-          format: double
-    ResponseEntityExperimentResults:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ExperimentResults'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     VariantResult:
       type: object
       properties:
@@ -985,41 +844,70 @@ components:
           $ref: '#/components/schemas/CredibilityInterval'
         isControl:
           type: boolean
-    BayesianResult:
+    TargetingCondition:
       type: object
       properties:
-        value:
-          type: number
-          format: double
-        results:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/VariantResult'
-            last:
-              $ref: '#/components/schemas/VariantResult'
-          items:
-            $ref: '#/components/schemas/VariantResult'
-        distributionPdfs:
-          $ref: '#/components/schemas/SampleGroup'
-        differenceData:
-          $ref: '#/components/schemas/DifferenceData'
-        quantiles:
+        id:
+          type: string
+        conditionKey:
+          type: string
+        values:
           type: object
           properties:
             empty:
               type: boolean
           additionalProperties:
-            $ref: '#/components/schemas/QuantilePair'
-        suggestedWinner:
+            type: string
+        operator:
           type: string
-    AddVariantForm:
+          enum:
+          - AND
+          - OR
+    Pagination:
       type: object
       properties:
-        description:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ExperimentVariant:
+      type: object
+      properties:
+        id:
           type: string
+        name:
+          type: string
+        weight:
+          type: number
+          format: float
+        url:
+          type: string
+        promoted:
+          type: boolean
+    SelectedExperiment:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        runningId:
+          type: string
+        pageUrl:
+          type: string
+        variant:
+          $ref: '#/components/schemas/SelectedVariant'
+        lookBackWindow:
+          $ref: '#/components/schemas/LookBackWindow'
+        regexs:
+          type: object
+          additionalProperties:
+            type: string
     SampleGroup:
       type: object
       properties:
@@ -1032,16 +920,147 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/SampleData'
-    ErrorEntity:
+    Experiment:
       type: object
       properties:
-        errorCode:
+        name:
           type: string
-        message:
+        description:
           type: string
-        fieldName:
+        id:
           type: string
-    ResponseEntityExperimentSelectedView:
+        status:
+          type: string
+          enum:
+          - RUNNING
+          - SCHEDULED
+          - ENDED
+          - DRAFT
+          - ARCHIVED
+        trafficProportion:
+          $ref: '#/components/schemas/TrafficProportion'
+        scheduling:
+          $ref: '#/components/schemas/Scheduling'
+        trafficAllocation:
+          type: number
+          format: float
+        creationDate:
+          type: string
+          format: date-time
+        modDate:
+          type: string
+          format: date-time
+        pageId:
+          type: string
+        createdBy:
+          type: string
+        lastModifiedBy:
+          type: string
+        goals:
+          $ref: '#/components/schemas/Goals'
+        targetingConditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetingCondition'
+        lookBackWindowExpireTime:
+          type: integer
+          format: int64
+        runningIds:
+          $ref: '#/components/schemas/RunningIds'
+    LookBackWindow:
+      type: object
+      properties:
+        value:
+          type: string
+        expireMillis:
+          type: integer
+          format: int64
+    ExcludedExperimentListForm:
+      type: object
+      properties:
+        exclude:
+          type: array
+          items:
+            type: string
+    ExperimentVariantForm:
+      type: object
+      properties:
+        description:
+          type: string
+    SelectedExperiments:
+      type: object
+      properties:
+        experiments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectedExperiment'
+        includedExperimentIds:
+          type: array
+          items:
+            type: string
+        excludedExperimentIds:
+          type: array
+          items:
+            type: string
+        excludedExperimentIdsEnded:
+          type: array
+          items:
+            type: string
+    SampleData:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+    GoalResults:
+      type: object
+      properties:
+        goal:
+          $ref: '#/components/schemas/Goal'
+        variants:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/VariantResults'
+    SelectedVariant:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+    TrafficProportion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - SPLIT_EVENLY
+          - CUSTOM_PERCENTAGES
+        variants:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperimentVariant'
+    VariantResults:
+      type: object
+      properties:
+        weight:
+          type: number
+          format: float
+        variantName:
+          type: string
+        variantDescription:
+          type: string
+        uniqueBySession:
+          $ref: '#/components/schemas/UniqueBySessionResume'
+        details:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ResultResumeItem'
+    ResponseEntityExperimentView:
       type: object
       properties:
         errors:
@@ -1049,7 +1068,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/SelectedExperiments'
+          type: array
+          items:
+            $ref: '#/components/schemas/Experiment'
         messages:
           type: array
           items:
@@ -1064,24 +1085,3 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    DifferenceData:
-      type: object
-      properties:
-        controlData:
-          type: array
-          items:
-            type: number
-            format: double
-        testData:
-          type: array
-          items:
-            type: number
-            format: double
-        differences:
-          type: array
-          items:
-            type: number
-            format: double
-        relativeDifference:
-          type: number
-          format: double

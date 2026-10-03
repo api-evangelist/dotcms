@@ -618,254 +618,6 @@ paths:
           description: General Error
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    DeleteContentletsForm:
-      required:
-      - identifiers
-      type: object
-      properties:
-        identifiers:
-          type: array
-          description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
-          example:
-          - abc123
-          - def456
-          - ghi789
-          items:
-            type: string
-            description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
-            example: '["abc123","def456","ghi789"]'
-      description: List of contentlet identifiers to permanently destroy
-    ResponseEntityJobStatusView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/JobStatusResponse'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityThreadDumpView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ThreadDumpView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityDeleteContentletsResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/DeleteContentletsResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntitySessionListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/SessionView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityThreadSystemInfoView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ThreadSystemInfoView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityKillSessionsResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/KillSessionsResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntitySystemJobListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    SearchAndReplaceResultView:
-      required:
-      - hasErrors
-      - success
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Whether the operation completed without errors
-          example: true
-        hasErrors:
-          type: boolean
-          description: Whether any table updates encountered errors. When true, some tables may not have been updated.
-          example: false
-    KillSessionsResultView:
-      required:
-      - killedCount
-      type: object
-      properties:
-        killedCount:
-          type: integer
-          description: Number of sessions invalidated (the caller's own session is always skipped).
-          format: int32
-          example: 5
     UpgradeTaskForm:
       required:
       - upgradeTaskClass
@@ -931,6 +683,18 @@ components:
           type: boolean
           description: True if this entry represents the caller's own session.
           example: true
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     SearchAndReplaceForm:
       required:
       - replaceString
@@ -946,62 +710,6 @@ components:
           description: Replacement text. Can be empty to delete all occurrences of searchString.
           example: https://new-domain.com
       description: Database-wide search and replace parameters
-    DeleteContentletsResultView:
-      required:
-      - deleted
-      - errors
-      type: object
-      properties:
-        deleted:
-          type: integer
-          description: Number of contentlets successfully destroyed
-          format: int32
-          example: 6
-        errors:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              type: string
-            last:
-              type: string
-          description: Identifiers of contentlets that failed to be destroyed
-          items:
-            type: string
-            description: Identifiers of contentlets that failed to be destroyed
-    JobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-        statusUrl:
-          type: string
-    ResponseEntitySystemJobDeleteView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ThreadSystemInfoView:
       required:
       - currentThreadCount
@@ -1044,6 +752,201 @@ components:
           description: Peak live thread count since the JVM started
           format: int32
           example: 245
+    SearchAndReplaceResultView:
+      required:
+      - hasErrors
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation completed without errors
+          example: true
+        hasErrors:
+          type: boolean
+          description: Whether any table updates encountered errors. When true, some tables may not have been updated.
+          example: false
+    ResponseEntityThreadDumpView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ThreadDumpView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityDeleteContentletsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DeleteContentletsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    DeleteContentletsResultView:
+      required:
+      - deleted
+      - errors
+      type: object
+      properties:
+        deleted:
+          type: integer
+          description: Number of contentlets successfully destroyed
+          format: int32
+          example: 6
+        errors:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              type: string
+            last:
+              type: string
+          description: Identifiers of contentlets that failed to be destroyed
+          items:
+            type: string
+            description: Identifiers of contentlets that failed to be destroyed
+    ResponseEntityKillSessionsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/KillSessionsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    DropOldVersionsResultView:
+      required:
+      - deletedCount
+      - success
+      type: object
+      properties:
+        deletedCount:
+          type: integer
+          description: Number of asset versions deleted
+          format: int32
+          example: 1523
+        success:
+          type: boolean
+          description: Whether the operation completed successfully
+          example: true
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntitySystemJobDeleteView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySystemJobListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntitySearchAndReplaceResultView:
       type: object
       properties:
@@ -1053,6 +956,77 @@ components:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
           $ref: '#/components/schemas/SearchAndReplaceResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySessionListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityThreadSystemInfoView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ThreadSystemInfoView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
         messages:
           type: array
           items:
@@ -1115,30 +1089,23 @@ components:
           description: Per-thread descriptors
           items:
             $ref: '#/components/schemas/ThreadDescriptorView'
-    DropOldVersionsResultView:
+    DeleteContentletsForm:
       required:
-      - deletedCount
-      - success
+      - identifiers
       type: object
       properties:
-        deletedCount:
-          type: integer
-          description: Number of asset versions deleted
-          format: int32
-          example: 1523
-        success:
-          type: boolean
-          description: Whether the operation completed successfully
-          example: true
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        identifiers:
+          type: array
+          description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
+          example:
+          - abc123
+          - def456
+          - ghi789
+          items:
+            type: string
+            description: List of contentlet identifiers. All language siblings of each identifier will be permanently destroyed.
+            example: '["abc123","def456","ghi789"]'
+      description: List of contentlet identifiers to permanently destroy
     ThreadDescriptorView:
       required:
       - daemon
@@ -1230,3 +1197,36 @@ components:
           description: Id of the thread that owns the lock this thread is waiting on; null if none
           format: int64
           example: 187
+    KillSessionsResultView:
+      required:
+      - killedCount
+      type: object
+      properties:
+        killedCount:
+          type: integer
+          description: Number of sessions invalidated (the caller's own session is always skipped).
+          format: int32
+          example: 5
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

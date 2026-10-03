@@ -285,137 +285,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityEndpointView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PublishingEndPoint'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityEndpointsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishingEndPoint'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityBooleanView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    EndpointForm:
-      required:
-      - address
-      - environmentId
-      - name
-      - port
-      - protocol
-      type: object
-      properties:
-        name:
-          type: string
-        protocol:
-          type: string
-        address:
-          type: string
-        port:
-          type: string
-        authorizationToken:
-          type: string
-        enabled:
-          type: boolean
-        sending:
-          type: boolean
-        environmentId:
-          type: string
-    ResponseEntityEnvironmentView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Environment'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ResponseEntityEnvironmentsView:
       type: object
       properties:
@@ -441,11 +310,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     DoesNotExistException:
       type: object
       properties:
@@ -535,6 +399,29 @@ components:
                 type: string
         localizedMessage:
           type: string
+    ResponseEntityEndpointView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     EnvironmentForm:
       required:
       - name
@@ -552,6 +439,31 @@ components:
           type: array
           items:
             type: string
+    ResponseEntityEndpointsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     Environment:
       type: object
       properties:
@@ -565,6 +477,29 @@ components:
           type: string
         owner:
           type: string
+    ResponseEntityEnvironmentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ErrorEntity:
       type: object
       properties:
@@ -838,6 +773,71 @@ components:
                 type: string
         localizedMessage:
           type: string
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EndpointForm:
+      required:
+      - address
+      - environmentId
+      - name
+      - port
+      - protocol
+      type: object
+      properties:
+        name:
+          type: string
+        protocol:
+          type: string
+        address:
+          type: string
+        port:
+          type: string
+        authorizationToken:
+          type: string
+        enabled:
+          type: boolean
+        sending:
+          type: boolean
+        environmentId:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     PublishingEndPoint:
       type: object
       properties:

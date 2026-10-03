@@ -359,18 +359,6 @@ paths:
           description: Authentication required
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     BulkResultView:
       type: object
       properties:
@@ -384,20 +372,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FailedResultView'
-    HierarchyShortCategory:
-      type: object
-      properties:
-        inode:
-          type: string
-        name:
-          type: string
-        key:
-          type: string
-        parentList:
-          type: array
-          items:
-            $ref: '#/components/schemas/ShortCategory'
-    ResponseEntityCategoryBulkDeleteResultView:
+    ResponseEntityBulkResultView:
       type: object
       properties:
         errors:
@@ -405,7 +380,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/CategoryBulkDeleteResultView'
+          $ref: '#/components/schemas/BulkResultView'
         messages:
           type: array
           items:
@@ -420,100 +395,11 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
-    ResponseEntityCategoryView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CategoryView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CategoryBulkDeleteResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
-        deletedCount:
-          type: integer
-          format: int64
     MessageEntity:
       type: object
       properties:
         message:
           type: string
-    ResponseEntityCategoryWithChildCountView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CategoryWithChildCountView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CategoryImportFormSchema:
-      type: object
-      properties:
-        filter:
-          type: string
-          description: Filter pattern for categories
-        exportType:
-          type: string
-          description: Import behavior
-          enum:
-          - replace
-          - merge
-        contextInode:
-          type: string
-          description: Context category inode to import into
-        file:
-          type: string
-          description: CSV file containing categories to import
-          format: binary
-      description: Category import form data with CSV file and processing parameters
     CategoryWithChildCountView:
       type: object
       properties:
@@ -567,31 +453,49 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    CategoryView:
+    HierarchyShortCategory:
       type: object
       properties:
         inode:
           type: string
-        parent:
-          type: string
-        description:
-          type: string
-        keywords:
+        name:
           type: string
         key:
           type: string
-        categoryName:
+        parentList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortCategory'
+    ResponseEntityCategoryWithChildCountView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryWithChildCountView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FailedResultView:
+      type: object
+      properties:
+        element:
           type: string
-        active:
-          type: boolean
-        sortOrder:
-          type: integer
-          format: int32
-        categoryVelocityVarName:
+        errorMessage:
           type: string
-        modDate:
-          type: string
-          format: date-time
     CategoryEditForm:
       type: object
       properties:
@@ -616,45 +520,15 @@ components:
           additionalProperties:
             type: integer
             format: int32
-    ShortCategory:
+    ErrorEntity:
       type: object
       properties:
-        name:
+        errorCode:
           type: string
-        inode:
+        message:
           type: string
-        key:
+        fieldName:
           type: string
-    ResponseEntityBulkResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CategoryKeysForm:
-      type: object
-      properties:
-        keys:
-          type: array
-          items:
-            type: string
     CategoryForm:
       required:
       - categoryName
@@ -681,12 +555,138 @@ components:
           format: int32
         categoryVelocityVarName:
           type: string
-    ErrorEntity:
+    Pagination:
       type: object
       properties:
-        errorCode:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    CategoryKeysForm:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: string
+    ShortCategory:
+      type: object
+      properties:
+        name:
           type: string
-        message:
+        inode:
           type: string
-        fieldName:
+        key:
           type: string
+    CategoryBulkDeleteResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+        deletedCount:
+          type: integer
+          format: int64
+    CategoryView:
+      type: object
+      properties:
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+    CategoryImportFormSchema:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: Filter pattern for categories
+        exportType:
+          type: string
+          description: Import behavior
+          enum:
+          - replace
+          - merge
+        contextInode:
+          type: string
+          description: Context category inode to import into
+        file:
+          type: string
+          description: CSV file containing categories to import
+          format: binary
+      description: Category import form data with CSV file and processing parameters
+    ResponseEntityCategoryView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityCategoryBulkDeleteResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryBulkDeleteResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'

@@ -474,34 +474,6 @@ paths:
           description: Unexpected server error
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ApiTokenForm:
-      type: object
-      properties:
-        userId:
-          type: string
-        expirationSeconds:
-          type: integer
-          format: int32
-        network:
-          type: string
-        claims:
-          type: object
-          additionalProperties:
-            type: object
-        shouldBeAdmin:
-          type: boolean
     ResponseEntityMapView:
       type: object
       properties:
@@ -527,6 +499,56 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityJwtView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ApiTokenForm:
+      type: object
+      properties:
+        userId:
+          type: string
+        expirationSeconds:
+          type: integer
+          format: int32
+        network:
+          type: string
+        claims:
+          type: object
+          additionalProperties:
+            type: object
+        shouldBeAdmin:
+          type: boolean
     MessageEntity:
       type: object
       properties:
@@ -564,37 +586,15 @@ components:
           type: object
           additionalProperties:
             type: object
-    ResponseEntityJwtView:
+    Pagination:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

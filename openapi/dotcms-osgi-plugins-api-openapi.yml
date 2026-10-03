@@ -284,117 +284,29 @@ paths:
           description: Can not stop system bundle
 components:
   schemas:
-    ResponseEntitySetStringView:
+    ContentDisposition:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+        type:
+          type: string
+        parameters:
           type: object
           additionalProperties:
             type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
           type: integer
           format: int64
-    FormDataBodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
-          type: string
-        value:
-          type: string
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    ResponseEntityListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     BodyPart:
       type: object
       properties:
@@ -435,29 +347,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    ResponseEntityBooleanView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     MultiPart:
       type: object
       properties:
@@ -502,7 +391,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    ResponseEntityBundleListView:
+    ResponseEntitySetStringView:
       type: object
       properties:
         errors:
@@ -510,9 +399,10 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
+          uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/BundleMap'
+            type: string
         messages:
           type: array
           items:
@@ -527,6 +417,24 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     FormDataMultiPart:
       type: object
       properties:
@@ -577,45 +485,54 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    MessageEntity:
+    ResponseEntityBooleanView:
       type: object
       properties:
-        message:
-          type: string
-    MessageBodyWorkers:
-      type: object
-    ParameterizedHeader:
-      type: object
-      properties:
-        value:
-          type: string
-        parameters:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
           type: object
           additionalProperties:
             type: string
-    ContentDisposition:
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListView:
       type: object
       properties:
-        type:
-          type: string
-        parameters:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
           type: object
           additionalProperties:
             type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ExtraPackagesForm:
       required:
       - packages
@@ -623,6 +540,79 @@ components:
       properties:
         packages:
           type: string
+    ResponseEntityBundleListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/BundleMap'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
     ResponseEntityStringView:
       type: object
       properties:
@@ -646,6 +636,11 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     FormDataContentDisposition:
       type: object
       properties:
@@ -670,15 +665,6 @@ components:
           type: integer
           format: int64
         name:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
           type: string
     BundleMap:
       type: object
@@ -714,3 +700,17 @@ components:
           type: boolean
         system:
           type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    MessageBodyWorkers:
+      type: object

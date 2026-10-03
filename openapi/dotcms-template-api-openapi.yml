@@ -480,110 +480,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ContainerUUID:
-      type: object
-      properties:
-        identifier:
-          type: string
-          description: 'Reference to the Container placed in this layout slot. Accepts any ONE of three forms:
-
-            - a Container **identifier** for a database-backed Container — a full UUID (''2cef9f97-5faf-4d18-8c9b-df22b6c17111'') or a dotCMS ''shorty'' (short) id; or
-
-            - a **file path** for a file-based (Container-as-File) Container — host-qualified (''//demo.dotcms.com/application/containers/default/'') or host-relative (''/application/containers/default/'', resolved against the current site); or
-
-            - the literal string ''SYSTEM_CONTAINER'' for the built-in system Container.
-
-            The server chooses the resolution strategy by inspecting the value: a string containing ''/application/containers'' is resolved as a file-path Container, ''SYSTEM_CONTAINER'' resolves to the system Container, and anything else is looked up as a database identifier. A value that does not resolve to an existing Container produces no container at render time (the slot renders empty) rather than falling back to another Container — pass the exact identifier or the full host-qualified path.'
-          example: //demo.dotcms.com/application/containers/default/
-        uuid:
-          type: string
-        historyUUIDs:
-          type: array
-          items:
-            type: string
-    BulkResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
-    ResponseEntityTemplateView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/TemplateView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ContainerView:
-      type: object
-      properties:
-        container:
-          $ref: '#/components/schemas/Container'
-        path:
-          type: string
-    SidebarView:
-      type: object
-      properties:
-        containers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContainerUUID'
-        location:
-          type: string
-        width:
-          type: string
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
-    TemplateImageForm:
-      type: object
-      properties:
-        templateId:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     TemplateView:
       type: object
       properties:
@@ -673,6 +569,113 @@ components:
           type: string
         new:
           type: boolean
+    ContainerUUID:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: 'Reference to the Container placed in this layout slot. Accepts any ONE of three forms:
+
+            - a Container **identifier** for a database-backed Container — a full UUID (''2cef9f97-5faf-4d18-8c9b-df22b6c17111'') or a dotCMS ''shorty'' (short) id; or
+
+            - a **file path** for a file-based (Container-as-File) Container — host-qualified (''//demo.dotcms.com/application/containers/default/'') or host-relative (''/application/containers/default/'', resolved against the current site); or
+
+            - the literal string ''SYSTEM_CONTAINER'' for the built-in system Container.
+
+            The server chooses the resolution strategy by inspecting the value: a string containing ''/application/containers'' is resolved as a file-path Container, ''SYSTEM_CONTAINER'' resolves to the system Container, and anything else is looked up as a database identifier. A value that does not resolve to an existing Container produces no container at render time (the slot renders empty) rather than falling back to another Container — pass the exact identifier or the full host-qualified path.'
+          example: //demo.dotcms.com/application/containers/default/
+        uuid:
+          type: string
+        historyUUIDs:
+          type: array
+          items:
+            type: string
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListTemplateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    TemplateLayoutRowView:
+      type: object
+      properties:
+        styleClass:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateLayoutColumnView'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
     BodyView:
       type: object
       properties:
@@ -680,6 +683,84 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TemplateLayoutRowView'
+    SidebarView:
+      type: object
+      properties:
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContainerUUID'
+        location:
+          type: string
+        width:
+          type: string
+    TemplateLayoutView:
+      type: object
+      properties:
+        width:
+          type: string
+        title:
+          type: string
+        header:
+          type: boolean
+        footer:
+          type: boolean
+        body:
+          $ref: '#/components/schemas/BodyView'
+        sidebar:
+          $ref: '#/components/schemas/SidebarView'
+      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityTemplateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/TemplateView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     TemplateForm:
       required:
       - title
@@ -842,54 +923,6 @@ components:
             type: object
         new:
           type: boolean
-    ThemeView:
-      type: object
-      properties:
-        path:
-          type: string
-        defaultFileType:
-          type: string
-        filesMasks:
-          type: string
-        getiDate:
-          type: string
-          format: date-time
-        hostId:
-          type: string
-        identifier:
-          type: string
-        inode:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        name:
-          type: string
-        showOnMenu:
-          type: boolean
-        sortOrder:
-          type: integer
-          format: int32
-        title:
-          type: string
-        type:
-          type: string
-    TemplateLayoutView:
-      type: object
-      properties:
-        width:
-          type: string
-        title:
-          type: string
-        header:
-          type: boolean
-        footer:
-          type: boolean
-        body:
-          $ref: '#/components/schemas/BodyView'
-        sidebar:
-          $ref: '#/components/schemas/SidebarView'
-      description: 'Layout produced by the visual builder: a ''body'' of rows, each row holding columns, and each column holding containers (referenced by identifier + uuid), plus optional ''header'', ''footer'', ''sidebar'', and ''title''. Provide this when ''drawed:true''.'
     Template:
       type: object
       properties:
@@ -989,29 +1022,6 @@ components:
             type: object
         new:
           type: boolean
-    ResponseEntityBulkResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     TemplateLayoutColumnView:
       type: object
       properties:
@@ -1031,50 +1041,40 @@ components:
           type: object
           additionalProperties:
             type: object
-    ResponseEntityListTemplateView:
+    TemplateImageForm:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/Template'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
+        templateId:
+          type: string
+    ThemeView:
       type: object
       properties:
-        errorCode:
+        path:
           type: string
-        message:
+        defaultFileType:
           type: string
-        fieldName:
+        filesMasks:
           type: string
-    TemplateLayoutRowView:
-      type: object
-      properties:
-        styleClass:
+        getiDate:
           type: string
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/TemplateLayoutColumnView'
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string

@@ -219,40 +219,25 @@ paths:
                 $ref: '#/components/schemas/ResponseEntityMetricsSnapshotView'
 components:
   schemas:
-    Pagination:
+    MetricsSnapshot:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    MetricTiming:
-      type: object
-      properties:
-        metricName:
-          type: string
-        durationMs:
-          type: integer
-          format: int64
-        cacheHit:
-          type: boolean
-        computationMs:
-          type: integer
-          format: int64
-        timedOut:
-          type: boolean
-        slow:
-          type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricValue'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricCalculationError'
+        timings:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricTiming'
+        notNumericMetricValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricValue'
     ResponseEntityMetricsSnapshotView:
       type: object
       properties:
@@ -276,6 +261,66 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MetricTiming:
+      type: object
+      properties:
+        metricName:
+          type: string
+        durationMs:
+          type: integer
+          format: int64
+        cacheHit:
+          type: boolean
+        computationMs:
+          type: integer
+          format: int64
+        timedOut:
+          type: boolean
+        slow:
+          type: boolean
+    Metric:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum:
+          - DIFFERENTIATING_FEATURES
+          - PAID_FEATURES
+          - PLATFORM_SPECIFIC_CUSTOMIZATION
+          - SOPHISTICATED_CONTENT_ARCHITECTURE
+          - POSITIVE_USER_EXPERIENCE
+          - PLATFORM_SPECIFIC_DEVELOPMENT
+          - RECENT_ACTIVITY
+          - HISTORY_LEGACY_DEPRECATED_FEATURES
+        feature:
+          type: string
+          enum:
+          - CONTENTLETS
+          - LANGUAGES
+          - CONTENT_TYPES
+          - SITES
+          - URL_MAPS
+          - WORKFLOW
+          - USERS
+          - SITE_SEARCH
+          - IMAGE_API
+          - LAYOUT
+          - CONTENT_TYPE_FIELDS
+          - AI
+          - EXPERIMENTS
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     MetricCalculationError:
       type: object
       properties:
@@ -314,59 +359,6 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/Metric'
-    MetricsSnapshot:
-      type: object
-      properties:
-        stats:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricValue'
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricCalculationError'
-        timings:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricTiming'
-        notNumericMetricValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetricValue'
-    Metric:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-          enum:
-          - DIFFERENTIATING_FEATURES
-          - PAID_FEATURES
-          - PLATFORM_SPECIFIC_CUSTOMIZATION
-          - SOPHISTICATED_CONTENT_ARCHITECTURE
-          - POSITIVE_USER_EXPERIENCE
-          - PLATFORM_SPECIFIC_DEVELOPMENT
-          - RECENT_ACTIVITY
-          - HISTORY_LEGACY_DEPRECATED_FEATURES
-        feature:
-          type: string
-          enum:
-          - CONTENTLETS
-          - LANGUAGES
-          - CONTENT_TYPES
-          - SITES
-          - URL_MAPS
-          - WORKFLOW
-          - USERS
-          - SITE_SEARCH
-          - IMAGE_API
-          - LAYOUT
-          - CONTENT_TYPE_FIELDS
-          - AI
-          - EXPERIMENTS
     MetricValue:
       type: object
       properties:
@@ -403,12 +395,20 @@ components:
           - EXPERIMENTS
         value:
           type: object
-    ErrorEntity:
+    MessageEntity:
       type: object
       properties:
-        errorCode:
-          type: string
         message:
           type: string
-        fieldName:
-          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

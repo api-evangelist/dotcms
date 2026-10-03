@@ -1439,27 +1439,7 @@ paths:
           description: Internal Server Error
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    UpdateFieldRequestView:
-      required:
-      - field
-      type: object
-      properties:
-        field:
-          $ref: '#/components/schemas/ContentTypeFieldView'
-      description: Request body for updating one content-type field. The field object must be wrapped in the top-level `field` property.
-    ResponseEntityMapView:
+    ResponseEntityMapStringObjectView:
       type: object
       properties:
         errors:
@@ -1486,11 +1466,102 @@ components:
           $ref: '#/components/schemas/Pagination'
     MoveFieldsForm:
       type: object
-    MessageEntity:
+    ResponseEntityMapView:
       type: object
       properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityFieldTypeListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
         message:
           type: string
+        fieldName:
+          type: string
+    UpdateFieldRequestView:
+      required:
+      - field
+      type: object
+      properties:
+        field:
+          $ref: '#/components/schemas/ContentTypeFieldView'
+      description: Request body for updating one content-type field. The field object must be wrapped in the top-level `field` property.
     DeleteFieldsForm:
       type: object
       properties:
@@ -1590,33 +1661,11 @@ components:
           type: string
           description: Regular expression used to validate the field value.
       description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
-    ResponseEntityListMapView:
+    MessageEntity:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+        message:
+          type: string
     ResponseEntityStringView:
       type: object
       properties:
@@ -1640,64 +1689,15 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityMapStringObjectView:
+    Pagination:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    ResponseEntityFieldTypeListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64

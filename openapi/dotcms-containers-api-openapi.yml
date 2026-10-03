@@ -729,6 +729,263 @@ paths:
           description: Internal server error
 components:
   schemas:
+    ResponseEntityPaginatedArrayListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          properties:
+            totalResults:
+              type: integer
+              format: int64
+            query:
+              type: string
+            empty:
+              type: boolean
+            first:
+              type: object
+              additionalProperties:
+                type: object
+            last:
+              type: object
+              additionalProperties:
+                type: object
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    ResponseEntitySingleContainerView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ContainerView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    ContainerForm:
+      required:
+      - title
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the container. Required for updates, ignored on creation.
+        title:
+          type: string
+          description: Title of the container
+        friendlyName:
+          type: string
+          description: Description of the container (displayed as 'Description' in the UI). Also accepts 'description' as an alias field name in JSON.
+        maxContentlets:
+          type: integer
+          description: Maximum number of contentlets this container can hold. Set to 0 for no limit.
+          format: int32
+        code:
+          type: string
+          description: Velocity/code used to render the container's content. Used when maxContentlets is 0.
+        notes:
+          type: string
+          description: Internal notes about this container (not displayed to end users)
+        preLoop:
+          type: string
+          description: Velocity code executed before the content loop
+        postLoop:
+          type: string
+          description: Velocity code executed after the content loop
+        showOnMenu:
+          type: boolean
+          description: Whether this container should appear in navigation menus
+        sortOrder:
+          type: integer
+          description: Sort order for display purposes
+          format: int32
+        sortContentletsBy:
+          type: string
+          description: Field name used to sort contentlets within this container
+        structureInode:
+          type: string
+          description: Inode of the content type (structure) associated with this container. This is a legacy field; prefer using containerStructures for multiple content type associations.
+        containerStructures:
+          type: array
+          description: List of content type associations for this container. Each entry maps a content type to rendering code. The 'id' field is ignored on input and auto-generated server-side. Only 'structureId' and 'code' are required.
+          items:
+            $ref: '#/components/schemas/ContainerStructure'
+        owner:
+          type: string
+          description: Owner user ID of the container
+        hostId:
+          type: string
+          description: Identifier of the site (host) where this container should be created or moved to. If not provided, the container is assigned to the site resolved from the current HTTP request context.
+        staticify:
+          type: boolean
+          description: Whether the container output should be staticified (cached as static HTML)
+        useDiv:
+          type: boolean
+          description: Whether to wrap content in a div element
+        dynamic:
+          type: boolean
+          description: Whether this container uses dynamic content type resolution
+      description: Form used to create or update a Container in dotCMS
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContainerView:
+      type: object
+      properties:
+        container:
+          $ref: '#/components/schemas/Container'
+        path:
+          type: string
+    ResponseEntityBulkResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContainerObjectMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContainerStructure:
+      type: object
+      properties:
+        id:
+          type: string
+        structureId:
+          type: string
+        containerInode:
+          type: string
+        containerId:
+          type: string
+        code:
+          type: string
+        contentTypeVar:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     Pagination:
       type: object
       properties:
@@ -741,7 +998,7 @@ components:
         totalEntries:
           type: integer
           format: int64
-    ResponseEntityBulkResultView:
+    ResponseEntityContainerView:
       type: object
       properties:
         errors:
@@ -749,7 +1006,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/BulkResultView'
+          type: array
+          items:
+            $ref: '#/components/schemas/Container'
         messages:
           type: array
           items:
@@ -849,262 +1108,3 @@ components:
             type: object
         new:
           type: boolean
-    ResponseEntityBooleanView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
-    ContainerView:
-      type: object
-      properties:
-        container:
-          $ref: '#/components/schemas/Container'
-        path:
-          type: string
-    BulkResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
-    ResponseEntityContainerObjectMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntitySingleContainerView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ContainerView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityContainerView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/Container'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ContainerStructure:
-      type: object
-      properties:
-        id:
-          type: string
-        structureId:
-          type: string
-        containerInode:
-          type: string
-        containerId:
-          type: string
-        code:
-          type: string
-        contentTypeVar:
-          type: string
-    ResponseEntityPaginatedArrayListMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          properties:
-            totalResults:
-              type: integer
-              format: int64
-            query:
-              type: string
-            empty:
-              type: boolean
-            first:
-              type: object
-              additionalProperties:
-                type: object
-            last:
-              type: object
-              additionalProperties:
-                type: object
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ContainerForm:
-      required:
-      - title
-      type: object
-      properties:
-        identifier:
-          type: string
-          description: Identifier of the container. Required for updates, ignored on creation.
-        title:
-          type: string
-          description: Title of the container
-        friendlyName:
-          type: string
-          description: Description of the container (displayed as 'Description' in the UI). Also accepts 'description' as an alias field name in JSON.
-        maxContentlets:
-          type: integer
-          description: Maximum number of contentlets this container can hold. Set to 0 for no limit.
-          format: int32
-        code:
-          type: string
-          description: Velocity/code used to render the container's content. Used when maxContentlets is 0.
-        notes:
-          type: string
-          description: Internal notes about this container (not displayed to end users)
-        preLoop:
-          type: string
-          description: Velocity code executed before the content loop
-        postLoop:
-          type: string
-          description: Velocity code executed after the content loop
-        showOnMenu:
-          type: boolean
-          description: Whether this container should appear in navigation menus
-        sortOrder:
-          type: integer
-          description: Sort order for display purposes
-          format: int32
-        sortContentletsBy:
-          type: string
-          description: Field name used to sort contentlets within this container
-        structureInode:
-          type: string
-          description: Inode of the content type (structure) associated with this container. This is a legacy field; prefer using containerStructures for multiple content type associations.
-        containerStructures:
-          type: array
-          description: List of content type associations for this container. Each entry maps a content type to rendering code. The 'id' field is ignored on input and auto-generated server-side. Only 'structureId' and 'code' are required.
-          items:
-            $ref: '#/components/schemas/ContainerStructure'
-        owner:
-          type: string
-          description: Owner user ID of the container
-        hostId:
-          type: string
-          description: Identifier of the site (host) where this container should be created or moved to. If not provided, the container is assigned to the site resolved from the current HTTP request context.
-        staticify:
-          type: boolean
-          description: Whether the container output should be staticified (cached as static HTML)
-        useDiv:
-          type: boolean
-          description: Whether to wrap content in a div element
-        dynamic:
-          type: boolean
-          description: Whether this container uses dynamic content type resolution
-      description: Form used to create or update a Container in dotCMS
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
