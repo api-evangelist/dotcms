@@ -2,6 +2,9 @@ aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
 common:
+- type: CapabilityMap
+  url: capabilities/dotcms-capability-edges.yml
+  name: dotCMS Business Capability Map
 - type: Overlay
   url: overlays/dotcms-rest-api-overlay.yaml
 - type: Website
