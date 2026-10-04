@@ -499,6 +499,27 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ApiTokenForm:
+      type: object
+      properties:
+        userId:
+          type: string
+        expirationSeconds:
+          type: integer
+          format: int32
+        network:
+          type: string
+        claims:
+          type: object
+          additionalProperties:
+            type: object
+        shouldBeAdmin:
+          type: boolean
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ErrorEntity:
       type: object
       properties:
@@ -508,7 +529,19 @@ components:
           type: string
         fieldName:
           type: string
-    ResponseEntityJwtView:
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityApiTokenWithJwtView:
       type: object
       properties:
         errors:
@@ -533,28 +566,7 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ApiTokenForm:
-      type: object
-      properties:
-        userId:
-          type: string
-        expirationSeconds:
-          type: integer
-          format: int32
-        network:
-          type: string
-        claims:
-          type: object
-          additionalProperties:
-            type: object
-        shouldBeAdmin:
-          type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntityApiTokenWithJwtView:
+    ResponseEntityJwtView:
       type: object
       properties:
         errors:
@@ -586,15 +598,3 @@ components:
           type: object
           additionalProperties:
             type: object
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

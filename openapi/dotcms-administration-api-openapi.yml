@@ -219,6 +219,23 @@ paths:
                 $ref: '#/components/schemas/ResponseEntityMetricsSnapshotView'
 components:
   schemas:
+    MetricTiming:
+      type: object
+      properties:
+        metricName:
+          type: string
+        durationMs:
+          type: integer
+          format: int64
+        cacheHit:
+          type: boolean
+        computationMs:
+          type: integer
+          format: int64
+        timedOut:
+          type: boolean
+        slow:
+          type: boolean
     MetricsSnapshot:
       type: object
       properties:
@@ -238,46 +255,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MetricValue'
-    ResponseEntityMetricsSnapshotView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/MetricsSnapshot'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MetricTiming:
-      type: object
-      properties:
-        metricName:
-          type: string
-        durationMs:
-          type: integer
-          format: int64
-        cacheHit:
-          type: boolean
-        computationMs:
-          type: integer
-          format: int64
-        timedOut:
-          type: boolean
-        slow:
-          type: boolean
     Metric:
       type: object
       properties:
@@ -312,15 +289,6 @@ components:
           - CONTENT_TYPE_FIELDS
           - AI
           - EXPERIMENTS
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     MetricCalculationError:
       type: object
       properties:
@@ -359,6 +327,55 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/Metric'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityMetricsSnapshotView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/MetricsSnapshot'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     MetricValue:
       type: object
       properties:
@@ -395,20 +412,3 @@ components:
           - EXPERIMENTS
         value:
           type: object
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

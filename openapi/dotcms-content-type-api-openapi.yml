@@ -1055,22 +1055,20 @@ paths:
           description: Internal server error
 components:
   schemas:
-    FilteredContentTypesForm:
+    CopyContentTypeForm:
+      required:
+      - name
       type: object
       properties:
-        filter:
-          type: object
-          additionalProperties:
-            type: object
-        page:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        orderBy:
+        name:
           type: string
-        direction:
+        variable:
+          type: string
+        folder:
+          type: string
+        host:
+          type: string
+        icon:
           type: string
     ResponseEntityContentTypeJsonView:
       type: object
@@ -1095,6 +1093,11 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ContentTypeView:
       type: object
       properties:
@@ -1108,124 +1111,73 @@ components:
           type: string
         variable:
           type: string
-    ResponseEntityBaseContentTypesView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/BaseContentTypesView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    BaseContentTypesView:
-      type: object
-      properties:
-        name:
-          type: string
-        label:
-          type: string
-        types:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContentTypeView'
-        index:
-          type: integer
-          format: int32
-    ResponseEntityListMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    CopyContentTypeForm:
+    ContentTypeRequestView:
       required:
+      - clazz
       - name
       type: object
       properties:
+        clazz:
+          type: string
+          description: 'Base type of the content type, as a case-insensitive base-type name: `CONTENT`, `WIDGET`, `FORM`, `FILEASSET`, `HTMLPAGE`, `PERSONA`, `VANITY_URL`, `KEY_VALUE`, or `DOTASSET`. Example: `"WIDGET"`.'
+          example: WIDGET
+          enum:
+          - CONTENT
+          - WIDGET
+          - FORM
+          - FILEASSET
+          - HTMLPAGE
+          - PERSONA
+          - VANITY_URL
+          - KEY_VALUE
+          - DOTASSET
         name:
           type: string
+          description: Display name of the content type.
         variable:
           type: string
-        folder:
-          type: string
+          description: Velocity variable name (unique, alphanumeric, starts with a letter; auto-generated from 'name' if omitted).
         host:
           type: string
-        icon:
+          description: Site identifier UUID this content type lives on, or the literal 'SYSTEM_HOST' (defaults to the default site).
+        folder:
           type: string
-    ResponseEntityContentTypeOperationView:
-      type: object
-      properties:
-        errors:
+          description: Folder identifier UUID, or the literal 'SYSTEM_FOLDER' (the default).
+        description:
+          type: string
+          description: Description of the content type.
+        defaultType:
+          type: boolean
+          description: Whether this is the default content type.
+        fixed:
+          type: boolean
+          description: Whether the content type is fixed (system-managed).
+        system:
+          type: boolean
+          description: Whether the content type is a system type.
+        workflow:
           type: array
+          description: 'Workflow scheme identifiers to associate with the content type, e.g. ["d61a59e1-a49c-46f2-a929-db2b4bfa88b2"] for the System Workflow. NOTE: this key is ''workflow'' (singular) in the REQUEST; GET responses return ''workflows'' (plural, array of objects) — rename the key when round-tripping.'
           items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
+            type: string
+        fields:
+          type: array
+          description: 'Fields that make up the content type, in order. Rows and columns are regular entries: ''ImmutableRowField'' begins a row, ''ImmutableColumnField'' begins a column, and subsequent content fields belong to the most-recent column.'
+          items:
+            $ref: '#/components/schemas/ContentTypeFieldView'
+        metadata:
           type: object
-          properties:
-            empty:
-              type: boolean
           additionalProperties:
             type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+            description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
+          description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
+        systemActionMappings:
           type: object
           additionalProperties:
             type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+            description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
+          description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
+      description: 'A content-type object, posted directly (NOT wrapped in a ''contentType'' envelope). The endpoint also accepts an array of these objects to create several types in one call. Creating clazz `WIDGET` automatically adds `widgetTitle`, `widgetUsage`, `widgetCode`, and `widgetPreexecute`. `widgetCode` is an ImmutableConstantField: its shared code belongs in the field''s `values` property, not in individual widget contentlets.'
     ContentTypeFieldView:
       required:
       - clazz
@@ -1318,114 +1270,44 @@ components:
           type: string
           description: Regular expression used to validate the field value.
       description: A single field within a content type's 'fields[]' array. The 'clazz' property is the discriminator that selects the concrete field type; the remaining properties apply across field types.
-    ContentTypeRequestView:
-      required:
-      - clazz
-      - name
+    ErrorEntity:
       type: object
       properties:
-        clazz:
+        errorCode:
           type: string
-          description: 'Base type of the content type, as a case-insensitive base-type name: `CONTENT`, `WIDGET`, `FORM`, `FILEASSET`, `HTMLPAGE`, `PERSONA`, `VANITY_URL`, `KEY_VALUE`, or `DOTASSET`. Example: `"WIDGET"`.'
-          example: WIDGET
-          enum:
-          - CONTENT
-          - WIDGET
-          - FORM
-          - FILEASSET
-          - HTMLPAGE
-          - PERSONA
-          - VANITY_URL
-          - KEY_VALUE
-          - DOTASSET
-        name:
-          type: string
-          description: Display name of the content type.
-        variable:
-          type: string
-          description: Velocity variable name (unique, alphanumeric, starts with a letter; auto-generated from 'name' if omitted).
-        host:
-          type: string
-          description: Site identifier UUID this content type lives on, or the literal 'SYSTEM_HOST' (defaults to the default site).
-        folder:
-          type: string
-          description: Folder identifier UUID, or the literal 'SYSTEM_FOLDER' (the default).
-        description:
-          type: string
-          description: Description of the content type.
-        defaultType:
-          type: boolean
-          description: Whether this is the default content type.
-        fixed:
-          type: boolean
-          description: Whether the content type is fixed (system-managed).
-        system:
-          type: boolean
-          description: Whether the content type is a system type.
-        workflow:
-          type: array
-          description: 'Workflow scheme identifiers to associate with the content type, e.g. ["d61a59e1-a49c-46f2-a929-db2b4bfa88b2"] for the System Workflow. NOTE: this key is ''workflow'' (singular) in the REQUEST; GET responses return ''workflows'' (plural, array of objects) — rename the key when round-tripping.'
-          items:
-            type: string
-        fields:
-          type: array
-          description: 'Fields that make up the content type, in order. Rows and columns are regular entries: ''ImmutableRowField'' begins a row, ''ImmutableColumnField'' begins a column, and subsequent content fields belong to the most-recent column.'
-          items:
-            $ref: '#/components/schemas/ContentTypeFieldView'
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-            description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
-          description: 'Content-type metadata. Known keys: ''CONTENT_EDITOR2_ENABLED'' (boolean), ''DOT_STYLE_EDITOR_SCHEMA'' (JSON string).'
-        systemActionMappings:
-          type: object
-          additionalProperties:
-            type: string
-            description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
-          description: Maps system actions (NEW, EDIT, PUBLISH, UNPUBLISH, ARCHIVE, UNARCHIVE, DELETE, DESTROY) to workflow action identifiers.
-      description: 'A content-type object, posted directly (NOT wrapped in a ''contentType'' envelope). The endpoint also accepts an array of these objects to create several types in one call. Creating clazz `WIDGET` automatically adds `widgetTitle`, `widgetUsage`, `widgetCode`, and `widgetPreexecute`. `widgetCode` is an ImmutableConstantField: its shared code belongs in the field''s `values` property, not in individual widget contentlets.'
-    ResponseEntityContentTypeDetailView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
         message:
           type: string
-    ContentType:
-      required:
-      - clazz
+        fieldName:
+          type: string
+    Pagination:
       type: object
       properties:
-        owner:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    FilteredContentTypesForm:
+      type: object
+      properties:
+        filter:
+          type: object
+          additionalProperties:
+            type: object
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        orderBy:
           type: string
-        clazz:
+        direction:
           type: string
-      discriminator:
-        propertyName: clazz
     ResponseEntityListContentTypeView:
       type: object
       properties:
@@ -1451,15 +1333,133 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    ContentType:
+      required:
+      - clazz
       type: object
       properties:
-        currentPage:
+        owner:
+          type: string
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    ResponseEntityBaseContentTypesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseContentTypesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContentTypeOperationView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityContentTypeDetailView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BaseContentTypesView:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentTypeView'
+        index:
           type: integer
           format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

@@ -318,54 +318,72 @@ paths:
           description: Authentication required
 components:
   schemas:
-    Folder:
+    UserAPI:
       type: object
       properties:
-        identifier:
+        anonymousUser:
+          $ref: '#/components/schemas/User'
+        systemUser:
+          $ref: '#/components/schemas/User'
+        defaultUser:
+          $ref: '#/components/schemas/User'
+        unDeletedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        anonymousUserNoThrow:
+          $ref: '#/components/schemas/User'
+    FolderSearchView:
+      type: object
+      properties:
+        id:
           type: string
-        name:
-          type: string
-        sortOrder:
-          type: integer
-          format: int32
-        showOnMenu:
-          type: boolean
-        hostId:
-          type: string
-        type:
-          type: string
-        title:
-          type: string
-        filesMasks:
-          type: string
-        defaultFileType:
-          type: string
-        defaultBaseType:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        owner:
-          type: string
+          description: Folder identifier
         inode:
           type: string
+          description: Folder inode
+        name:
+          type: string
+          description: Folder name (last path segment)
         path:
           type: string
-        idate:
-          type: string
-          format: date-time
-        systemFolder:
+          description: Parent path of the folder, e.g. '/application/' for '/application/blog/'
+        addChildrenAllowed:
           type: boolean
-        permissionType:
-          type: string
-        parent:
+          description: True when the requesting user has CAN_ADD_CHILDREN on this folder
+        hasChildren:
           type: boolean
-        host:
-          $ref: '#/components/schemas/Host'
-        map:
-          type: object
-          additionalProperties:
-            type: object
+          description: True when the folder has at least one child folder readable by the requesting user
+        defaultBaseType:
+          type: string
+          description: Content Drive upload-mode preference as a BaseContentType name (e.g. DOTASSET, FILEASSET); null when the folder has no preference
+        title:
+          type: string
+          description: Folder title
+        sortOrder:
+          type: integer
+          description: Folder sort order used when ordering menu items
+          format: int32
+        filesMasks:
+          type: string
+          description: Comma-separated file-name masks allowed in this folder, e.g. '*.jpg,*.png'
+        defaultFileType:
+          type: string
+          description: Velocity variable name of the Content Type used by default for new files in this folder
+        showOnMenu:
+          type: boolean
+          description: True when the folder is shown on navigation menus
+        permissions:
+          type: array
+          description: Permission types the requesting user holds on this folder. Only populated when 'includePermissions=true'; null means the permissions were not requested, while an empty array means they were requested and the user holds none.
+          items:
+            type: string
+            enum:
+            - READ
+            - EDIT
+            - PUBLISH
+            - EDIT_PERMISSIONS
+            - CAN_ADD_CHILDREN
     Field:
       required:
       - clazz
@@ -393,74 +411,6 @@ components:
           type: string
       discriminator:
         propertyName: clazz
-    SearchByPathForm:
-      type: object
-      properties:
-        path:
-          type: string
-    ResponseEntityFolderSearchResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/FolderSearchResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityFolderView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Folder'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    UserAPI:
-      type: object
-      properties:
-        anonymousUser:
-          $ref: '#/components/schemas/User'
-        systemUser:
-          $ref: '#/components/schemas/User'
-        defaultUser:
-          $ref: '#/components/schemas/User'
-        unDeletedUsers:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        anonymousUserNoThrow:
-          $ref: '#/components/schemas/User'
     User:
       type: object
       properties:
@@ -645,27 +595,33 @@ components:
           type: boolean
         new:
           type: boolean
-    FolderSearchResultView:
+    ResponseEntityFolderView:
       type: object
       properties:
-        id:
-          type: string
-        inode:
-          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Folder'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SearchByPathForm:
+      type: object
+      properties:
         path:
-          type: string
-        hostName:
-          type: string
-        addChildrenAllowed:
-          type: boolean
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
           type: string
     Host:
       type: object
@@ -764,106 +720,47 @@ components:
           type: boolean
         locked:
           type: boolean
-    Role:
+    FolderSearchResultView:
       type: object
       properties:
         id:
           type: string
-        name:
+        inode:
           type: string
-        description:
+        path:
           type: string
-        roleKey:
+        hostName:
           type: string
-        parent:
-          type: string
-        editPermissions:
+        addChildrenAllowed:
           type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
-          type: array
-          items:
-            type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
-    ResponseEntityListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityFolderSearchView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          properties:
-            totalResults:
-              type: integer
-              format: int64
-            query:
-              type: string
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/FolderSearchView'
-            last:
-              $ref: '#/components/schemas/FolderSearchView'
-          items:
-            $ref: '#/components/schemas/FolderSearchView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     MessageEntity:
       type: object
       properties:
         message:
           type: string
+    ResponseEntityFolderWithSubfoldersView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/FolderView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     FolderView:
       type: object
       properties:
@@ -900,57 +797,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FolderView'
-    FolderSearchView:
+    ResponseEntityListView:
       type: object
       properties:
-        id:
-          type: string
-          description: Folder identifier
-        inode:
-          type: string
-          description: Folder inode
-        name:
-          type: string
-          description: Folder name (last path segment)
-        path:
-          type: string
-          description: Parent path of the folder, e.g. '/application/' for '/application/blog/'
-        addChildrenAllowed:
-          type: boolean
-          description: True when the requesting user has CAN_ADD_CHILDREN on this folder
-        hasChildren:
-          type: boolean
-          description: True when the folder has at least one child folder readable by the requesting user
-        defaultBaseType:
-          type: string
-          description: Content Drive upload-mode preference as a BaseContentType name (e.g. DOTASSET, FILEASSET); null when the folder has no preference
-        title:
-          type: string
-          description: Folder title
-        sortOrder:
-          type: integer
-          description: Folder sort order used when ordering menu items
-          format: int32
-        filesMasks:
-          type: string
-          description: Comma-separated file-name masks allowed in this folder, e.g. '*.jpg,*.png'
-        defaultFileType:
-          type: string
-          description: Velocity variable name of the Content Type used by default for new files in this folder
-        showOnMenu:
-          type: boolean
-          description: True when the folder is shown on navigation menus
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
         permissions:
           type: array
-          description: Permission types the requesting user holds on this folder. Only populated when 'includePermissions=true'; null means the permissions were not requested, while an empty array means they were requested and the user holds none.
           items:
             type: string
-            enum:
-            - READ
-            - EDIT
-            - PUBLISH
-            - EDIT_PERMISSIONS
-            - CAN_ADD_CHILDREN
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     Pagination:
       type: object
       properties:
@@ -963,7 +843,7 @@ components:
         totalEntries:
           type: integer
           format: int64
-    ResponseEntityFolderWithSubfoldersView:
+    ResponseEntityFolderSearchResultView:
       type: object
       properties:
         errors:
@@ -971,7 +851,127 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/FolderView'
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderSearchResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    Folder:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        showOnMenu:
+          type: boolean
+        hostId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        filesMasks:
+          type: string
+        defaultFileType:
+          type: string
+        defaultBaseType:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        owner:
+          type: string
+        inode:
+          type: string
+        path:
+          type: string
+        idate:
+          type: string
+          format: date-time
+        systemFolder:
+          type: boolean
+        permissionType:
+          type: string
+        parent:
+          type: boolean
+        host:
+          $ref: '#/components/schemas/Host'
+        map:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityFolderSearchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          properties:
+            totalResults:
+              type: integer
+              format: int64
+            query:
+              type: string
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/FolderSearchView'
+            last:
+              $ref: '#/components/schemas/FolderSearchView'
+          items:
+            $ref: '#/components/schemas/FolderSearchView'
         messages:
           type: array
           items:

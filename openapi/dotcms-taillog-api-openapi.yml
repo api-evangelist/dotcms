@@ -60,6 +60,11 @@ paths:
             application/json: {}
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ErrorEntity:
       type: object
       properties:
@@ -69,6 +74,18 @@ components:
           type: string
         fieldName:
           type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityListStringView:
       type: object
       properties:
@@ -104,20 +121,3 @@ components:
               type: string
         closed:
           type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

@@ -257,15 +257,6 @@ components:
           type: string
         value:
           type: object
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     ResponseEntityViewMapStringObject:
       type: object
       properties:
@@ -308,6 +299,15 @@ components:
           type: object
           additionalProperties:
             type: object
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     Pagination:
       type: object
       properties:

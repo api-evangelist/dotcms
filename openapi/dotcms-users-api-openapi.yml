@@ -530,119 +530,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    ResponseEntityLoginAsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseUserDeletedEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/UserDeletedView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    UpdateCurrentUserForm:
-      type: object
-      properties:
-        userId:
-          type: string
-        givenName:
-          type: string
-        email:
-          type: string
-        surname:
-          type: string
-        currentPassword:
-          type: string
-        newPassword:
-          type: string
-    ResponseEntityListUserView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityUserUpdateView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     User:
       type: object
       properties:
@@ -827,7 +714,22 @@ components:
           type: boolean
         new:
           type: boolean
-    ResponseUserMapEntityView:
+    LoginAsForm:
+      required:
+      - password
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        password:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseSiteVariablesEntityView:
       type: object
       properties:
         errors:
@@ -835,9 +737,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: object
-          additionalProperties:
-            type: object
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteVariableView'
         messages:
           type: array
           items:
@@ -899,6 +801,31 @@ components:
             type: string
             description: 'Role keys or role IDs (roles created without a key can only be referenced by ID). On update: field absent = roles untouched; [] = remove all user-assignable roles; otherwise the complete user-assignable role set. On create: absent or empty = default Front-end User role. Unknown entries are ignored.'
             example: '["DOTCMS_BACK_END_USER","48190c8c-42c4-46af-8d1a-0cd5db894797"]'
+    ResponseEntityUserUpdateView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ErrorEntity:
       type: object
       properties:
@@ -908,32 +835,43 @@ components:
           type: string
         fieldName:
           type: string
-    RestUser:
+    Pagination:
       type: object
       properties:
-        userId:
-          type: string
-        givenName:
-          type: string
-        email:
-          type: string
-        surname:
-          type: string
-        roleId:
-          type: string
-        loginAs:
-          type: boolean
-        admin:
-          type: boolean
-    UserDeletedView:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityListUserView:
       type: object
       properties:
-        status:
-          type: string
-        deletedUser:
-          type: string
-        reassignedTo:
-          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     Role:
       type: object
       properties:
@@ -967,17 +905,7 @@ components:
           type: string
         user:
           type: boolean
-    LoginAsForm:
-      required:
-      - password
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-        password:
-          type: string
-    ResponseSiteVariablesEntityView:
+    ResponseEntityLoginAsView:
       type: object
       properties:
         errors:
@@ -985,9 +913,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteVariableView'
+          type: object
+          additionalProperties:
+            type: object
         messages:
           type: array
           items:
@@ -1002,23 +930,63 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
+    ResponseUserMapEntityView:
       type: object
       properties:
-        message:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UpdateCurrentUserForm:
+      type: object
+      properties:
+        userId:
           type: string
-    Pagination:
+        givenName:
+          type: string
+        email:
+          type: string
+        surname:
+          type: string
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+    RestUser:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        userId:
+          type: string
+        givenName:
+          type: string
+        email:
+          type: string
+        surname:
+          type: string
+        roleId:
+          type: string
+        loginAs:
+          type: boolean
+        admin:
+          type: boolean
     SiteVariableView:
       type: object
       properties:
@@ -1038,4 +1006,36 @@ components:
           type: string
           format: date-time
         lastModifierFullName:
+          type: string
+    ResponseUserDeletedEntityView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/UserDeletedView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UserDeletedView:
+      type: object
+      properties:
+        status:
+          type: string
+        deletedUser:
+          type: string
+        reassignedTo:
           type: string

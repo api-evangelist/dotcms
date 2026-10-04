@@ -93,6 +93,32 @@ paths:
             application/json: {}
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityView:
       type: object
       properties:
@@ -125,15 +151,6 @@ components:
           type: string
           description: Run id returned by /fix (report) or /fix/stream (the `run` event)
           example: r_1f0c2b7d9a4e4c1fb0d5e6a7c8b9d0e1
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     A11yAgentFixForm:
       required:
       - identifier
@@ -154,20 +171,3 @@ components:
           description: When true the agent fixes only VTL and reports CSS contrast issues instead of editing stylesheets
           example: false
           default: false
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

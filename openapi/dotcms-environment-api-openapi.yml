@@ -285,6 +285,23 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    EnvironmentForm:
+      required:
+      - name
+      - pushMode
+      type: object
+      properties:
+        name:
+          type: string
+        pushMode:
+          type: string
+          enum:
+          - PUSH_TO_ONE
+          - PUSH_TO_ALL
+        whoCanSend:
+          type: array
+          items:
+            type: string
     ResponseEntityEnvironmentsView:
       type: object
       properties:
@@ -310,6 +327,118 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityEndpointView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        pushToAll:
+          type: boolean
+        permissionId:
+          type: string
+        owner:
+          type: string
+    ResponseEntityEnvironmentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    EndpointForm:
+      required:
+      - address
+      - environmentId
+      - name
+      - port
+      - protocol
+      type: object
+      properties:
+        name:
+          type: string
+        protocol:
+          type: string
+        address:
+          type: string
+        port:
+          type: string
+        authorizationToken:
+          type: string
+        enabled:
+          type: boolean
+        sending:
+          type: boolean
+        environmentId:
+          type: string
     DoesNotExistException:
       type: object
       properties:
@@ -399,46 +528,66 @@ components:
                 type: string
         localizedMessage:
           type: string
-    ResponseEntityEndpointView:
+    ErrorEntity:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PublishingEndPoint'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    PublishingEndPoint:
+      type: object
+      properties:
+        id:
+          type: string
+        groupId:
+          type: string
+        serverName:
           type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    EnvironmentForm:
-      required:
-      - name
-      - pushMode
-      type: object
-      properties:
-        name:
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        address:
           type: string
-        pushMode:
+        port:
           type: string
-          enum:
-          - PUSH_TO_ONE
-          - PUSH_TO_ALL
-        whoCanSend:
-          type: array
-          items:
-            type: string
+        protocol:
+          type: string
+        enabled:
+          type: boolean
+        authKey:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        sending:
+          type: boolean
+        tokenExpired:
+          type: boolean
+        tokenInvalid:
+          type: boolean
     ResponseEntityEndpointsView:
       type: object
       properties:
@@ -464,51 +613,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Environment:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        pushToAll:
-          type: boolean
-        permissionId:
-          type: string
-        owner:
-          type: string
-    ResponseEntityEnvironmentView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Environment'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     ForbiddenException:
       type: object
       properties:
@@ -773,107 +877,3 @@ components:
                 type: string
         localizedMessage:
           type: string
-    ResponseEntityBooleanView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    EndpointForm:
-      required:
-      - address
-      - environmentId
-      - name
-      - port
-      - protocol
-      type: object
-      properties:
-        name:
-          type: string
-        protocol:
-          type: string
-        address:
-          type: string
-        port:
-          type: string
-        authorizationToken:
-          type: string
-        enabled:
-          type: boolean
-        sending:
-          type: boolean
-        environmentId:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    PublishingEndPoint:
-      type: object
-      properties:
-        id:
-          type: string
-        groupId:
-          type: string
-        serverName:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            length:
-              type: integer
-              format: int32
-              writeOnly: true
-        address:
-          type: string
-        port:
-          type: string
-        protocol:
-          type: string
-        enabled:
-          type: boolean
-        authKey:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            length:
-              type: integer
-              format: int32
-              writeOnly: true
-        sending:
-          type: boolean
-        tokenExpired:
-          type: boolean
-        tokenInvalid:
-          type: boolean

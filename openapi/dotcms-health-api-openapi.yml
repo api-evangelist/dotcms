@@ -172,11 +172,27 @@ paths:
           description: Internal Server Error
 components:
   schemas:
-    MessageEntity:
+    ErrorEntity:
       type: object
       properties:
+        errorCode:
+          type: string
         message:
           type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityView:
       type: object
       properties:
@@ -200,24 +216,8 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    Pagination:
+    MessageEntity:
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
         message:
-          type: string
-        fieldName:
           type: string

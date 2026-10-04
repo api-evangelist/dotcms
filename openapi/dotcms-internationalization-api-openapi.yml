@@ -295,6 +295,16 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    MakeDefaultLangForm:
+      type: object
+      properties:
+        fireTransferAssetsJob:
+          type: boolean
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ResponseEntityViewLanguage:
       type: object
       properties:
@@ -318,6 +328,18 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ErrorEntity:
       type: object
       properties:
@@ -343,17 +365,6 @@ components:
           type: string
         isoCode:
           type: string
-    I18NForm:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        messagesKey:
-          type: array
-          items:
-            type: string
     LanguageForm:
       type: object
       properties:
@@ -367,25 +378,14 @@ components:
           type: string
         isoCode:
           type: string
-    MakeDefaultLangForm:
+    I18NForm:
       type: object
       properties:
-        fireTransferAssetsJob:
-          type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
+        language:
           type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string

@@ -39,15 +39,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     Announcement:
       type: object
       properties:
@@ -104,6 +95,15 @@ components:
       type: object
       properties:
         message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
           type: string
     Pagination:
       type: object

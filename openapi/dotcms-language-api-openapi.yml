@@ -54,6 +54,43 @@ paths:
           description: Authentication required
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    I18NForm:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string
     ResponseEntityMapStringStringView:
       type: object
       properties:
@@ -79,40 +116,3 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    I18NForm:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        messagesKey:
-          type: array
-          items:
-            type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

@@ -3441,7 +3441,16 @@ paths:
           description: Unsupported Media Type
 components:
   schemas:
-    ResponseEntityWorkflowActionsView:
+    WorkflowDefaultActionView:
+      type: object
+      properties:
+        scheme:
+          $ref: '#/components/schemas/WorkflowScheme'
+        action:
+          $ref: '#/components/schemas/WorkflowAction'
+        firstStep:
+          $ref: '#/components/schemas/WorkflowStep'
+    ResponseEntityWorkflowSchemeView:
       type: object
       properties:
         errors:
@@ -3449,9 +3458,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowActionView'
+          $ref: '#/components/schemas/WorkflowScheme'
         messages:
           type: array
           items:
@@ -3466,97 +3473,337 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    WorkflowTaskView:
+    WorkflowActionSeparatorForm:
+      type: object
+      properties:
+        schemeId:
+          type: string
+        stepId:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    WorkflowActionClassParameter:
       type: object
       properties:
         id:
           type: string
-        assignedTo:
+        actionClassId:
           type: string
-        assignedUserName:
+        key:
           type: string
-        createdBy:
+        value:
           type: string
-        description:
-          type: string
-        belongsTo:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        dueDate:
-          type: string
-          format: date-time
-        languageId:
-          type: integer
-          format: int64
-        modDate:
-          type: string
-          format: date-time
-        title:
-          type: string
-        status:
-          type: string
-    WorkflowSchemeImportExportObjectView:
+    ResponseEntityWorkflowActionletsView:
       type: object
       properties:
-        version:
-          type: string
-        schemes:
+        errors:
           type: array
           items:
-            $ref: '#/components/schemas/WorkflowScheme'
-        steps:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
           type: array
           items:
-            $ref: '#/components/schemas/WorkflowStep'
-        actions:
+            $ref: '#/components/schemas/WorkFlowActionlet'
+        messages:
           type: array
           items:
-            $ref: '#/components/schemas/WorkflowAction'
-        actionSteps:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
-            type: object
-            additionalProperties:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FormDataBodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
               type: string
-        actionClasses:
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        formDataContentDisposition:
+          $ref: '#/components/schemas/FormDataContentDisposition'
+        simple:
+          type: boolean
+        name:
+          type: string
+        value:
+          type: string
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    ResponseEntityWorkflowActionClassesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
           type: array
           items:
             $ref: '#/components/schemas/WorkflowActionClass'
-        actionClassParams:
+        messages:
           type: array
           items:
-            $ref: '#/components/schemas/WorkflowActionClassParameter'
-        schemeSystemActionWorkflowActionMappings:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
-            $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
-    WorkflowSystemActionForm:
-      required:
-      - actionId
-      - systemAction
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
       type: object
       properties:
-        actionId:
+        message:
           type: string
+    WorkflowSearcherForm:
+      type: object
+      properties:
+        keywords:
+          type: string
+        assignedTo:
+          type: string
+        daysOld:
+          type: integer
+          format: int32
         schemeId:
           type: string
-        contentTypeVariable:
+        stepId:
           type: string
-        systemAction:
+        open:
+          type: boolean
+        closed:
+          type: boolean
+        createdBy:
           type: string
-          enum:
-          - NEW
-          - EDIT
-          - PUBLISH
-          - UNPUBLISH
-          - ARCHIVE
-          - UNARCHIVE
-          - DELETE
-          - DESTROY
-          - LOCK
-          - UNLOCK
+        show4all:
+          type: boolean
+        orderBy:
+          type: string
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+    WorkflowCopyForm:
+      type: object
+      properties:
+        name:
+          type: string
+    MessageBodyWorkers:
+      type: object
+    MultiPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        bodyParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    WorkflowReorderWorkflowActionStepForm:
+      required:
+      - order
+      type: object
+      properties:
+        order:
+          type: integer
+          format: int32
+    BulkActionView:
+      type: object
+      properties:
+        schemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkWorkflowSchemeView'
+    WorkflowActionClass:
+      type: object
+      properties:
+        id:
+          type: string
+        actionId:
+          type: string
+        name:
+          type: string
+        order:
+          type: integer
+          format: int32
+        clazz:
+          type: string
+        actionlet:
+          $ref: '#/components/schemas/WorkFlowActionlet'
+    CountWorkflowAction:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+        workflowAction:
+          $ref: '#/components/schemas/WorkflowAction'
+        pushPublish:
+          type: boolean
+        moveable:
+          type: boolean
+        conditionPresent:
+          type: boolean
+    WorkflowTimelineItemView:
+      type: object
+      properties:
+        createdDate:
+          type: string
+          format: date-time
+        roleId:
+          type: string
+        postedBy:
+          type: string
+        commentDescription:
+          type: string
+        taskId:
+          type: string
+        type:
+          type: string
+        step:
+          type: object
+          additionalProperties:
+            type: string
+        action:
+          type: object
+          additionalProperties:
+            type: string
+    ResponseEntityWorkflowCommentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/WorkflowTimelineItemView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityWorkflowSchemesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowScheme'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     AdditionalParamsBean:
       type: object
       properties:
@@ -3579,7 +3826,7 @@ components:
         assignCommentBean:
           $ref: '#/components/schemas/AssignCommentBean'
       description: Action-specific parameters for bulk fire. Wraps push-publish settings, assign-and-comment metadata, and a free-form map for actionlet-specific keys.
-    ResponseEntityView:
+    ResponseEntityWorkflowStepsView:
       type: object
       properties:
         errors:
@@ -3587,7 +3834,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: object
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStep'
         messages:
           type: array
           items:
@@ -3652,29 +3901,438 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    MessageEntity:
+    ResponseEntityContentTypeWorkflowSchemesView:
       type: object
       properties:
-        message:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentTypeWorkflowSchemesView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityWorkflowActionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowActionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntitySystemActionWorkflowActionMappings:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBulkActionView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkActionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityBulkActionsResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkActionsResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WorkflowSystemActionForm:
+      required:
+      - actionId
+      - systemAction
+      type: object
+      properties:
+        actionId:
           type: string
-    BulkActionView:
+        schemeId:
+          type: string
+        contentTypeVariable:
+          type: string
+        systemAction:
+          type: string
+          enum:
+          - NEW
+          - EDIT
+          - PUBLISH
+          - UNPUBLISH
+          - ARCHIVE
+          - UNARCHIVE
+          - DELETE
+          - DESTROY
+          - LOCK
+          - UNLOCK
+    ContentDisposition:
       type: object
       properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    ResponseContentletWorkflowStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/ContentletWorkflowStatusView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WorkflowActionStepForm:
+      required:
+      - actionId
+      type: object
+      properties:
+        actionId:
+          type: string
+    ResponseEntitySystemActionWorkflowActionMapping:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WorkflowScheme:
+      type: object
+      properties:
+        id:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        variableName:
+          type: string
+        description:
+          type: string
+        archived:
+          type: boolean
+        mandatory:
+          type: boolean
+        defaultScheme:
+          type: boolean
+        modDate:
+          type: string
+          format: date-time
+        entryActionId:
+          type: string
+        system:
+          type: boolean
+    ActionInputView:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: object
+          additionalProperties:
+            type: object
+    WorkflowSearchResultsView:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          format: int32
+        workflowTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowTaskView'
+    FireBulkActionsForm:
+      required:
+      - workflowActionId
+      type: object
+      properties:
+        query:
+          type: string
+          description: Lucene query that selects the contentlets to act on. Mutually exclusive with 'contentletIds'.
+          example: +contentType:webPageContent +languageId:1
+        contentletIds:
+          type: array
+          description: Explicit list of contentlet identifiers to act on. Mutually exclusive with 'query'.
+          items:
+            type: string
+            description: Explicit list of contentlet identifiers to act on. Mutually exclusive with 'query'.
+        workflowActionId:
+          type: string
+          description: The workflow action identifier (UUID) to fire. Discover via GET /api/v1/workflow/schemes/{schemeId}/actions or GET /api/v1/workflow/contentlet/{inode}/actions. Not the system action enum value (NEW, EDIT, PUBLISH, …).
+          example: ceca4ee9-1b7b-4f21-a5f4-5d8e9b8b8a1d
+        additionalParams:
+          $ref: '#/components/schemas/AdditionalParamsBean'
+        popupParamsBean:
+          $ref: '#/components/schemas/AdditionalParamsBean'
+      description: Request body for PUT /api/v1/workflow/contentlet/actions/bulk/fire. Either 'query' OR 'contentletIds' must be supplied (not both). 'workflowActionId' is required and must belong to the workflow scheme that owns the input contentlets — otherwise the contentlets are skipped and the response returns a non-empty 'skippedCount' with a 'skipReason'. To bypass scheme checks (e.g. for System Workflow actions like Move on content from a non-system scheme), use PUT /api/v1/workflow/actions/{actionId}/fire instead.
+    WorkflowSchemeImportExportObjectView:
+      type: object
+      properties:
+        version:
+          type: string
         schemes:
           type: array
           items:
-            $ref: '#/components/schemas/BulkWorkflowSchemeView'
-    WorkflowActionletParameter:
+            $ref: '#/components/schemas/WorkflowScheme'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStep'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+        actionSteps:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        actionClasses:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowActionClass'
+        actionClassParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowActionClassParameter'
+        schemeSystemActionWorkflowActionMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
+    ContentletWorkflowStatusView:
       type: object
       properties:
-        displayName:
+        step:
+          $ref: '#/components/schemas/WorkflowStep'
+        scheme:
+          $ref: '#/components/schemas/WorkflowScheme'
+        task:
+          $ref: '#/components/schemas/WorkflowTask'
+    WorkflowActionMultipartSchema:
+      type: object
+      properties:
+        contentlet:
           type: string
-        key:
+          description: JSON object describing the contentlet values.
+          example: '{\n  "contentType": "News",\n  "title": "My News"\n}'
+        binaryFields:
+          type: array
+          description: List of binary field variables. The uploaded files in 'file' should correspond by index to these field variables.
+          example:
+          - binaryImage
+          - binaryDocument
+          items:
+            type: string
+            description: List of binary field variables. The uploaded files in 'file' should correspond by index to these field variables.
+            example: '["binaryImage","binaryDocument"]'
+        file:
+          type: array
+          description: Files to upload. Repeat the 'file' part for multiple files; order should match 'binaryFields'.
+          items:
+            type: string
+            format: binary
+      description: Multipart form for workflow actions. Include a JSON 'contentlet' and one or more 'file' parts that map to binary field variables.
+    ResponseEntityWorkflowHistoryCommentsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowTimelineItemView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WorkflowStepUpdateForm:
+      required:
+      - enableEscalation
+      - escalationTime
+      - stepName
+      - stepOrder
+      - stepResolved
+      type: object
+      properties:
+        stepOrder:
+          type: integer
+          format: int32
+        stepName:
           type: string
-        defaultValue:
-          type: string
-        required:
+        enableEscalation:
           type: boolean
+        escalationAction:
+          type: string
+        escalationTime:
+          type: string
+        stepResolved:
+          type: boolean
+    ResponseEntityDefaultWorkflowActionsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowDefaultActionView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     FormDataContentDisposition:
       type: object
       properties:
@@ -3700,104 +4358,58 @@ components:
           format: int64
         name:
           type: string
-    ResponseEntityWorkflowSchemeView:
+    WorkFlowActionlet:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/WorkflowScheme'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    EventOutput:
-      type: object
-      properties:
-        type:
-          type: object
-          properties:
-            typeName:
-              type: string
-        closed:
-          type: boolean
-    WorkflowSchemeImportObjectForm:
-      type: object
-      properties:
-        workflowObject:
-          $ref: '#/components/schemas/WorkflowSchemeImportExportObjectView'
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Permission'
-    BulkActionsResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActionFail'
-        skipReason:
+        howTo:
           type: string
-    WorkflowStepUpdateForm:
-      required:
-      - enableEscalation
-      - escalationTime
-      - stepName
-      - stepOrder
-      - stepResolved
-      type: object
-      properties:
-        stepOrder:
-          type: integer
-          format: int32
-        stepName:
+        localizedHowto:
           type: string
-        enableEscalation:
-          type: boolean
-        escalationAction:
+        actionClass:
           type: string
-        escalationTime:
+        localizedName:
           type: string
-        stepResolved:
-          type: boolean
-    Permission:
+        name:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowActionletParameter'
+    WorkflowTask:
       type: object
       properties:
         id:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        assignedTo:
+          type: string
+        belongsTo:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        webasset:
+          type: string
+        languageId:
           type: integer
           format: int64
         inode:
           type: string
-        permission:
-          type: integer
-          format: int32
-        type:
-          type: string
-        individualPermission:
+        new:
           type: boolean
-        bitPermission:
-          type: boolean
-        roleId:
-          type: string
     BulkWorkflowSchemeView:
       type: object
       properties:
@@ -3807,6 +4419,42 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BulkWorkflowStepView'
+    ContentTypeWorkflowSchemesView:
+      required:
+      - contentTypeId
+      - contentTypeVariable
+      - schemes
+      type: object
+      properties:
+        contentTypeId:
+          type: string
+          description: UUID of the content type
+        contentTypeVariable:
+          type: string
+          description: Variable name of the content type
+        schemes:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/WorkflowScheme'
+            last:
+              $ref: '#/components/schemas/WorkflowScheme'
+          description: Workflow schemes associated with the content type
+          items:
+            $ref: '#/components/schemas/WorkflowScheme'
+    WorkflowActionletParameter:
+      type: object
+      properties:
+        displayName:
+          type: string
+        key:
+          type: string
+        defaultValue:
+          type: string
+        required:
+          type: boolean
     FireMultipleActionForm:
       type: object
       properties:
@@ -3838,79 +4486,65 @@ components:
             type: object
             additionalProperties:
               type: object
-    WorkFlowActionlet:
+    WorkflowSchemesForm:
+      required:
+      - schemes
       type: object
       properties:
-        howTo:
+        schemes:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+    ActionFail:
+      type: object
+      properties:
+        identifier:
           type: string
-        localizedHowto:
+        inode:
           type: string
-        actionClass:
+        errorMessage:
           type: string
-        localizedName:
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WorkflowActionletActionForm:
+      required:
+      - actionletClass
+      type: object
+      properties:
+        actionletClass:
           type: string
-        name:
-          type: string
+        order:
+          type: integer
+          format: int32
         parameters:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowActionletParameter'
-    WorkflowSearcherForm:
-      type: object
-      properties:
-        keywords:
-          type: string
-        assignedTo:
-          type: string
-        daysOld:
-          type: integer
-          format: int32
-        schemeId:
-          type: string
-        stepId:
-          type: string
-        open:
-          type: boolean
-        closed:
-          type: boolean
-        createdBy:
-          type: string
-        show4all:
-          type: boolean
-        orderBy:
-          type: string
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-    ResponseEntityWorkflowStepsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowStep'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
           type: object
           additionalProperties:
             type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityWorkflowStepView:
+    ResponseEntityView:
       type: object
       properties:
         errors:
@@ -3918,30 +4552,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/WorkflowStep'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
           type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityBulkActionsResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkActionsResultView'
         messages:
           type: array
           items:
@@ -3980,1161 +4591,16 @@ components:
         escalationTime:
           type: integer
           format: int32
-    WorkflowTimelineItemView:
-      type: object
-      properties:
-        createdDate:
-          type: string
-          format: date-time
-        roleId:
-          type: string
-        postedBy:
-          type: string
-        commentDescription:
-          type: string
-        taskId:
-          type: string
-        type:
-          type: string
-        step:
-          type: object
-          additionalProperties:
-            type: string
-        action:
-          type: object
-          additionalProperties:
-            type: string
-    ResponseEntityWorkflowCommentView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/WorkflowTimelineItemView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    AssignCommentBean:
-      type: object
-      properties:
-        assign:
-          type: string
-          description: Identifier of the user or role to next receive the workflow task. Empty string keeps the existing assignee.
-        comment:
-          type: string
-          description: Free-form comment recorded against the workflow task.
-      description: Assignee and comment to attach to the workflow task created when an action is fired.
-    PushPublishBean:
-      type: object
-      properties:
-        whereToSend:
-          type: string
-          description: Push-publish environment identifier or name to receive the content.
-        publishDate:
-          type: string
-          description: Publish date (yyyy-MM-dd).
-        publishTime:
-          type: string
-          description: Publish time (HH:mm).
-        expireDate:
-          type: string
-          description: Expire date (yyyy-MM-dd). Ignored when 'neverExpire' is true.
-        expireTime:
-          type: string
-          description: Expire time (HH:mm). Ignored when 'neverExpire' is true.
-        neverExpire:
-          type: string
-          description: If 'true', the content does not expire. Overrides expireDate/expireTime.
-        filterKey:
-          type: string
-          description: Push-publish filter key (defines what gets bundled with the content).
-        iWantTo:
-          type: string
-          writeOnly: true
-        timezoneId:
-          type: string
-          description: Timezone identifier (e.g. 'America/New_York') for publish/expire dates.
-        iwantTo:
-          type: string
-      description: Push-publish settings applied when the resolved workflow action wires the Push Publish actionlet.
-    FormDataBodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        formDataContentDisposition:
-          $ref: '#/components/schemas/FormDataContentDisposition'
-        simple:
-          type: boolean
-        name:
-          type: string
-        value:
-          type: string
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    WorkflowActionView:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schemeId:
-          type: string
-        condition:
-          type: string
-        nextStep:
-          type: string
-        nextAssign:
-          type: string
-        icon:
-          type: string
-        roleHierarchyForAssign:
-          type: boolean
-        assignable:
-          type: boolean
-        commentable:
-          type: boolean
-        order:
-          type: integer
-          format: int32
-        saveActionlet:
-          type: boolean
-          writeOnly: true
-        publishActionlet:
-          type: boolean
-          writeOnly: true
-        unpublishActionlet:
-          type: boolean
-          writeOnly: true
-        archiveActionlet:
-          type: boolean
-          writeOnly: true
-        pushPublishActionlet:
-          type: boolean
-          writeOnly: true
-        onlyBatchActionlet:
-          type: boolean
-          writeOnly: true
-        unarchiveActionlet:
-          type: boolean
-          writeOnly: true
-        deleteActionlet:
-          type: boolean
-          writeOnly: true
-        destroyActionlet:
-          type: boolean
-          writeOnly: true
-        moveActionlet:
-          type: boolean
-          writeOnly: true
-        commentActionlet:
-          type: boolean
-          writeOnly: true
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-        resetable:
-          type: boolean
-          writeOnly: true
-        actionInputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActionInputView'
-        nextStepCurrentStep:
-          type: boolean
-        moveActionletHashPath:
-          type: boolean
-          writeOnly: true
-        owner:
-          type: string
-        showOn:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-            enum:
-            - NEW
-            - LOCKED
-            - UNLOCKED
-            - PUBLISHED
-            - UNPUBLISHED
-            - ARCHIVED
-            - LISTING
-            - EDITING
-        hasOnlyBatchActionlet:
-          type: boolean
-        hasSaveActionlet:
-          type: boolean
-        hasDeleteActionlet:
-          type: boolean
-        hasResetActionlet:
-          type: boolean
-        hasPublishActionlet:
-          type: boolean
-        hasUnpublishActionlet:
-          type: boolean
-        hasArchiveActionlet:
-          type: boolean
-        hasPushPublishActionlet:
-          type: boolean
-        hasUnarchiveActionlet:
-          type: boolean
-        hasDestroyActionlet:
-          type: boolean
-        hasCommentActionlet:
-          type: boolean
-        hasMoveActionletHasPathActionlet:
-          type: boolean
-        hasMoveActionletActionlet:
-          type: boolean
-    ContentDisposition:
+    EventOutput:
       type: object
       properties:
         type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-    ResponseEntityWorkflowSchemesView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowScheme'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityWorkflowActionletsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkFlowActionlet'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowActionClassParameter:
-      type: object
-      properties:
-        id:
-          type: string
-        actionClassId:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-    WorkflowActionletActionForm:
-      required:
-      - actionletClass
-      type: object
-      properties:
-        actionletClass:
-          type: string
-        order:
-          type: integer
-          format: int32
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-    WorkflowSearchResultsView:
-      type: object
-      properties:
-        totalCount:
-          type: integer
-          format: int32
-        workflowTasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowTaskView'
-    ContentletWorkflowStatusView:
-      type: object
-      properties:
-        step:
-          $ref: '#/components/schemas/WorkflowStep'
-        scheme:
-          $ref: '#/components/schemas/WorkflowScheme'
-        task:
-          $ref: '#/components/schemas/WorkflowTask'
-    ActionInputView:
-      type: object
-      properties:
-        id:
-          type: string
-        body:
-          type: object
-          additionalProperties:
-            type: object
-    ResponseEntityDefaultWorkflowActionsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowDefaultActionView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowActionSeparatorForm:
-      type: object
-      properties:
-        schemeId:
-          type: string
-        stepId:
-          type: string
-    MessageBodyWorkers:
-      type: object
-    ResponseEntitySystemActionWorkflowActionMapping:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityWorkflowActionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/WorkflowAction'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityWorkflowHistoryCommentsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowTimelineItemView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowReorderWorkflowActionStepForm:
-      required:
-      - order
-      type: object
-      properties:
-        order:
-          type: integer
-          format: int32
-    ResponseEntityBulkActionView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkActionView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowActionMultipartSchema:
-      type: object
-      properties:
-        contentlet:
-          type: string
-          description: JSON object describing the contentlet values.
-          example: '{\n  "contentType": "News",\n  "title": "My News"\n}'
-        binaryFields:
-          type: array
-          description: List of binary field variables. The uploaded files in 'file' should correspond by index to these field variables.
-          example:
-          - binaryImage
-          - binaryDocument
-          items:
-            type: string
-            description: List of binary field variables. The uploaded files in 'file' should correspond by index to these field variables.
-            example: '["binaryImage","binaryDocument"]'
-        file:
-          type: array
-          description: Files to upload. Repeat the 'file' part for multiple files; order should match 'binaryFields'.
-          items:
-            type: string
-            format: binary
-      description: Multipart form for workflow actions. Include a JSON 'contentlet' and one or more 'file' parts that map to binary field variables.
-    CountWorkflowStep:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int64
-        workflowStep:
-          $ref: '#/components/schemas/WorkflowStep'
-    WorkflowActionForm:
-      required:
-      - actionAssignable
-      - actionCommentable
-      - actionName
-      - actionNextStep
-      - actionRoleHierarchyForAssign
-      - schemeId
-      - showOn
-      type: object
-      properties:
-        actionId:
-          type: string
-        schemeId:
-          type: string
-        stepId:
-          type: string
-        actionName:
-          type: string
-        whoCanUse:
-          type: array
-          items:
-            type: string
-        actionIcon:
-          type: string
-        actionAssignable:
-          type: boolean
-        actionCommentable:
-          type: boolean
-        showOn:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-            enum:
-            - NEW
-            - LOCKED
-            - UNLOCKED
-            - PUBLISHED
-            - UNPUBLISHED
-            - ARCHIVED
-            - LISTING
-            - EDITING
-        actionRoleHierarchyForAssign:
-          type: boolean
-        actionNextStep:
-          type: string
-        actionNextAssign:
-          type: string
-        actionCondition:
-          type: string
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-    WorkflowAction:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schemeId:
-          type: string
-        condition:
-          type: string
-        nextStep:
-          type: string
-        nextAssign:
-          type: string
-        icon:
-          type: string
-        roleHierarchyForAssign:
-          type: boolean
-        assignable:
-          type: boolean
-        commentable:
-          type: boolean
-        order:
-          type: integer
-          format: int32
-        saveActionlet:
-          type: boolean
-          writeOnly: true
-        publishActionlet:
-          type: boolean
-          writeOnly: true
-        unpublishActionlet:
-          type: boolean
-          writeOnly: true
-        archiveActionlet:
-          type: boolean
-          writeOnly: true
-        pushPublishActionlet:
-          type: boolean
-          writeOnly: true
-        onlyBatchActionlet:
-          type: boolean
-          writeOnly: true
-        unarchiveActionlet:
-          type: boolean
-          writeOnly: true
-        deleteActionlet:
-          type: boolean
-          writeOnly: true
-        destroyActionlet:
-          type: boolean
-          writeOnly: true
-        moveActionlet:
-          type: boolean
-          writeOnly: true
-        commentActionlet:
-          type: boolean
-          writeOnly: true
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-        resetable:
-          type: boolean
-          writeOnly: true
-        nextStepCurrentStep:
-          type: boolean
-        moveActionletHashPath:
-          type: boolean
-          writeOnly: true
-        owner:
-          type: string
-        showOn:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-            enum:
-            - NEW
-            - LOCKED
-            - UNLOCKED
-            - PUBLISHED
-            - UNPUBLISHED
-            - ARCHIVED
-            - LISTING
-            - EDITING
-        hasOnlyBatchActionlet:
-          type: boolean
-        hasSaveActionlet:
-          type: boolean
-        hasDeleteActionlet:
-          type: boolean
-        hasResetActionlet:
-          type: boolean
-        hasPublishActionlet:
-          type: boolean
-        hasUnpublishActionlet:
-          type: boolean
-        hasArchiveActionlet:
-          type: boolean
-        hasPushPublishActionlet:
-          type: boolean
-        hasUnarchiveActionlet:
-          type: boolean
-        hasDestroyActionlet:
-          type: boolean
-        hasCommentActionlet:
-          type: boolean
-        hasMoveActionletHasPathActionlet:
-          type: boolean
-        hasMoveActionletActionlet:
-          type: boolean
-    ResponseEntityWorkflowTasksView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/WorkflowSearchResultsView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ActionFail:
-      type: object
-      properties:
-        identifier:
-          type: string
-        inode:
-          type: string
-        errorMessage:
-          type: string
-    BulkActionForm:
-      type: object
-      properties:
-        contentletIds:
-          type: array
-          items:
-            type: string
-        query:
-          type: string
-    SchemesAndSchemesContentTypeView:
-      type: object
-      properties:
-        schemes:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowScheme'
-        contentTypeSchemes:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowScheme'
-    ResponseEntityMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    BulkWorkflowStepView:
-      type: object
-      properties:
-        step:
-          $ref: '#/components/schemas/CountWorkflowStep'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CountWorkflowAction'
-    ResponseEntityWorkflowActionClassesView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowActionClass'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowSchemesForm:
-      required:
-      - schemes
-      type: object
-      properties:
-        schemes:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-    WorkflowScheme:
-      type: object
-      properties:
-        id:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        name:
-          type: string
-        variableName:
-          type: string
-        description:
-          type: string
-        archived:
-          type: boolean
-        mandatory:
-          type: boolean
-        defaultScheme:
-          type: boolean
-        modDate:
-          type: string
-          format: date-time
-        entryActionId:
-          type: string
-        system:
-          type: boolean
-    FireBulkActionsForm:
-      required:
-      - workflowActionId
-      type: object
-      properties:
-        query:
-          type: string
-          description: Lucene query that selects the contentlets to act on. Mutually exclusive with 'contentletIds'.
-          example: +contentType:webPageContent +languageId:1
-        contentletIds:
-          type: array
-          description: Explicit list of contentlet identifiers to act on. Mutually exclusive with 'query'.
-          items:
-            type: string
-            description: Explicit list of contentlet identifiers to act on. Mutually exclusive with 'query'.
-        workflowActionId:
-          type: string
-          description: The workflow action identifier (UUID) to fire. Discover via GET /api/v1/workflow/schemes/{schemeId}/actions or GET /api/v1/workflow/contentlet/{inode}/actions. Not the system action enum value (NEW, EDIT, PUBLISH, …).
-          example: ceca4ee9-1b7b-4f21-a5f4-5d8e9b8b8a1d
-        additionalParams:
-          $ref: '#/components/schemas/AdditionalParamsBean'
-        popupParamsBean:
-          $ref: '#/components/schemas/AdditionalParamsBean'
-      description: Request body for PUT /api/v1/workflow/contentlet/actions/bulk/fire. Either 'query' OR 'contentletIds' must be supplied (not both). 'workflowActionId' is required and must belong to the workflow scheme that owns the input contentlets — otherwise the contentlets are skipped and the response returns a non-empty 'skippedCount' with a 'skipReason'. To bypass scheme checks (e.g. for System Workflow actions like Move on content from a non-system scheme), use PUT /api/v1/workflow/actions/{actionId}/fire instead.
-    WorkflowSchemeForm:
-      required:
-      - schemeName
-      type: object
-      properties:
-        schemeName:
-          type: string
-        schemeDescription:
-          type: string
-        schemeArchived:
-          type: boolean
-    ResponseEntitySystemActionWorkflowActionMappings:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/SystemActionWorkflowActionMapping'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    BodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
           type: object
           properties:
-            type:
+            typeName:
               type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    WorkflowCopyForm:
-      type: object
-      properties:
-        name:
-          type: string
-    ContentTypeWorkflowSchemesView:
-      required:
-      - contentTypeId
-      - contentTypeVariable
-      - schemes
-      type: object
-      properties:
-        contentTypeId:
-          type: string
-          description: UUID of the content type
-        contentTypeVariable:
-          type: string
-          description: Variable name of the content type
-        schemes:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/WorkflowScheme'
-            last:
-              $ref: '#/components/schemas/WorkflowScheme'
-          description: Workflow schemes associated with the content type
-          items:
-            $ref: '#/components/schemas/WorkflowScheme'
-    WorkflowTask:
-      type: object
-      properties:
-        id:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modDate:
-          type: string
-          format: date-time
-        dueDate:
-          type: string
-          format: date-time
-        createdBy:
-          type: string
-        assignedTo:
-          type: string
-        belongsTo:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-        webasset:
-          type: string
-        languageId:
-          type: integer
-          format: int64
-        inode:
-          type: string
-        new:
+        closed:
           type: boolean
-    SystemActionWorkflowActionMapping:
-      type: object
-      properties:
-        identifier:
-          type: string
-        systemAction:
-          type: string
-          enum:
-          - NEW
-          - EDIT
-          - PUBLISH
-          - UNPUBLISH
-          - ARCHIVE
-          - UNARCHIVE
-          - DELETE
-          - DESTROY
-          - LOCK
-          - UNLOCK
-        workflowAction:
-          $ref: '#/components/schemas/WorkflowAction'
-        owner:
-          type: object
-        ownerContentType:
-          type: boolean
-        ownerScheme:
-          type: boolean
-    WorkflowActionClass:
-      type: object
-      properties:
-        id:
-          type: string
-        actionId:
-          type: string
-        name:
-          type: string
-        order:
-          type: integer
-          format: int32
-        clazz:
-          type: string
-        actionlet:
-          $ref: '#/components/schemas/WorkFlowActionlet'
-    ResponseEntityContentTypeWorkflowSchemesView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContentTypeWorkflowSchemesView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    WorkflowDefaultActionView:
-      type: object
-      properties:
-        scheme:
-          $ref: '#/components/schemas/WorkflowScheme'
-        action:
-          $ref: '#/components/schemas/WorkflowAction'
-        firstStep:
-          $ref: '#/components/schemas/WorkflowStep'
-    WorkflowCommentForm:
-      type: object
-      properties:
-        comment:
-          type: string
-    ResponseContentletWorkflowStatusView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/ContentletWorkflowStatusView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     WorkflowStepAddForm:
       required:
       - enableEscalation
@@ -5157,26 +4623,30 @@ components:
           type: string
         stepResolved:
           type: boolean
-    CountWorkflowAction:
+    AssignCommentBean:
       type: object
       properties:
-        count:
+        assign:
+          type: string
+          description: Identifier of the user or role to next receive the workflow task. Empty string keeps the existing assignee.
+        comment:
+          type: string
+          description: Free-form comment recorded against the workflow task.
+      description: Assignee and comment to attach to the workflow task created when an action is fired.
+    BulkActionsResultView:
+      type: object
+      properties:
+        successCount:
           type: integer
           format: int64
-        workflowAction:
-          $ref: '#/components/schemas/WorkflowAction'
-        pushPublish:
-          type: boolean
-        moveable:
-          type: boolean
-        conditionPresent:
-          type: boolean
-    WorkflowActionStepForm:
-      required:
-      - actionId
-      type: object
-      properties:
-        actionId:
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionFail'
+        skipReason:
           type: string
     FireActionByNameForm:
       type: object
@@ -5326,50 +4796,64 @@ components:
             template: 8e63a9c0-...
             cachettl: 15
             sortOrder: 0
-    MultiPart:
+    SystemActionWorkflowActionMapping:
       type: object
       properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
+        identifier:
+          type: string
+        systemAction:
+          type: string
+          enum:
+          - NEW
+          - EDIT
+          - PUBLISH
+          - UNPUBLISH
+          - ARCHIVE
+          - UNARCHIVE
+          - DELETE
+          - DESTROY
+          - LOCK
+          - UNLOCK
+        workflowAction:
+          $ref: '#/components/schemas/WorkflowAction'
+        owner:
           type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        bodyParts:
+        ownerContentType:
+          type: boolean
+        ownerScheme:
+          type: boolean
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityWorkflowActionView:
+      type: object
+      properties:
+        errors:
           type: array
           items:
-            $ref: '#/components/schemas/BodyPart'
-        parameterizedHeaders:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/WorkflowAction'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
           type: object
           additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ParameterizedHeader:
       type: object
       properties:
@@ -5526,6 +5010,121 @@ components:
             cachettl: 15
             sortOrder: 0
       description: Form used to fire a workflow action. The content being acted on is supplied in the 'contentlet' map; the remaining fields are workflow/publishing options applied by the action.
+    WorkflowCommentForm:
+      type: object
+      properties:
+        comment:
+          type: string
+    BulkActionForm:
+      type: object
+      properties:
+        contentletIds:
+          type: array
+          items:
+            type: string
+        query:
+          type: string
+    WorkflowActionForm:
+      required:
+      - actionAssignable
+      - actionCommentable
+      - actionName
+      - actionNextStep
+      - actionRoleHierarchyForAssign
+      - schemeId
+      - showOn
+      type: object
+      properties:
+        actionId:
+          type: string
+        schemeId:
+          type: string
+        stepId:
+          type: string
+        actionName:
+          type: string
+        whoCanUse:
+          type: array
+          items:
+            type: string
+        actionIcon:
+          type: string
+        actionAssignable:
+          type: boolean
+        actionCommentable:
+          type: boolean
+        showOn:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - NEW
+            - LOCKED
+            - UNLOCKED
+            - PUBLISHED
+            - UNPUBLISHED
+            - ARCHIVED
+            - LISTING
+            - EDITING
+        actionRoleHierarchyForAssign:
+          type: boolean
+        actionNextStep:
+          type: string
+        actionNextAssign:
+          type: string
+        actionCondition:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    ResponseEntityWorkflowTasksView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/WorkflowSearchResultsView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityWorkflowStepView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/WorkflowStep'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntityStringView:
       type: object
       properties:
@@ -5549,3 +5148,404 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    BulkWorkflowStepView:
+      type: object
+      properties:
+        step:
+          $ref: '#/components/schemas/CountWorkflowStep'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountWorkflowAction'
+    WorkflowSchemeForm:
+      required:
+      - schemeName
+      type: object
+      properties:
+        schemeName:
+          type: string
+        schemeDescription:
+          type: string
+        schemeArchived:
+          type: boolean
+    PushPublishBean:
+      type: object
+      properties:
+        whereToSend:
+          type: string
+          description: Push-publish environment identifier or name to receive the content.
+        publishDate:
+          type: string
+          description: Publish date (yyyy-MM-dd).
+        publishTime:
+          type: string
+          description: Publish time (HH:mm).
+        expireDate:
+          type: string
+          description: Expire date (yyyy-MM-dd). Ignored when 'neverExpire' is true.
+        expireTime:
+          type: string
+          description: Expire time (HH:mm). Ignored when 'neverExpire' is true.
+        neverExpire:
+          type: string
+          description: If 'true', the content does not expire. Overrides expireDate/expireTime.
+        filterKey:
+          type: string
+          description: Push-publish filter key (defines what gets bundled with the content).
+        iWantTo:
+          type: string
+          writeOnly: true
+        timezoneId:
+          type: string
+          description: Timezone identifier (e.g. 'America/New_York') for publish/expire dates.
+        iwantTo:
+          type: string
+      description: Push-publish settings applied when the resolved workflow action wires the Push Publish actionlet.
+    Permission:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        inode:
+          type: string
+        permission:
+          type: integer
+          format: int32
+        type:
+          type: string
+        individualPermission:
+          type: boolean
+        bitPermission:
+          type: boolean
+        roleId:
+          type: string
+    CountWorkflowStep:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+        workflowStep:
+          $ref: '#/components/schemas/WorkflowStep'
+    WorkflowTaskView:
+      type: object
+      properties:
+        id:
+          type: string
+        assignedTo:
+          type: string
+        assignedUserName:
+          type: string
+        createdBy:
+          type: string
+        description:
+          type: string
+        belongsTo:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        languageId:
+          type: integer
+          format: int64
+        modDate:
+          type: string
+          format: date-time
+        title:
+          type: string
+        status:
+          type: string
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    SchemesAndSchemesContentTypeView:
+      type: object
+      properties:
+        schemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowScheme'
+        contentTypeSchemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowScheme'
+    WorkflowAction:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schemeId:
+          type: string
+        condition:
+          type: string
+        nextStep:
+          type: string
+        nextAssign:
+          type: string
+        icon:
+          type: string
+        roleHierarchyForAssign:
+          type: boolean
+        assignable:
+          type: boolean
+        commentable:
+          type: boolean
+        order:
+          type: integer
+          format: int32
+        saveActionlet:
+          type: boolean
+          writeOnly: true
+        publishActionlet:
+          type: boolean
+          writeOnly: true
+        unpublishActionlet:
+          type: boolean
+          writeOnly: true
+        archiveActionlet:
+          type: boolean
+          writeOnly: true
+        pushPublishActionlet:
+          type: boolean
+          writeOnly: true
+        onlyBatchActionlet:
+          type: boolean
+          writeOnly: true
+        unarchiveActionlet:
+          type: boolean
+          writeOnly: true
+        deleteActionlet:
+          type: boolean
+          writeOnly: true
+        destroyActionlet:
+          type: boolean
+          writeOnly: true
+        moveActionlet:
+          type: boolean
+          writeOnly: true
+        commentActionlet:
+          type: boolean
+          writeOnly: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+        resetable:
+          type: boolean
+          writeOnly: true
+        nextStepCurrentStep:
+          type: boolean
+        moveActionletHashPath:
+          type: boolean
+          writeOnly: true
+        owner:
+          type: string
+        showOn:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - NEW
+            - LOCKED
+            - UNLOCKED
+            - PUBLISHED
+            - UNPUBLISHED
+            - ARCHIVED
+            - LISTING
+            - EDITING
+        hasOnlyBatchActionlet:
+          type: boolean
+        hasSaveActionlet:
+          type: boolean
+        hasDeleteActionlet:
+          type: boolean
+        hasResetActionlet:
+          type: boolean
+        hasPublishActionlet:
+          type: boolean
+        hasUnpublishActionlet:
+          type: boolean
+        hasArchiveActionlet:
+          type: boolean
+        hasPushPublishActionlet:
+          type: boolean
+        hasUnarchiveActionlet:
+          type: boolean
+        hasDestroyActionlet:
+          type: boolean
+        hasCommentActionlet:
+          type: boolean
+        hasMoveActionletHasPathActionlet:
+          type: boolean
+        hasMoveActionletActionlet:
+          type: boolean
+    WorkflowActionView:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schemeId:
+          type: string
+        condition:
+          type: string
+        nextStep:
+          type: string
+        nextAssign:
+          type: string
+        icon:
+          type: string
+        roleHierarchyForAssign:
+          type: boolean
+        assignable:
+          type: boolean
+        commentable:
+          type: boolean
+        order:
+          type: integer
+          format: int32
+        saveActionlet:
+          type: boolean
+          writeOnly: true
+        publishActionlet:
+          type: boolean
+          writeOnly: true
+        unpublishActionlet:
+          type: boolean
+          writeOnly: true
+        archiveActionlet:
+          type: boolean
+          writeOnly: true
+        pushPublishActionlet:
+          type: boolean
+          writeOnly: true
+        onlyBatchActionlet:
+          type: boolean
+          writeOnly: true
+        unarchiveActionlet:
+          type: boolean
+          writeOnly: true
+        deleteActionlet:
+          type: boolean
+          writeOnly: true
+        destroyActionlet:
+          type: boolean
+          writeOnly: true
+        moveActionlet:
+          type: boolean
+          writeOnly: true
+        commentActionlet:
+          type: boolean
+          writeOnly: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+        resetable:
+          type: boolean
+          writeOnly: true
+        actionInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionInputView'
+        nextStepCurrentStep:
+          type: boolean
+        moveActionletHashPath:
+          type: boolean
+          writeOnly: true
+        owner:
+          type: string
+        showOn:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - NEW
+            - LOCKED
+            - UNLOCKED
+            - PUBLISHED
+            - UNPUBLISHED
+            - ARCHIVED
+            - LISTING
+            - EDITING
+        hasOnlyBatchActionlet:
+          type: boolean
+        hasSaveActionlet:
+          type: boolean
+        hasDeleteActionlet:
+          type: boolean
+        hasResetActionlet:
+          type: boolean
+        hasPublishActionlet:
+          type: boolean
+        hasUnpublishActionlet:
+          type: boolean
+        hasArchiveActionlet:
+          type: boolean
+        hasPushPublishActionlet:
+          type: boolean
+        hasUnarchiveActionlet:
+          type: boolean
+        hasDestroyActionlet:
+          type: boolean
+        hasCommentActionlet:
+          type: boolean
+        hasMoveActionletHasPathActionlet:
+          type: boolean
+        hasMoveActionletActionlet:
+          type: boolean
+    WorkflowSchemeImportObjectForm:
+      type: object
+      properties:
+        workflowObject:
+          $ref: '#/components/schemas/WorkflowSchemeImportExportObjectView'
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'

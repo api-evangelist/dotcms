@@ -1347,96 +1347,6 @@ paths:
           description: 'Internal Server Error: An unexpected error occurred during job creation or processing.'
 components:
   schemas:
-    ResponseEntityCountView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CountView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    JobPaginatedResult:
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int64
-        page:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
-        jobs:
-          type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/Job'
-            last:
-              $ref: '#/components/schemas/Job'
-          items:
-            $ref: '#/components/schemas/Job'
-    SearchForm:
-      type: object
-      properties:
-        query:
-          type: string
-          description: "Lucene query. IMPORTANT: custom (user-defined) fields MUST be qualified with the content type's variable name — `ContentTypeVar.fieldVar`. A BARE field name matches nothing and returns zero results with NO error (a common silent failure). For example, to find featured Books use `+AwazonBook.featured:true`, not `+featured:true`; to match a slug use `+AwazonBook.slug:my-slug`. Restrict the type with `+contentType:AwazonBook` (contentType is a system field, unqualified). \n\nResults are also HOST-scoped: unless you add a host clause, the search resolves against the current request's site and will NOT return content that lives on a different host (e.g. content saved to `SYSTEM_HOST`/default while you query as another site). Constrain the host explicitly with `+conHost:<siteIdentifier>` (or `+conHost:SYSTEM_HOST`), and add `+live:true` / `+working:true` and `+deleted:false` as needed. See the Lucene content-search syntax docs."
-          example: +contentType:AwazonBook +AwazonBook.featured:true +live:true +deleted:false
-        sort:
-          type: string
-          description: Sort clause, e.g. `AwazonBook.title asc` or `modDate desc`. Custom fields are qualified the same way as in `query`.
-          example: modDate desc
-        limit:
-          type: integer
-          description: Maximum number of contentlets to return (page size).
-          format: int32
-          example: 20
-          default: 20
-        offset:
-          type: integer
-          description: Zero-based result offset for paging.
-          format: int32
-          example: 0
-          default: 0
-        userId:
-          type: string
-          description: Optional user id to run the search as (permissions are applied for this user). Defaults to the authenticated caller when omitted.
-        render:
-          type: string
-          description: When set to `true`, each matching contentlet's `htmlpageasset`/widget content is rendered and included in the response. Omit for raw field data only.
-        depth:
-          type: integer
-          description: 'Relationship-loading depth (0-3): how many levels of related content to inline. `-1` (default) loads none.'
-          format: int32
-          example: 1
-          default: -1
-        languageId:
-          type: integer
-          description: Language id to search in. Defaults to the system default language when omitted.
-          format: int64
-          example: 1
-        allCategoriesInfo:
-          type: boolean
-          description: When `true`, include full category metadata for category fields in the results.
-      description: Content search request. `query` is a Lucene expression; the remaining fields control paging, sorting, language, and how results are rendered.
     ContainerView:
       type: object
       properties:
@@ -1444,34 +1354,7 @@ components:
           $ref: '#/components/schemas/Container'
         path:
           type: string
-    ContentImportParamsSchema:
-      required:
-      - file
-      - form
-      type: object
-      properties:
-        file:
-          type: string
-          description: The CSV file to import.
-          format: binary
-        form:
-          type: string
-          description: JSON string representing import settings.
-          example: "{\n  \"contentType\": \"activity\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"]\n  \"stopOnError\":false \n  \"commitGranularity\": 100\n}"
-      description: Schema for content import parameters.
-    JobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-        statusUrl:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntityContentletView:
+    ResponseEntityJobView:
       type: object
       properties:
         errors:
@@ -1479,57 +1362,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: object
-          additionalProperties:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityPaginatedDataView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityMapStringObjectView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            type: object
+          $ref: '#/components/schemas/Job'
         messages:
           type: array
           items:
@@ -1567,28 +1400,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    BulkRefreshForm:
-      required:
-      - contentletIds
-      type: object
-      properties:
-        contentletIds:
-          maxItems: 2147483647
-          minItems: 1
-          type: array
-          items:
-            type: string
-        includeDependencies:
-          type: boolean
-        includeItemResults:
-          type: boolean
-    ContentForm:
-      type: object
-      properties:
-        contentlet:
-          type: object
-          additionalProperties:
-            type: object
     ContentSearchForm:
       type: object
       properties:
@@ -1628,23 +1439,6 @@ components:
           type: string
         fieldName:
           type: string
-    BulkRefreshSubmitResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-        submitted:
-          type: integer
-          format: int32
-    JobResult:
-      type: object
-      properties:
-        errorDetail:
-          $ref: '#/components/schemas/ErrorDetail'
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
     Pagination:
       type: object
       properties:
@@ -1657,6 +1451,107 @@ components:
         totalEntries:
           type: integer
           format: int64
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    Permissionable:
+      type: object
+      properties:
+        parentPermissionable:
+          $ref: '#/components/schemas/Permissionable'
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+    ErrorDetail:
+      type: object
+      properties:
+        message:
+          type: string
+        exceptionClass:
+          type: string
+        stackTrace:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        processingStage:
+          type: string
+    BulkRefreshSubmitResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        submitted:
+          type: integer
+          format: int32
+    ResponseEntityBooleanView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: boolean
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ContentImportParamsSchema:
+      required:
+      - file
+      - form
+      type: object
+      properties:
+        file:
+          type: string
+          description: The CSV file to import.
+          format: binary
+        form:
+          type: string
+          description: JSON string representing import settings.
+          example: "{\n  \"contentType\": \"activity\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"]\n  \"stopOnError\":false \n  \"commitGranularity\": 100\n}"
+      description: Schema for content import parameters.
+    ResponseEntitySearchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/SearchView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     IHTMLPage:
       type: object
       properties:
@@ -1732,217 +1627,29 @@ components:
           type: string
         type:
           type: string
-    ContentReferenceView:
+    SearchView:
       type: object
       properties:
-        page:
-          $ref: '#/components/schemas/IHTMLPage'
-        container:
-          $ref: '#/components/schemas/ContainerView'
-        personaName:
-          type: string
-    Permissionable:
-      type: object
-      properties:
-        parentPermissionable:
-          $ref: '#/components/schemas/Permissionable'
-        permissionId:
-          type: string
-        permissionType:
-          type: string
-        owner:
-          type: string
-    ResponseEntityListMapView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntitySearchView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/SearchView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    JsonObjectView:
-      type: object
-      properties:
-        jsonObject:
-          type: object
-          properties:
-            asMap:
-              type: object
-              additionalProperties:
-                type: object
-            empty:
-              type: boolean
-          additionalProperties:
-            type: object
-    ResponseEntityBulkRefreshSubmitView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/BulkRefreshSubmitResponse'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    CountView:
-      type: object
-      properties:
-        count:
+        resultsSize:
           type: integer
-          format: int32
-    EventOutput:
-      type: object
-      properties:
-        type:
-          type: object
-          properties:
-            typeName:
-              type: string
-        closed:
-          type: boolean
-    Job:
-      type: object
-      properties:
-        id:
-          type: string
-        queueName:
-          type: string
-        state:
-          type: string
-          enum:
-          - PENDING
-          - RUNNING
-          - SUCCESS
-          - FAILED
-          - FAILED_PERMANENTLY
-          - ABANDONED
-          - ABANDONED_PERMANENTLY
-          - CANCEL_REQUESTED
-          - CANCELLING
-          - CANCELED
-        executionNode:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        startedAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        completedAt:
-          type: string
-          format: date-time
-        result:
-          $ref: '#/components/schemas/JobResult'
-        parameters:
-          type: object
-          properties:
-            empty:
-              type: boolean
-          additionalProperties:
-            type: object
-        retryCount:
+          format: int64
+        queryTook:
           type: integer
-          format: int32
-        progress:
-          type: number
-          format: float
-    ResponseEntityMapView:
+          format: int64
+        contentTook:
+          type: integer
+          format: int64
+        jsonObjectView:
+          $ref: '#/components/schemas/JsonObjectView'
+    JobResult:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
           type: object
           additionalProperties:
             type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorDetail:
-      type: object
-      properties:
-        message:
-          type: string
-        exceptionClass:
-          type: string
-        stackTrace:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-        processingStage:
-          type: string
     Container:
       type: object
       properties:
@@ -2028,7 +1735,7 @@ components:
             type: object
         new:
           type: boolean
-    ResponseEntityJobView:
+    ResponseEntityStringView:
       type: object
       properties:
         errors:
@@ -2036,7 +1743,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/Job'
+          type: string
         messages:
           type: array
           items:
@@ -2051,7 +1758,7 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityJobStatusView:
+    ResponseEntityPaginatedDataView:
       type: object
       properties:
         errors:
@@ -2059,7 +1766,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/JobStatusResponse'
+          type: object
         messages:
           type: array
           items:
@@ -2074,29 +1781,13 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityBooleanView:
+    ContentForm:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: boolean
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+        contentlet:
           type: object
           additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+            type: object
     ResponseEntityContentReferenceListView:
       type: object
       properties:
@@ -2145,21 +1836,7 @@ components:
           format: int32
         orderBy:
           type: string
-    SearchView:
-      type: object
-      properties:
-        resultsSize:
-          type: integer
-          format: int64
-        queryTook:
-          type: integer
-          format: int64
-        contentTook:
-          type: integer
-          format: int64
-        jsonObjectView:
-          $ref: '#/components/schemas/JsonObjectView'
-    ResponseEntityStringView:
+    ResponseEntityMapStringObjectView:
       type: object
       properties:
         errors:
@@ -2167,7 +1844,9 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: string
+          type: object
+          additionalProperties:
+            type: object
         messages:
           type: array
           items:
@@ -2182,3 +1861,324 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    CountView:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+    ResponseEntityBulkRefreshSubmitView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/BulkRefreshSubmitResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    SearchForm:
+      type: object
+      properties:
+        query:
+          type: string
+          description: "Lucene query. IMPORTANT: custom (user-defined) fields MUST be qualified with the content type's variable name — `ContentTypeVar.fieldVar`. A BARE field name matches nothing and returns zero results with NO error (a common silent failure). For example, to find featured Books use `+AwazonBook.featured:true`, not `+featured:true`; to match a slug use `+AwazonBook.slug:my-slug`. Restrict the type with `+contentType:AwazonBook` (contentType is a system field, unqualified). \n\nResults are also HOST-scoped: unless you add a host clause, the search resolves against the current request's site and will NOT return content that lives on a different host (e.g. content saved to `SYSTEM_HOST`/default while you query as another site). Constrain the host explicitly with `+conHost:<siteIdentifier>` (or `+conHost:SYSTEM_HOST`), and add `+live:true` / `+working:true` and `+deleted:false` as needed. See the Lucene content-search syntax docs."
+          example: +contentType:AwazonBook +AwazonBook.featured:true +live:true +deleted:false
+        sort:
+          type: string
+          description: Sort clause, e.g. `AwazonBook.title asc` or `modDate desc`. Custom fields are qualified the same way as in `query`.
+          example: modDate desc
+        limit:
+          type: integer
+          description: Maximum number of contentlets to return (page size).
+          format: int32
+          example: 20
+          default: 20
+        offset:
+          type: integer
+          description: Zero-based result offset for paging.
+          format: int32
+          example: 0
+          default: 0
+        userId:
+          type: string
+          description: Optional user id to run the search as (permissions are applied for this user). Defaults to the authenticated caller when omitted.
+        render:
+          type: string
+          description: When set to `true`, each matching contentlet's `htmlpageasset`/widget content is rendered and included in the response. Omit for raw field data only.
+        depth:
+          type: integer
+          description: 'Relationship-loading depth (0-3): how many levels of related content to inline. `-1` (default) loads none.'
+          format: int32
+          example: 1
+          default: -1
+        languageId:
+          type: integer
+          description: Language id to search in. Defaults to the system default language when omitted.
+          format: int64
+          example: 1
+        allCategoriesInfo:
+          type: boolean
+          description: When `true`, include full category metadata for category fields in the results.
+      description: Content search request. `query` is a Lucene expression; the remaining fields control paging, sorting, language, and how results are rendered.
+    ContentReferenceView:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/IHTMLPage'
+        container:
+          $ref: '#/components/schemas/ContainerView'
+        personaName:
+          type: string
+    ResponseEntityMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobPaginatedResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        jobs:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/Job'
+            last:
+              $ref: '#/components/schemas/Job'
+          items:
+            $ref: '#/components/schemas/Job'
+    ResponseEntityContentletView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    BulkRefreshForm:
+      required:
+      - contentletIds
+      type: object
+      properties:
+        contentletIds:
+          maxItems: 2147483647
+          minItems: 1
+          type: array
+          items:
+            type: string
+        includeDependencies:
+          type: boolean
+        includeItemResults:
+          type: boolean
+    ResponseEntityListMapView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        queueName:
+          type: string
+        state:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - SUCCESS
+          - FAILED
+          - FAILED_PERMANENTLY
+          - ABANDONED
+          - ABANDONED_PERMANENTLY
+          - CANCEL_REQUESTED
+          - CANCELLING
+          - CANCELED
+        executionNode:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        result:
+          $ref: '#/components/schemas/JobResult'
+        parameters:
+          type: object
+          properties:
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object
+        retryCount:
+          type: integer
+          format: int32
+        progress:
+          type: number
+          format: float
+    ResponseEntityCountView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CountView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    JsonObjectView:
+      type: object
+      properties:
+        jsonObject:
+          type: object
+          properties:
+            asMap:
+              type: object
+              additionalProperties:
+                type: object
+            empty:
+              type: boolean
+          additionalProperties:
+            type: object

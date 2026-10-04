@@ -116,15 +116,6 @@ components:
         entries:
           type: integer
           format: int64
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     ResponseSiteVariablesEntityView:
       type: object
       properties:
@@ -154,6 +145,15 @@ components:
       type: object
       properties:
         message:
+          type: string
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
           type: string
     Pagination:
       type: object

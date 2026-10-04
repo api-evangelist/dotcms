@@ -153,6 +153,11 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     ErrorEntity:
       type: object
       properties:
@@ -161,11 +166,6 @@ components:
         message:
           type: string
         fieldName:
-          type: string
-    MessageEntity:
-      type: object
-      properties:
-        message:
           type: string
     Pagination:
       type: object

@@ -358,19 +358,6 @@ paths:
       deprecated: true
 components:
   schemas:
-    RestTag:
-      type: object
-      properties:
-        label:
-          type: string
-        siteId:
-          type: string
-        siteName:
-          type: string
-        persona:
-          type: boolean
-        id:
-          type: string
     FormDataMultiPart:
       type: object
       properties:
@@ -421,63 +408,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    TagInode:
-      type: object
-      properties:
-        inode:
-          type: string
-        tagId:
-          type: string
-        fieldVarName:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    BodyPart:
-      type: object
-      properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
     ErrorEntity:
       type: object
       properties:
@@ -487,6 +417,115 @@ components:
           type: string
         fieldName:
           type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityTagInodesView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagInode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ParameterizedHeader:
+      type: object
+      properties:
+        value:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+    FormDataContentDisposition:
+      type: object
+      properties:
+        type:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+        name:
+          type: string
+    RestTag:
+      type: object
+      properties:
+        label:
+          type: string
+        siteId:
+          type: string
+        siteName:
+          type: string
+        persona:
+          type: boolean
+        id:
+          type: string
+    ResponseEntityTagsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestTag'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     FormDataBodyPart:
       type: object
       properties:
@@ -535,68 +574,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    FormDataContentDisposition:
-      type: object
-      properties:
-        type:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-        name:
-          type: string
-    ResponseEntityTagsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/RestTag'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
     ContentDisposition:
       type: object
       properties:
@@ -620,6 +597,29 @@ components:
         size:
           type: integer
           format: int64
+    ResponseEntityStringView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntityTagInodeOperationView:
       type: object
       properties:
@@ -645,6 +645,50 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    UpdateTagForm:
+      required:
+      - siteId
+      - tagName
+      type: object
+      properties:
+        siteId:
+          type: string
+        tagName:
+          type: string
+        tagId:
+          type: string
+        name:
+          type: string
+    TagForm:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        siteId:
+          type: string
+        ownerId:
+          type: string
+        persona:
+          type: boolean
+    TagInode:
+      type: object
+      properties:
+        inode:
+          type: string
+        tagId:
+          type: string
+        fieldVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
     ResponseEntityTagOperationView:
       type: object
       properties:
@@ -670,58 +714,8 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityTagInodesView:
+    MessageBodyWorkers:
       type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagInode'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    TagForm:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        siteId:
-          type: string
-        ownerId:
-          type: string
-        persona:
-          type: boolean
-    UpdateTagForm:
-      required:
-      - siteId
-      - tagName
-      type: object
-      properties:
-        siteId:
-          type: string
-        tagName:
-          type: string
-        tagId:
-          type: string
-        name:
-          type: string
     MultiPart:
       type: object
       properties:
@@ -766,37 +760,43 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    ParameterizedHeader:
+    BodyPart:
       type: object
       properties:
-        value:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
         entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+          type: object
+        headers:
           type: object
           additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageBodyWorkers:
-      type: object
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'

@@ -89,13 +89,6 @@ paths:
             application/json: {}
 components:
   schemas:
-    MapStringRestPersonaView:
-      type: object
-      properties:
-        empty:
-          type: boolean
-      additionalProperties:
-        $ref: '#/components/schemas/RestPersona'
     RestPersona:
       type: object
       properties:
@@ -103,3 +96,10 @@ components:
           type: string
         description:
           type: string
+    MapStringRestPersonaView:
+      type: object
+      properties:
+        empty:
+          type: boolean
+      additionalProperties:
+        $ref: '#/components/schemas/RestPersona'
