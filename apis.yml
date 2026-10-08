@@ -2,6 +2,8 @@ aid: dotcms
 url: >-
   https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml
 common:
+- type: FinOps
+  url: finops/dotcms-finops.yml
 - type: CapabilityMap
   url: capabilities/dotcms-capability-edges.yml
   name: dotCMS Business Capability Map
