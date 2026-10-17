@@ -318,6 +318,11 @@ paths:
           description: Authentication required
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     UserAPI:
       type: object
       properties:
@@ -333,6 +338,151 @@ components:
             $ref: '#/components/schemas/User'
         anonymousUserNoThrow:
           $ref: '#/components/schemas/User'
+    FolderView:
+      type: object
+      properties:
+        path:
+          type: string
+        defaultFileType:
+          type: string
+        filesMasks:
+          type: string
+        getiDate:
+          type: string
+          format: date-time
+        hostId:
+          type: string
+        identifier:
+          type: string
+        inode:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        name:
+          type: string
+        showOnMenu:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+        subFolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderView'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    Field:
+      required:
+      - clazz
+      type: object
+      properties:
+        fieldContentTypeProperties:
+          type: array
+          items:
+            type: string
+            enum:
+            - NAME
+            - VALUES
+            - CATEGORIES
+            - RELATIONSHIPS
+            - REGEX_CHECK
+            - HINT
+            - REQUIRED
+            - SEARCHABLE
+            - INDEXED
+            - LISTED
+            - UNIQUE
+            - DEFAULT_VALUE
+            - DATA_TYPE
+        clazz:
+          type: string
+      discriminator:
+        propertyName: clazz
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        roleKey:
+          type: string
+        parent:
+          type: string
+        editPermissions:
+          type: boolean
+        editUsers:
+          type: boolean
+        editLayouts:
+          type: boolean
+        locked:
+          type: boolean
+        system:
+          type: boolean
+        roleChildren:
+          type: array
+          items:
+            type: string
+        fqn:
+          type: string
+        dbfqn:
+          type: string
+        user:
+          type: boolean
+    ResponseEntityFolderSearchView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          properties:
+            totalResults:
+              type: integer
+              format: int64
+            query:
+              type: string
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/FolderSearchView'
+            last:
+              $ref: '#/components/schemas/FolderSearchView'
+          items:
+            $ref: '#/components/schemas/FolderSearchView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     FolderSearchView:
       type: object
       properties:
@@ -384,33 +534,226 @@ components:
             - PUBLISH
             - EDIT_PERMISSIONS
             - CAN_ADD_CHILDREN
-    Field:
-      required:
-      - clazz
+    SearchByPathForm:
       type: object
       properties:
-        fieldContentTypeProperties:
+        path:
+          type: string
+    ResponseEntityListView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
             type: string
-            enum:
-            - NAME
-            - VALUES
-            - CATEGORIES
-            - RELATIONSHIPS
-            - REGEX_CHECK
-            - HINT
-            - REQUIRED
-            - SEARCHABLE
-            - INDEXED
-            - LISTED
-            - UNIQUE
-            - DEFAULT_VALUE
-            - DATA_TYPE
-        clazz:
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityFolderView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Folder'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FolderSearchResultView:
+      type: object
+      properties:
+        id:
           type: string
-      discriminator:
-        propertyName: clazz
+        inode:
+          type: string
+        path:
+          type: string
+        hostName:
+          type: string
+        addChildrenAllowed:
+          type: boolean
+    ResponseEntityFolderSearchResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderSearchResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Host:
+      type: object
+      properties:
+        lowIndexPriority:
+          type: boolean
+        variantId:
+          type: string
+        inode:
+          type: string
+        hostname:
+          type: string
+        systemHost:
+          type: boolean
+        hostThumbnail:
+          type: string
+          format: binary
+        structureInode:
+          type: string
+        tagStorage:
+          type: string
+        parent:
+          type: boolean
+        aliases:
+          type: string
+        default:
+          type: boolean
+        name:
+          type: string
+        permissionId:
+          type: string
+        permissionType:
+          type: string
+        owner:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        identifier:
+          type: string
+        type:
+          type: string
+        languageId:
+          type: integer
+          format: int64
+        sortOrder:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        folder:
+          type: string
+        htmlpage:
+          type: boolean
+        vanityUrl:
+          type: boolean
+        userAPI:
+          $ref: '#/components/schemas/UserAPI'
+        contentTypeId:
+          type: string
+        host:
+          type: string
+        modUser:
+          type: string
+        working:
+          type: boolean
+        keyValue:
+          type: boolean
+        categoryId:
+          type: string
+        versionId:
+          type: string
+        titleImage:
+          $ref: '#/components/schemas/Field'
+        dotAsset:
+          type: boolean
+        persona:
+          type: boolean
+        form:
+          type: boolean
+        languageVariable:
+          type: boolean
+        indexPolicyDependencies:
+          type: string
+          enum:
+          - DEFER
+          - WAIT_FOR
+          - FORCE
+        fileAsset:
+          type: boolean
+        title:
+          type: string
+        live:
+          type: boolean
+        new:
+          type: boolean
+        locked:
+          type: boolean
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    ResponseEntityFolderWithSubfoldersView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/FolderView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     User:
       type: object
       properties:
@@ -595,312 +938,6 @@ components:
           type: boolean
         new:
           type: boolean
-    ResponseEntityFolderView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Folder'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    SearchByPathForm:
-      type: object
-      properties:
-        path:
-          type: string
-    Host:
-      type: object
-      properties:
-        lowIndexPriority:
-          type: boolean
-        variantId:
-          type: string
-        inode:
-          type: string
-        hostname:
-          type: string
-        systemHost:
-          type: boolean
-        hostThumbnail:
-          type: string
-          format: binary
-        structureInode:
-          type: string
-        tagStorage:
-          type: string
-        parent:
-          type: boolean
-        aliases:
-          type: string
-        default:
-          type: boolean
-        name:
-          type: string
-        permissionId:
-          type: string
-        permissionType:
-          type: string
-        owner:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        identifier:
-          type: string
-        type:
-          type: string
-        languageId:
-          type: integer
-          format: int64
-        sortOrder:
-          type: integer
-          format: int64
-        archived:
-          type: boolean
-        folder:
-          type: string
-        htmlpage:
-          type: boolean
-        vanityUrl:
-          type: boolean
-        userAPI:
-          $ref: '#/components/schemas/UserAPI'
-        contentTypeId:
-          type: string
-        host:
-          type: string
-        modUser:
-          type: string
-        working:
-          type: boolean
-        keyValue:
-          type: boolean
-        categoryId:
-          type: string
-        versionId:
-          type: string
-        titleImage:
-          $ref: '#/components/schemas/Field'
-        dotAsset:
-          type: boolean
-        persona:
-          type: boolean
-        form:
-          type: boolean
-        languageVariable:
-          type: boolean
-        indexPolicyDependencies:
-          type: string
-          enum:
-          - DEFER
-          - WAIT_FOR
-          - FORCE
-        fileAsset:
-          type: boolean
-        title:
-          type: string
-        live:
-          type: boolean
-        new:
-          type: boolean
-        locked:
-          type: boolean
-    FolderSearchResultView:
-      type: object
-      properties:
-        id:
-          type: string
-        inode:
-          type: string
-        path:
-          type: string
-        hostName:
-          type: string
-        addChildrenAllowed:
-          type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ResponseEntityFolderWithSubfoldersView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/FolderView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    FolderView:
-      type: object
-      properties:
-        path:
-          type: string
-        defaultFileType:
-          type: string
-        filesMasks:
-          type: string
-        getiDate:
-          type: string
-          format: date-time
-        hostId:
-          type: string
-        identifier:
-          type: string
-        inode:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        name:
-          type: string
-        showOnMenu:
-          type: boolean
-        sortOrder:
-          type: integer
-          format: int32
-        title:
-          type: string
-        type:
-          type: string
-        subFolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/FolderView'
-    ResponseEntityListView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityFolderSearchResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/FolderSearchResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        roleKey:
-          type: string
-        parent:
-          type: string
-        editPermissions:
-          type: boolean
-        editUsers:
-          type: boolean
-        editLayouts:
-          type: boolean
-        locked:
-          type: boolean
-        system:
-          type: boolean
-        roleChildren:
-          type: array
-          items:
-            type: string
-        fqn:
-          type: string
-        dbfqn:
-          type: string
-        user:
-          type: boolean
     Folder:
       type: object
       properties:
@@ -949,40 +986,3 @@ components:
           type: object
           additionalProperties:
             type: object
-    ResponseEntityFolderSearchView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          properties:
-            totalResults:
-              type: integer
-              format: int64
-            query:
-              type: string
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/FolderSearchView'
-            last:
-              $ref: '#/components/schemas/FolderSearchView'
-          items:
-            $ref: '#/components/schemas/FolderSearchView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'

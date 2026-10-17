@@ -59,15 +59,6 @@ components:
       properties:
         message:
           type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     Pagination:
       type: object
       properties:
@@ -80,17 +71,6 @@ components:
         totalEntries:
           type: integer
           format: int64
-    I18NForm:
-      type: object
-      properties:
-        language:
-          type: string
-        country:
-          type: string
-        messagesKey:
-          type: array
-          items:
-            type: string
     ResponseEntityMapStringStringView:
       type: object
       properties:
@@ -116,3 +96,23 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    I18NForm:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        messagesKey:
+          type: array
+          items:
+            type: string

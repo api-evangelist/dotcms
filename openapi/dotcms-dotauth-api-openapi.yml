@@ -360,7 +360,7 @@ paths:
           description: Session invalidated (or was unknown)
 components:
   schemas:
-    ResponseEntityOAuthExchangeView:
+    ResponseEntityStringView:
       type: object
       properties:
         errors:
@@ -368,7 +368,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          $ref: '#/components/schemas/OAuthExchangeView'
+          type: string
         messages:
           type: array
           items:
@@ -395,6 +395,37 @@ components:
           - SAML
         headlessConfigured:
           type: boolean
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    MessageBodyWorkers:
+      type: object
     FormDataMultiPart:
       type: object
       properties:
@@ -454,41 +485,72 @@ components:
           type: string
         fieldName:
           type: string
-    Pagination:
+    DotAuthConfigForm:
+      required:
+      - values
       type: object
       properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityDotAuthConfigView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/DotAuthConfigView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+        values:
           type: object
           additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+            type: object
+    BodyPart:
+      type: object
+      properties:
+        contentDisposition:
+          $ref: '#/components/schemas/ContentDisposition'
+        entity:
+          type: object
+        headers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        mediaType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+        messageBodyWorkers:
+          $ref: '#/components/schemas/MessageBodyWorkers'
+        parent:
+          $ref: '#/components/schemas/MultiPart'
+        providers:
+          type: object
+        parameterizedHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParameterizedHeader'
+    OAuthExchangeView:
+      type: object
+      properties:
+        sessionRef:
+          type: string
+        expiresAt:
+          type: string
+        expirationDays:
+          type: integer
+          format: int32
+        user:
+          $ref: '#/components/schemas/UserSummary'
     ResponseEntityDotAuthSitesView:
       type: object
       properties:
@@ -512,27 +574,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ParameterizedHeader:
-      type: object
-      properties:
-        value:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            type: string
-    OAuthExchangeView:
-      type: object
-      properties:
-        sessionRef:
-          type: string
-        expiresAt:
-          type: string
-        expirationDays:
-          type: integer
-          format: int32
-        user:
-          $ref: '#/components/schemas/UserSummary'
     FormDataContentDisposition:
       type: object
       properties:
@@ -558,20 +599,57 @@ components:
           format: int64
         name:
           type: string
-    DotAuthConfigForm:
-      required:
-      - values
+    ContentDisposition:
       type: object
       properties:
-        protocol:
+        type:
           type: string
-          enum:
-          - OAUTH
-          - SAML
-        values:
+        parameters:
           type: object
           additionalProperties:
-            type: object
+            type: string
+        fileName:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        readDate:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int64
+    ResponseEntityDotAuthConfigView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/DotAuthConfigView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     FormDataBodyPart:
       type: object
       properties:
@@ -620,48 +698,25 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    SiteRowView:
+    DotAuthSitesView:
       type: object
       properties:
-        hostId:
-          type: string
-        hostName:
-          type: string
-        status:
-          type: string
-          enum:
-          - SITE_OVERRIDE
-          - INHERITED
-          - NOT_CONFIGURED
-        protocol:
-          type: string
-          enum:
-          - OAUTH
-          - SAML
-    ContentDisposition:
+        system:
+          $ref: '#/components/schemas/SystemView'
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteRowView'
+    ParameterizedHeader:
       type: object
       properties:
-        type:
+        value:
           type: string
         parameters:
           type: object
           additionalProperties:
             type: string
-        fileName:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        modificationDate:
-          type: string
-          format: date-time
-        readDate:
-          type: string
-          format: date-time
-        size:
-          type: integer
-          format: int64
-    ResponseEntityStringView:
+    ResponseEntityOAuthExchangeView:
       type: object
       properties:
         errors:
@@ -669,7 +724,7 @@ components:
           items:
             $ref: '#/components/schemas/ErrorEntity'
         entity:
-          type: string
+          $ref: '#/components/schemas/OAuthExchangeView'
         messages:
           type: array
           items:
@@ -684,24 +739,6 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    OAuthExchangeForm:
-      required:
-      - idToken
-      - nonce
-      type: object
-      properties:
-        idToken:
-          type: string
-        nonce:
-          type: string
-        expirationDays:
-          type: integer
-          format: int32
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
     DotAuthConfigView:
       type: object
       properties:
@@ -724,8 +761,6 @@ components:
           type: object
           additionalProperties:
             type: object
-    MessageBodyWorkers:
-      type: object
     MultiPart:
       type: object
       properties:
@@ -770,69 +805,34 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ParameterizedHeader'
-    BodyPart:
+    SiteRowView:
       type: object
       properties:
-        contentDisposition:
-          $ref: '#/components/schemas/ContentDisposition'
-        entity:
-          type: object
-        headers:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-        mediaType:
-          type: object
-          properties:
-            type:
-              type: string
-            subtype:
-              type: string
-            parameters:
-              type: object
-              additionalProperties:
-                type: string
-            wildcardType:
-              type: boolean
-            wildcardSubtype:
-              type: boolean
-        messageBodyWorkers:
-          $ref: '#/components/schemas/MessageBodyWorkers'
-        parent:
-          $ref: '#/components/schemas/MultiPart'
-        providers:
-          type: object
-        parameterizedHeaders:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParameterizedHeader'
-    UserSummary:
+        hostId:
+          type: string
+        hostName:
+          type: string
+        status:
+          type: string
+          enum:
+          - SITE_OVERRIDE
+          - INHERITED
+          - NOT_CONFIGURED
+        protocol:
+          type: string
+          enum:
+          - OAUTH
+          - SAML
+    OAuthExchangeForm:
+      required:
+      - idToken
+      - nonce
       type: object
       properties:
-        userId:
+        idToken:
           type: string
-        email:
+        nonce:
           type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        fullName:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
-    DotAuthSitesView:
-      type: object
-      properties:
-        system:
-          $ref: '#/components/schemas/SystemView'
-        sites:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteRowView'
+        expirationDays:
+          type: integer
+          format: int32

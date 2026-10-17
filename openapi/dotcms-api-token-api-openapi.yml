@@ -474,7 +474,12 @@ paths:
           description: Unexpected server error
 components:
   schemas:
-    ResponseEntityMapView:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    ResponseEntityApiTokenWithJwtView:
       type: object
       properties:
         errors:
@@ -515,33 +520,7 @@ components:
             type: object
         shouldBeAdmin:
           type: boolean
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityApiTokenWithJwtView:
+    ResponseEntityMapView:
       type: object
       properties:
         errors:
@@ -566,6 +545,18 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
     ResponseEntityJwtView:
       type: object
       properties:
@@ -598,3 +589,12 @@ components:
           type: object
           additionalProperties:
             type: object
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

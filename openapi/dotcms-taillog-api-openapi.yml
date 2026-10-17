@@ -65,15 +65,6 @@ components:
       properties:
         message:
           type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
     Pagination:
       type: object
       properties:
@@ -121,3 +112,12 @@ components:
               type: string
         closed:
           type: boolean
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string

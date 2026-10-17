@@ -667,62 +667,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ParameterModel:
-      type: object
-      properties:
-        id:
-          type: string
-        ownerId:
-          type: string
-        key:
-          type: string
-        value:
-          type: string
-        priority:
-          type: integer
-          format: int32
-    RestConditionGroup:
-      required:
-      - operator
-      type: object
-      properties:
-        operator:
-          type: string
-        priority:
-          type: integer
-          format: int32
-        conditions:
-          type: object
-          additionalProperties:
-            type: boolean
-    RestConditionValue:
-      required:
-      - key
-      type: object
-      properties:
-        key:
-          type: string
-        value:
-          type: string
-        priority:
-          type: integer
-          format: int32
-    RestRuleAction:
-      required:
-      - owningRule
-      type: object
-      properties:
-        owningRule:
-          type: string
-        priority:
-          type: integer
-          format: int32
-        actionlet:
-          type: string
-        parameters:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ParameterModel'
     RestRule:
       type: object
       properties:
@@ -742,6 +686,62 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/RestConditionGroup'
         ruleActions:
+          type: object
+          additionalProperties:
+            type: boolean
+    RestRuleAction:
+      required:
+      - owningRule
+      type: object
+      properties:
+        owningRule:
+          type: string
+        priority:
+          type: integer
+          format: int32
+        actionlet:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ParameterModel'
+    ParameterModel:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerId:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        priority:
+          type: integer
+          format: int32
+    RestConditionValue:
+      required:
+      - key
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        priority:
+          type: integer
+          format: int32
+    RestConditionGroup:
+      required:
+      - operator
+      type: object
+      properties:
+        operator:
+          type: string
+        priority:
+          type: integer
+          format: int32
+        conditions:
           type: object
           additionalProperties:
             type: boolean

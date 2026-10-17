@@ -514,41 +514,57 @@ paths:
           description: 'Internal Server Error: An unexpected error occurred while retrieving jobs.'
 components:
   schemas:
-    JobPaginatedResult:
+    MessageEntity:
       type: object
       properties:
-        total:
-          type: integer
-          format: int64
-        page:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
-        jobs:
+        message:
+          type: string
+    ResponseEntityView:
+      type: object
+      properties:
+        errors:
           type: array
-          properties:
-            empty:
-              type: boolean
-            first:
-              $ref: '#/components/schemas/Job'
-            last:
-              $ref: '#/components/schemas/Job'
           items:
-            $ref: '#/components/schemas/Job'
-    JobParamsSchema:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityStringView:
       type: object
       properties:
-        file:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
           type: string
-          description: The file to be processed by the job.
-          format: binary
-        params:
-          type: string
-          description: JSON string with job-specific parameters.
-          example: '{"contentType":"CustomContentType","workflowActionId":"Workflow-UUID","language":"en-us","stopOnError":true}'
-      description: Schema for multipart job queue parameters.
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     ResponseEntityJobPaginatedResultView:
       type: object
       properties:
@@ -572,11 +588,125 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    MessageEntity:
+    ErrorDetail:
       type: object
       properties:
         message:
           type: string
+        exceptionClass:
+          type: string
+        stackTrace:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        processingStage:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ResponseEntityJobStatusView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/JobStatusResponse'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    JobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        statusUrl:
+          type: string
+    JobParamsSchema:
+      type: object
+      properties:
+        file:
+          type: string
+          description: The file to be processed by the job.
+          format: binary
+        params:
+          type: string
+          description: JSON string with job-specific parameters.
+          example: '{"contentType":"CustomContentType","workflowActionId":"Workflow-UUID","language":"en-us","stopOnError":true}'
+      description: Schema for multipart job queue parameters.
+    EventOutput:
+      type: object
+      properties:
+        type:
+          type: object
+          properties:
+            typeName:
+              type: string
+        closed:
+          type: boolean
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
+    JobPaginatedResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        jobs:
+          type: array
+          properties:
+            empty:
+              type: boolean
+            first:
+              $ref: '#/components/schemas/Job'
+            last:
+              $ref: '#/components/schemas/Job'
+          items:
+            $ref: '#/components/schemas/Job'
+    JobResult:
+      type: object
+      properties:
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetail'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
     Job:
       type: object
       properties:
@@ -626,133 +756,3 @@ components:
         progress:
           type: number
           format: float
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityJobStatusView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/JobStatusResponse'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    ResponseEntityView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: object
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    JobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          type: string
-        statusUrl:
-          type: string
-    ErrorDetail:
-      type: object
-      properties:
-        message:
-          type: string
-        exceptionClass:
-          type: string
-        stackTrace:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-        processingStage:
-          type: string
-    EventOutput:
-      type: object
-      properties:
-        type:
-          type: object
-          properties:
-            typeName:
-              type: string
-        closed:
-          type: boolean
-    JobResult:
-      type: object
-      properties:
-        errorDetail:
-          $ref: '#/components/schemas/ErrorDetail'
-        metadata:
-          type: object
-          additionalProperties:
-            type: object
-    ResponseEntityStringView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: string
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'

@@ -210,6 +210,32 @@ paths:
             application/json: {}
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    ErrorEntity:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        fieldName:
+          type: string
     ResponseEntityFileAssetView:
       type: object
       properties:
@@ -271,29 +297,3 @@ components:
           format: int64
           example: 4096
       description: File asset view returned after a save or publish operation
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64

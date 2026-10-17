@@ -285,6 +285,11 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
     EnvironmentForm:
       required:
       - name
@@ -302,7 +307,7 @@ components:
           type: array
           items:
             type: string
-    ResponseEntityEnvironmentsView:
+    ResponseEntityEndpointsView:
       type: object
       properties:
         errors:
@@ -312,7 +317,94 @@ components:
         entity:
           type: array
           items:
-            $ref: '#/components/schemas/Environment'
+            $ref: '#/components/schemas/PublishingEndPoint'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        totalEntries:
+          type: integer
+          format: int64
+    PublishingEndPoint:
+      type: object
+      properties:
+        id:
+          type: string
+        groupId:
+          type: string
+        serverName:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        address:
+          type: string
+        port:
+          type: string
+        protocol:
+          type: string
+        enabled:
+          type: boolean
+        authKey:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            length:
+              type: integer
+              format: int32
+              writeOnly: true
+        sending:
+          type: boolean
+        tokenExpired:
+          type: boolean
+        tokenInvalid:
+          type: boolean
+    Environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        pushToAll:
+          type: boolean
+        permissionId:
+          type: string
+        owner:
+          type: string
+    ResponseEntityEndpointView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/PublishingEndPoint'
         messages:
           type: array
           items:
@@ -350,69 +442,14 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    ResponseEntityEndpointView:
+    ErrorEntity:
       type: object
       properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/PublishingEndPoint'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    Environment:
-      type: object
-      properties:
-        id:
+        errorCode:
           type: string
-        name:
-          type: string
-        pushToAll:
-          type: boolean
-        permissionId:
-          type: string
-        owner:
-          type: string
-    ResponseEntityEnvironmentView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/Environment'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
         message:
+          type: string
+        fieldName:
           type: string
     EndpointForm:
       required:
@@ -439,6 +476,54 @@ components:
           type: boolean
         environmentId:
           type: string
+    ResponseEntityEnvironmentsView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          type: array
+          items:
+            $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ResponseEntityEnvironmentView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/Environment'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
     DoesNotExistException:
       type: object
       properties:
@@ -528,91 +613,6 @@ components:
                 type: string
         localizedMessage:
           type: string
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    PublishingEndPoint:
-      type: object
-      properties:
-        id:
-          type: string
-        groupId:
-          type: string
-        serverName:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            length:
-              type: integer
-              format: int32
-              writeOnly: true
-        address:
-          type: string
-        port:
-          type: string
-        protocol:
-          type: string
-        enabled:
-          type: boolean
-        authKey:
-          type: object
-          properties:
-            empty:
-              type: boolean
-            length:
-              type: integer
-              format: int32
-              writeOnly: true
-        sending:
-          type: boolean
-        tokenExpired:
-          type: boolean
-        tokenInvalid:
-          type: boolean
-    ResponseEntityEndpointsView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishingEndPoint'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
     ForbiddenException:
       type: object
       properties:

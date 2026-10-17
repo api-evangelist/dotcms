@@ -359,133 +359,6 @@ paths:
           description: Authentication required
 components:
   schemas:
-    CategoryView:
-      type: object
-      properties:
-        inode:
-          type: string
-        parent:
-          type: string
-        description:
-          type: string
-        keywords:
-          type: string
-        key:
-          type: string
-        categoryName:
-          type: string
-        active:
-          type: boolean
-        sortOrder:
-          type: integer
-          format: int32
-        categoryVelocityVarName:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-    ShortCategory:
-      type: object
-      properties:
-        name:
-          type: string
-        inode:
-          type: string
-        key:
-          type: string
-    CategoryImportFormSchema:
-      type: object
-      properties:
-        filter:
-          type: string
-          description: Filter pattern for categories
-        exportType:
-          type: string
-          description: Import behavior
-          enum:
-          - replace
-          - merge
-        contextInode:
-          type: string
-          description: Context category inode to import into
-        file:
-          type: string
-          description: CSV file containing categories to import
-          format: binary
-      description: Category import form data with CSV file and processing parameters
-    CategoryBulkDeleteResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
-        deletedCount:
-          type: integer
-          format: int64
-    ErrorEntity:
-      type: object
-      properties:
-        errorCode:
-          type: string
-        message:
-          type: string
-        fieldName:
-          type: string
-    Pagination:
-      type: object
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        totalEntries:
-          type: integer
-          format: int64
-    ResponseEntityCategoryWithChildCountView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CategoryWithChildCountView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    BulkResultView:
-      type: object
-      properties:
-        successCount:
-          type: integer
-          format: int64
-        skippedCount:
-          type: integer
-          format: int64
-        fails:
-          type: array
-          items:
-            $ref: '#/components/schemas/FailedResultView'
     HierarchyShortCategory:
       type: object
       properties:
@@ -499,95 +372,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ShortCategory'
-    CategoryForm:
-      required:
-      - categoryName
+    Pagination:
       type: object
       properties:
-        siteId:
-          type: string
-        inode:
-          type: string
-        parent:
-          type: string
-        description:
-          type: string
-        keywords:
-          type: string
-        key:
-          type: string
-        categoryName:
-          type: string
-        active:
-          type: boolean
-        sortOrder:
+        currentPage:
           type: integer
           format: int32
-        categoryVelocityVarName:
-          type: string
-    CategoryWithChildCountView:
-      type: object
-      properties:
-        inode:
-          type: string
-        parent:
-          type: string
-        description:
-          type: string
-        keywords:
-          type: string
-        key:
-          type: string
-        categoryName:
-          type: string
-        active:
-          type: boolean
-        sortOrder:
+        perPage:
           type: integer
           format: int32
-        categoryVelocityVarName:
-          type: string
-        modDate:
-          type: string
-          format: date-time
-        childrenCount:
+        totalEntries:
           type: integer
-          format: int32
-    FailedResultView:
-      type: object
-      properties:
-        element:
-          type: string
-        errorMessage:
-          type: string
-    ResponseEntityCategoryBulkDeleteResultView:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorEntity'
-        entity:
-          $ref: '#/components/schemas/CategoryBulkDeleteResultView'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageEntity'
-        i18nMessagesMap:
-          type: object
-          additionalProperties:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-    MessageEntity:
-      type: object
-      properties:
-        message:
-          type: string
+          format: int64
     ResponseEntityBulkResultView:
       type: object
       properties:
@@ -634,30 +430,22 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    CategoryEditForm:
+    ErrorEntity:
       type: object
       properties:
-        filter:
+        errorCode:
           type: string
-        page:
-          type: integer
-          format: int32
-        perPage:
-          type: integer
-          format: int32
-        direction:
+        message:
           type: string
-        orderBy:
+        fieldName:
           type: string
-        siteId:
-          type: string
-        parentInode:
-          type: string
-        categoryData:
-          type: object
-          additionalProperties:
-            type: integer
-            format: int32
+    CategoryKeysForm:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: string
     HierarchyShortCategoriesResponseView:
       type: object
       properties:
@@ -683,10 +471,222 @@ components:
             type: string
         pagination:
           $ref: '#/components/schemas/Pagination'
-    CategoryKeysForm:
+    ShortCategory:
       type: object
       properties:
-        keys:
+        name:
+          type: string
+        inode:
+          type: string
+        key:
+          type: string
+    MessageEntity:
+      type: object
+      properties:
+        message:
+          type: string
+    BulkResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+    CategoryView:
+      type: object
+      properties:
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+    CategoryImportFormSchema:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: Filter pattern for categories
+        exportType:
+          type: string
+          description: Import behavior
+          enum:
+          - replace
+          - merge
+        contextInode:
+          type: string
+          description: Context category inode to import into
+        file:
+          type: string
+          description: CSV file containing categories to import
+          format: binary
+      description: Category import form data with CSV file and processing parameters
+    ResponseEntityCategoryBulkDeleteResultView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryBulkDeleteResultView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
           type: array
           items:
             type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CategoryBulkDeleteResultView:
+      type: object
+      properties:
+        successCount:
+          type: integer
+          format: int64
+        skippedCount:
+          type: integer
+          format: int64
+        fails:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedResultView'
+        deletedCount:
+          type: integer
+          format: int64
+    FailedResultView:
+      type: object
+      properties:
+        element:
+          type: string
+        errorMessage:
+          type: string
+    ResponseEntityCategoryWithChildCountView:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorEntity'
+        entity:
+          $ref: '#/components/schemas/CategoryWithChildCountView'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+        i18nMessagesMap:
+          type: object
+          additionalProperties:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    CategoryWithChildCountView:
+      type: object
+      properties:
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+        modDate:
+          type: string
+          format: date-time
+        childrenCount:
+          type: integer
+          format: int32
+    CategoryForm:
+      required:
+      - categoryName
+      type: object
+      properties:
+        siteId:
+          type: string
+        inode:
+          type: string
+        parent:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: string
+        key:
+          type: string
+        categoryName:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+        categoryVelocityVarName:
+          type: string
+    CategoryEditForm:
+      type: object
+      properties:
+        filter:
+          type: string
+        page:
+          type: integer
+          format: int32
+        perPage:
+          type: integer
+          format: int32
+        direction:
+          type: string
+        orderBy:
+          type: string
+        siteId:
+          type: string
+        parentInode:
+          type: string
+        categoryData:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
