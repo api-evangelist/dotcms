@@ -25,8 +25,99 @@ edges:
     builder: unknown (not in the directory record)
   detected_by: sweep-workflow-automation.py
   first_seen: '2026-10-15'
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@dotcms/analytics
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@dotcms/analytics'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/analytics
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/angular'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/angular
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/client'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/client
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/dotcli'
+      version: 26.10.13-1
+      released: '2026-10-18'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/dotcli
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/experiments'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/experiments
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/react'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/react
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    - name: '@dotcms/uve'
+      version: 26.10.13-1
+      released: '2026-10-14'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@dotcms/uve
+      repo_leg: github-org:dotcms
+      publisher_leg: email:dotcms.com
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 method: searched
 checked:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
 - https://zapier.com/api/v4/apps/
 source:
 - https://zapier.com/api/v4/apps/
