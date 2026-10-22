@@ -171,6 +171,45 @@ edges:
     detected: '2026-10-20'
   detected_by: sweep-agent-skills.py
   first_seen: '2026-10-20'
+- partner_name: CVE Program (CVE Numbering Authorities)
+  partner: null
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.cve.org/PartnerInformation/ListofPartners/partner/dotCMS
+  category: Vulnerability disclosure (CVE Numbering Authority)
+  contract_reference:
+    register: CVE Program CNA list (github.com/CVEProject/cve-website CNAsList.json @ 239d3d9b68e0)
+    standard: CVE Program CNA Operational Rules (CVE Numbering Authority)
+    spec_file: null
+    role: cve-numbering-authority
+    registered_name: dotCMS LLC
+    matched_domain: dotcms.com
+    matched_by: domain
+    cna_id: CNA-2023-0001
+    cna_short_name: dotCMS
+    cna_types:
+    - Hosted Service
+    cna_roles:
+    - CNA
+    scope: All dotCMS product services including the vulnerabilities reported in our open source core located at
+      <a href='https://github.com/dotCMS/core' target='_blank'>https://github.com/dotCMS/core</a>.
+    top_level_root: MITRE Corporation
+    root: n/a
+    security_advisories:
+    - https://www.dotcms.com/docs/latest/known-security-issues
+    disclosure_policy:
+    - https://www.dotcms.com/docs/latest/responsible-disclosure-policy
+    - https://www.dotcms.com/docs/latest/security-and-privacy#:~:text=dotCMS%20will%20disclose%20all%20issues,fix%20the%20reported%20security%20issue
+    country: USA
+    signal_note: listing as a CVE Numbering Authority = participation (a public commitment to assign CVE IDs and
+      publish advisories for its scope); never a count of CVEs
+    detected_by: sweep-vulnerability-disclosure-cna.py
+    detected: '2026-10-22'
+  detected_by: sweep-vulnerability-disclosure-cna.py
+  first_seen: '2026-10-22'
 method: searched
 checked:
 - https://api.nuget.org/v3
@@ -187,5 +226,8 @@ checked:
 - https://officialskills.sh/sitemap.xml
 - https://skillsmp.com/sitemap.xml
 - https://www.skills.sh/sitemap.xml
+- https://api.first.org/data/v1/teams
+- https://raw.githubusercontent.com/CVEProject/cve-website/dev/src/assets/data/CNAsList.json
+- https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
 source:
 - https://zapier.com/api/v4/apps/
