@@ -27,3 +27,9 @@ paths:
       - Layout
       summary: Get layout
       x-summary-source: derived
+x-provenance:
+  method: harvested
+  publisher: dotCMS
+  source: https://demo.dotcms.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

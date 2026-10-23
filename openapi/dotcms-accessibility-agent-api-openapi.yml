@@ -171,3 +171,9 @@ components:
           type: string
           description: Run id returned by /fix (report) or /fix/stream (the `run` event)
           example: r_1f0c2b7d9a4e4c1fb0d5e6a7c8b9d0e1
+x-provenance:
+  method: harvested
+  publisher: dotCMS
+  source: https://demo.dotcms.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

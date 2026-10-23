@@ -153,3 +153,9 @@ components:
           items:
             $ref: '#/components/schemas/DotTempFile'
       description: Response body for /api/v1/temp and /api/v1/temp/byUrl uploads. Contains the tempFiles array; use tempFiles[0].id (e.g. "temp_5311313004") as the field value when creating contentlets with binary or image fields.
+x-provenance:
+  method: harvested
+  publisher: dotCMS
+  source: https://demo.dotcms.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

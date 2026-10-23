@@ -1313,3 +1313,9 @@ components:
             description: List of asset identifiers to add to the bundle
             example: '["asset-123","asset-456"]'
       description: Form for adding assets to a bundle
+x-provenance:
+  method: harvested
+  publisher: dotCMS
+  source: https://demo.dotcms.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

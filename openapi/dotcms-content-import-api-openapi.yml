@@ -670,3 +670,9 @@ components:
           description: JSON string representing import settings.
           example: "{\n  \"contentType\": \"activity\",\n  \"language\": \"en-US\",\n  \"workflowActionId\": \"b9d89c80-3d88-4311-8365-187323c96436\",\n  \"fields\": [\"title\"]\n  \"stopOnError\":false \n  \"commitGranularity\": 100\n}"
       description: Schema for content import parameters.
+x-provenance:
+  method: harvested
+  publisher: dotCMS
+  source: https://demo.dotcms.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
