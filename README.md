@@ -1,4 +1,4 @@
-# dotCMS (dotcms)
+# dotCMS
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,112 +64,257 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-dotCMS is a Java-based visual headless content management system aimed at compliance-led enterprises, deployable as SaaS (dotCMS Cloud), on premise, or as a managed service. It covers content modelling, authoring, workflow, multi-site management, personalization, experiments and content analytics, and pairs headless delivery with a Universal Visual Editor so authors can edit content in place inside a React, Angular or Next.js front end.
+dotCMS is a Java-based visual headless content management system aimed at compliance-led enterprises, deployable as SaaS (dotCMS Cloud), on premise, or as a managed service. It covers content modelling, authoring, workflow, multi-site management, personalization, experiments and content analytics, and pairs headless delivery with a Universal Visual Editor so authors can edit content in place inside a React, Angular or Next.js front end. Every dotCMS instance serves its own first-party OpenAPI 3.0.1 at /api/openapi.json — 592 paths and 754 operations across 71 tags, covering content, content types, workflow, publishing, sites, roles, permissions and dotAI — alongside a GraphQL endpoint at /api/v1/graphql. dotCMS also ships an early agent surface: a first-party MCP server, two published Agent Skills, an RFC 9727 API catalog and markdown content negotiation. It is certified to ISO/IEC 27001, ISO/IEC 42001 (AI management), SOC 2 Type II and TX-RAMP Level II.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/dotcms/refs/heads/main/apis.yml)
+**Areas:** CMS · Content · Content Management · Headless CMS · Digital Experience · Content Delivery · Workflows · GraphQL · MCP · Java
 
-## Scope
+## dotCMS on APIs.io
 
-- **Type:** Index
-- **Position:** Consuming
-- **Access:** 3rd-Party
+Everything profiled for dotCMS is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/dotcms/](https://apis.io/providers/dotcms/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (73)
 
-- CMS
-- Content
-- Content Management
-- Headless CMS
-- Digital Experience
-- Content Delivery
-- Workflows
-- GraphQL
-- MCP
-- Java
+- [dotCMS GraphQL API](https://apis.io/apis/dotcms/graphql/) — The dotCMS GraphQL API provides a single endpoint for querying content across all content types using a self-documenting schema. It supports Lucene-style…
+- [dotCMS Accessibility Agent API](https://apis.io/apis/dotcms/dotcms-accessibility-agent-api/) — Streaming a11y-fix agent proxy
+- [dotCMS Accessibility Checker API](https://apis.io/apis/dotcms/dotcms-accessibility-checker-api/) — Endpoints that perform operations related to validating accessibility in content.
+- [dotCMS Administration API](https://apis.io/apis/dotcms/dotcms-administration-api/) — System administration and management tools
+- [dotCMS AI API](https://apis.io/apis/dotcms/dotcms-ai-api/) — AI-powered content generation and analysis endpoints
+- [dotCMS Announcements API](https://apis.io/apis/dotcms/dotcms-announcements-api/) — System announcements and notifications
+- [dotCMS API Token API](https://apis.io/apis/dotcms/dotcms-api-token-api/) — API token management and authentication
+- [dotCMS Apps API](https://apis.io/apis/dotcms/dotcms-apps-api/) — Third-party application integration and configuration
+- [dotCMS Authentication API](https://apis.io/apis/dotcms/dotcms-authentication-api/) — The Authentication API from dotCMS — 6 operation(s) for authentication.
+- [dotCMS Browser Tree API](https://apis.io/apis/dotcms/dotcms-browser-tree-api/) — File and folder browser tree operations
+- [dotCMS Bundle API](https://apis.io/apis/dotcms/dotcms-bundle-api/) — Content bundle management and deployment
+- [dotCMS Cache Management API](https://apis.io/apis/dotcms/dotcms-cache-management-api/) — Cache provider management and operations
+- [dotCMS Categories API](https://apis.io/apis/dotcms/dotcms-categories-api/) — Content categorization and taxonomy
+- [dotCMS Cluster Management API](https://apis.io/apis/dotcms/dotcms-cluster-management-api/) — Cluster nodes and distributed system management
+- [dotCMS Containers API](https://apis.io/apis/dotcms/dotcms-containers-api/) — Endpoints for managing Container objects and their content
+- [dotCMS Content Analytics API](https://apis.io/apis/dotcms/dotcms-content-analytics-api/) — Proxy endpoints that forward analytics requests to the dot-ca-event-manager service.
+- [dotCMS Content API](https://apis.io/apis/dotcms/dotcms-content-api/) — Endpoints for managing content and contentlets - the core data objects in dotCMS
+- [dotCMS Content Delivery API](https://apis.io/apis/dotcms/dotcms-content-delivery-api/) — Content retrieval and manipulation endpoints
+- [dotCMS Content Import API](https://apis.io/apis/dotcms/dotcms-content-import-api/) — The Content Import API from dotCMS — 11 operation(s) for content import.
+- [dotCMS Content Report API](https://apis.io/apis/dotcms/dotcms-content-report-api/) — Content reporting and analytics
+- [dotCMS Content Type API](https://apis.io/apis/dotcms/dotcms-content-type-api/) — Content type definitions and schema management
+- [dotCMS Content Type Field API](https://apis.io/apis/dotcms/dotcms-content-type-field-api/) — Content type field definitions and configuration
+- [dotCMS Data Integrity API](https://apis.io/apis/dotcms/dotcms-data-integrity-api/) — Data integrity checking and conflict resolution
+- [dotCMS Dot Auth API](https://apis.io/apis/dotcms/dotcms-dotauth-api/) — OAuth/OIDC and SAML authentication: per-site configuration (SYSTEM_HOST is the global default) and headless OIDC token exchange
+- [dotCMS Elasticsearch Content Search API](https://apis.io/apis/dotcms/dotcms-elasticsearch-content-search-api/) — Backend Elasticsearch search endpoints for portlet context
+- [dotCMS Environment API](https://apis.io/apis/dotcms/dotcms-environment-api/) — Publishing environment management and configuration
+- [dotCMS Experiment API](https://apis.io/apis/dotcms/dotcms-experiment-api/) — The Experiment API from dotCMS — 15 operation(s) for experiment.
+- [dotCMS File Assets API](https://apis.io/apis/dotcms/dotcms-file-assets-api/) — File asset management and download operations
+- [dotCMS Folders API](https://apis.io/apis/dotcms/dotcms-folders-api/) — Endpoints for managing folder structure and organization
+- [dotCMS Forms API](https://apis.io/apis/dotcms/dotcms-forms-api/) — Form management and processing
+- [dotCMS Get Pages Content Types API](https://apis.io/apis/dotcms/dotcms-getpagescontenttypes-api/) — Returns the content types valid for a page based on the container/types on the layout
+- [dotCMS Health API](https://apis.io/apis/dotcms/dotcms-health-api/) — Health management and monitoring endpoints for administrative dashboards
+- [dotCMS Internationalization API](https://apis.io/apis/dotcms/dotcms-internationalization-api/) — Language management and localization
+- [dotCMS Java Script API](https://apis.io/apis/dotcms/dotcms-javascript-api/) — JavaScript execution and server-side scripting
+- [dotCMS Job Queue API](https://apis.io/apis/dotcms/dotcms-job-queue-api/) — Endpoints for managing background jobs and job queues
+- [dotCMS Language API](https://apis.io/apis/dotcms/dotcms-language-api/) — Language configuration and management
+- [dotCMS Layout API](https://apis.io/apis/dotcms/dotcms-layout-api/) — The Layout API from dotCMS — 1 operation(s) for layout.
+- [dotCMS License API](https://apis.io/apis/dotcms/dotcms-license-api/) — License management and validation
+- [dotCMS Maintenance API](https://apis.io/apis/dotcms/dotcms-maintenance-api/) — System maintenance and administration operations
+- [dotCMS Navigation API](https://apis.io/apis/dotcms/dotcms-navigation-api/) — Site navigation tree endpoints
+- [dotCMS Notifications API](https://apis.io/apis/dotcms/dotcms-notifications-api/) — User notifications and alerts management
+- [dotCMS OSGi Plugins API](https://apis.io/apis/dotcms/dotcms-osgi-plugins-api/) — OSGi plugin management and dynamic deployment
+- [dotCMS Page API](https://apis.io/apis/dotcms/dotcms-page-api/) — Page rendering, layout management, and content operations
+- [dotCMS Permissions API](https://apis.io/apis/dotcms/dotcms-permissions-api/) — Permission management and access control
+- [dotCMS Personalization API](https://apis.io/apis/dotcms/dotcms-personalization-api/) — Content personalization and persona management
+- [dotCMS Personas API](https://apis.io/apis/dotcms/dotcms-personas-api/) — Content persona management and targeting
+- [dotCMS Portlets API](https://apis.io/apis/dotcms/dotcms-portlets-api/) — Portlet management and administration
+- [dotCMS Publishing API](https://apis.io/apis/dotcms/dotcms-publishing-api/) — Push publishing job management endpoints
+- [dotCMS Relationships API](https://apis.io/apis/dotcms/dotcms-relationships-api/) — Content relationship management
+- [dotCMS Roles API](https://apis.io/apis/dotcms/dotcms-roles-api/) — User role and permission management
+- [dotCMS Rules Engine API](https://apis.io/apis/dotcms/dotcms-rules-engine-api/) — Business rules and conditional logic management
+- [dotCMS SAML Authentication API](https://apis.io/apis/dotcms/dotcms-saml-authentication-api/) — SAML SSO authentication and integration
+- [dotCMS Search Index API](https://apis.io/apis/dotcms/dotcms-search-index-api/) — Elasticsearch index management and operations
+- [dotCMS Site API](https://apis.io/apis/dotcms/dotcms-site-api/) — Site management, lifecycle, and configuration endpoints
+- [dotCMS System API](https://apis.io/apis/dotcms/dotcms-system-api/) — System-level operations and Redis management
+- [dotCMS System Configuration API](https://apis.io/apis/dotcms/dotcms-system-configuration-api/) — System configuration and company settings
+- [dotCMS System Logging API](https://apis.io/apis/dotcms/dotcms-system-logging-api/) — System logging configuration and management
+- [dotCMS System Monitoring API](https://apis.io/apis/dotcms/dotcms-system-monitoring-api/) — System monitoring and health checks
+- [dotCMS System Storage API](https://apis.io/apis/dotcms/dotcms-system-storage-api/) — Storage providers and data replication management
+- [dotCMS Tag (v1) API](https://apis.io/apis/dotcms/dotcms-tag-v1-api/) — Legacy tag management endpoints (deprecated - use v2 TagResource instead)
+- [dotCMS Tags API](https://apis.io/apis/dotcms/dotcms-tags-api/) — Content tagging and labeling
+- [dotCMS Tail Log API](https://apis.io/apis/dotcms/dotcms-taillog-api/) — Server log file monitoring and real-time viewing
+- [dotCMS Template API](https://apis.io/apis/dotcms/dotcms-template-api/) — Template CRUD, publish, archive, and layout management endpoints
+- [dotCMS Templates API](https://apis.io/apis/dotcms/dotcms-templates-api/) — Template design and management
+- [dotCMS Temporary Files API](https://apis.io/apis/dotcms/dotcms-temporary-files-api/) — Temporary file upload and management for content creation
+- [dotCMS Test Resource API](https://apis.io/apis/dotcms/dotcms-testresource-api/) — The TestResource API from dotCMS — 2 operation(s) for testresource.
+- [dotCMS Theme API](https://apis.io/apis/dotcms/dotcms-theme-api/) — Theme browsing and management
+- [dotCMS Usage API](https://apis.io/apis/dotcms/dotcms-usage-api/) — Provides business intelligence metrics for dashboard usage
+- [dotCMS Users API](https://apis.io/apis/dotcms/dotcms-users-api/) — User account management and administration
+- [dotCMS Variants API](https://apis.io/apis/dotcms/dotcms-variants-api/) — Endpoints for managing content variants
+- [dotCMS Web Assets API](https://apis.io/apis/dotcms/dotcms-web-assets-api/) — Web asset management and operations
+- [dotCMS Widgets API](https://apis.io/apis/dotcms/dotcms-widgets-api/) — Widget development and rendering
+- [dotCMS Workflow API](https://apis.io/apis/dotcms/dotcms-workflow-api/) — Endpoints that perform operations related to workflows.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-01-08
-- **Modified:** 2026-09-06
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### dotCMS REST API
+Event-driven and webhook contracts.
 
-Every dotCMS instance serves its own first-party OpenAPI 3.0.1 document at `/api/openapi.json` — **592 paths, 754 operations, 606 component schemas, 71 tags**, covering content and content types, workflow, search, publishing, sites, folders, templates, containers, roles, permissions, experiments, jobs and dotAI. The copy in `openapi/` was harvested verbatim from dotCMS's own demo instance.
+- [Dotcms Event Surface](https://apis.io/asyncapis/dotcms/dotcms-event-surface/)
 
-- **Human URL:** [https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis](https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis)
-- **Base URL:** `https://demo.dotcms.com/api`
-- **Spec source:** `https://demo.dotcms.com/api/openapi.json` (HTTP 200, harvested 2026-09-06)
+#### GraphQL (1)
 
-#### Properties
+GraphQL schemas.
 
-- [OpenAPI](openapi/dotcms-rest-api-openapi.json) — [OpenAPI 3.0.1](https://spec.openapis.org/oas/latest.html)
-- [Documentation](https://dev.dotcms.com/docs/build/apis/api-basics/rest-apis)
-- [API Reference](https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground)
-- [Developer Portal](https://dev.dotcms.com/)
-- [Overlay](overlays/dotcms-rest-api-overlay.yaml)
-- [Error Catalog](errors/dotcms-problem-types.yml)
-- [Data Model](data-model/dotcms-data-model.yml)
-- [Conventions](conventions/dotcms-conventions.yml)
+- [dotCMS GraphQL API](https://apis.io/graphqls/dotcms/dotcms-graphql/)
 
-### dotCMS GraphQL API
+#### MCP servers (1)
 
-A single endpoint for querying content across all content types. The endpoint answers anonymously on the demo instance, but `__schema` introspection is disabled server-side, so no SDL could be captured and none was fabricated.
+Model Context Protocol servers that expose the API to agents.
 
-- **Human URL:** [https://dev.dotcms.com/docs/graphql](https://dev.dotcms.com/docs/graphql)
-- **Base URL:** `https://demo.dotcms.com/api/v1/graphql`
+- [dotcms](https://apis.io/servers/dotcms/dotcms/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://dev.dotcms.com/docs/graphql)
-- [GraphQL](graphql/dotcms-graphql.md)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-## Agent surface
+- [Dotcms Agentic Access](https://apis.io/agentic-access/dotcms/dotcms-agentic-access/)
 
-dotCMS ships an early and unusually complete agent surface, all of it first-party:
+#### Collections (8)
 
-- **MCP server** — `@dotcms/mcp-server` (stdio), source in `dotCMS/core`, documented at [dev.dotcms.com/docs/mcp-server](https://dev.dotcms.com/docs/mcp-server). Four tools, two of which are sandboxes over the whole REST spec. See `mcp/`.
-- **Agent Skills** — two provider-authored skills published at [dotCMS/agent-toolkit](https://github.com/dotCMS/agent-toolkit) (MIT), mirrored verbatim in `skills/`.
-- **RFC 9727 API catalog** — served at [`/.well-known/api-catalog`](https://www.dotcms.com/.well-known/api-catalog) as `application/linkset+json`, declaring markdown content negotiation across the site.
-- **RFC 9116 security.txt** — served at [`/.well-known/security.txt`](https://www.dotcms.com/.well-known/security.txt).
-- **llms.txt** — published at [dev.dotcms.com/llms.txt](https://dev.dotcms.com/llms.txt).
+Postman and Open Collection request collections.
 
-## Compliance
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-authentication-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-content-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-navigation-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-search-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-sites-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-users-api/)
+- [Moved to /providers/dotcms/](https://apis.io/collections/dotcms/open-dotcms-workflow-api/)
 
-ISO/IEC 27001:2022 · ISO/IEC 42001:2023 (AI management) · SOC 2 Type II · TX-RAMP Level II · CSA CAIQ — trust center at [security.dotcms.com](https://security.dotcms.com/).
+#### Overlays (73)
 
-## Common Properties
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- [GitHub Organization](https://github.com/dotCMS)
-- [LinkedIn](https://www.linkedin.com/company/dotcms)
-- [llms.txt](llms/dotcms-llms.txt)
-- [Packages / SDKs](packages/dotcms-packages.yml)
-- [CLI](cli/dotcms-cli.yml)
-- [Components](components/dotcms-components.yml)
-- [Well-Known](well-known/dotcms-well-known.yml)
-- [MCP Server](mcp/dotcms-mcp.yml)
-- [Tool Crosswalk](mcp/dotcms-tool-crosswalk.yml)
-- [Agent Skills](skills/_index.yml)
-- [Conformance](conformance/dotcms-conformance.yml)
-- [Compliance](https://www.dotcms.com/product/security-compliance)
-- [Trust Center](security/dotcms-trust-center.yml)
-- [Security / Responsible Disclosure](https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/responsible-disclosure-policy)
-- [Lifecycle](lifecycle/dotcms-lifecycle.yml)
-- [Changelog](changelog/dotcms-changelog.yml)
-- [Sandbox](sandbox/dotcms-sandbox.yml)
-- [Webhooks / Event surface](asyncapi/dotcms-event-surface.yml)
-- [Plans](plans/dotcms-plans-pricing.yml)
-- [Rate Limits](rate-limits/dotcms-rate-limits.yml)
-- [Roadmap](https://www.dotcms.com/roadmap)
+- [Dotcms Accessibility Agent Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-accessibility-agent-api-phrasing-overlay/)
+- [Dotcms Accessibility Checker Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-accessibility-checker-api-phrasing-overlay/)
+- [Dotcms Administration Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-administration-api-phrasing-overlay/)
+- [Dotcms Ai Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-ai-api-phrasing-overlay/)
+- [Dotcms Announcements Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-announcements-api-phrasing-overlay/)
+- [Dotcms Api Token Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-api-token-api-phrasing-overlay/)
+- [Dotcms Apps Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-apps-api-phrasing-overlay/)
+- [Dotcms Authentication Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-authentication-api-phrasing-overlay/)
+- [Dotcms Browser Tree Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-browser-tree-api-phrasing-overlay/)
+- [Dotcms Bundle Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-bundle-api-phrasing-overlay/)
+- [Dotcms Cache Management Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-cache-management-api-phrasing-overlay/)
+- [Dotcms Categories Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-categories-api-phrasing-overlay/)
+- [Dotcms Cluster Management Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-cluster-management-api-phrasing-overlay/)
+- [Dotcms Containers Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-containers-api-phrasing-overlay/)
+- [Dotcms Content Analytics Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-analytics-api-phrasing-overlay/)
+- [Dotcms Content Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-api-phrasing-overlay/)
+- [Dotcms Content Delivery Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-delivery-api-phrasing-overlay/)
+- [Dotcms Content Import Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-import-api-phrasing-overlay/)
+- [Dotcms Content Report Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-report-api-phrasing-overlay/)
+- [Dotcms Content Type Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-type-api-phrasing-overlay/)
+- [Dotcms Content Type Field Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-content-type-field-api-phrasing-overlay/)
+- [Dotcms Data Integrity Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-data-integrity-api-phrasing-overlay/)
+- [Dotcms Dotauth Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-dotauth-api-phrasing-overlay/)
+- [Dotcms Elasticsearch Content Search Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-elasticsearch-content-search-api-phrasing-overlay/)
+- [Dotcms Environment Api Phrasing Overlay](https://apis.io/overlays/dotcms/dotcms-environment-api-phrasing-overlay/)
+- …and 48 more published on APIs.io
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Dotcms Authentication](https://apis.io/security/dotcms/dotcms-authentication/)
+- [Dotcms Domain Security](https://apis.io/security/dotcms/dotcms-domain-security/)
+- [Dotcms Trust Center](https://apis.io/security/dotcms/dotcms-trust-center/)
+- [Dotcms Vulnerability Disclosure](https://apis.io/security/dotcms/dotcms-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Dotcms Plans Pricing](https://apis.io/plans/dotcms/dotcms-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Dotcms Rate Limits](https://apis.io/rate-limits/dotcms/dotcms-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Dotcms Finops](https://apis.io/finops/dotcms/dotcms-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.dotcms.com/)
+- [Documentation](https://dev.dotcms.com/docs)
+- [Getting started](https://dev.dotcms.com/getting-started)
+- [API reference](https://dev.dotcms.com/docs/build/apis/rest-apis/api-playground)
 - [Pricing](https://www.dotcms.com/pricing)
 - [Support](https://community.dotcms.com/)
+- [Blog](https://www.dotcms.com/blog)
+- [Security](https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/responsible-disclosure-policy)
+- [Compliance](https://www.dotcms.com/product/security-compliance)
+- [Terms of service](https://www.dotcms.com/bsl)
+- [Privacy policy](https://dev.dotcms.com/docs/manage/access-and-security/security-and-privacy/privacy-policy)
+- [GitHub](https://github.com/dotCMS)
 
-## Superseded artifacts
+## API Evangelist rating
 
-`openapi/_superseded/` and `collections/_superseded/` hold the documentation-derived scaffold specs (19 paths) and the collections generated from them, retired on 2026-09-06 when the real 754-operation contract was harvested. They are kept for audit; nothing points at them. See the README in each directory.
+**Kin Score 70.9** — exemplar · rubric 0.25.0 · scored 2026-10-23
 
-## Maintainers
+| Facet | Score |
+|---|---|
+| Discoverability | 81.7 |
+| Contract quality | 46.2 |
+| Contract governance | 18.2 |
+| Operational transparency | 50.0 |
+| Developer ergonomics | 85.7 |
+| Access clarity | 78.9 |
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Agent readiness 45.2** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | yes |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 35.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/dotcms/](https://apis.io/providers/dotcms/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for dotCMS: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/dotcms/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
