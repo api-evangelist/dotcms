@@ -1,0 +1,256 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: dotCMS
+providerId: dotcms
+created: '2026-05-04'
+modified: '2026-09-06'
+generated: '2026-09-06'
+method: searched
+source: https://www.dotcms.com/pricing
+tags:
+  - CMS
+  - Content
+  - Content Management
+description: >-
+  dotCMS publishes four named tiers with real, comparable capacity numbers — monthly request
+  quotas, monthly bandwidth, environment topology and an uptime target per tier — but publishes
+  NO prices. Every tier's call to action is "Request Pricing", and the add-on table shows
+  relative cost as `$` / `$$` placeholders rather than figures. So this is the uncommon middle
+  case: not a "contact us" black box, and not a transparent price list. The quotas below are read
+  verbatim from the pricing comparison table on 2026-09-06; the price fields are recorded as
+  `not-published` rather than guessed. dotCMS states the pricing basis itself: "Pricing is based
+  on your scale (typically number of sites or content types)."
+plan_count: 4
+prices_published: false
+pricing_basis: >-
+  Scale — typically number of sites or content types. Deployment is customer-chosen (SaaS, on
+  premise, or managed service) and dotCMS advertises "no artificial limits, no surprise costs".
+plans:
+  - id: dotcms-starter
+    name: Starter
+    type: paid
+    price: not-published
+    cta: https://www.dotcms.com/demo-request
+    description: >-
+      "For teams managing a few digital experiences who need a flexible, low-overhead CMS to get
+      started quickly." Supports a small number of sites and simple content models.
+    entries:
+      - label: API Requests
+        name: api_requests
+        type: quota
+        metric: requests
+        limit: 100000
+        timeFrame: month
+        unit: 1
+        price: not-published
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: bytes
+        limit: 1
+        limitUnit: TB
+        timeFrame: month
+        price: not-published
+    elements:
+      - name: Unlimited users and roles
+      - name: Dev + production environments
+      - name: 'SLA: 99.5%'
+      - name: dotAI core (included)
+      - name: 'Support: Basic'
+  - id: dotcms-professional
+    name: Professional
+    type: paid
+    price: not-published
+    cta: https://www.dotcms.com/demo-request
+    description: >-
+      "For growing teams that need more control, integrations, and reliability as they scale
+      across multiple sites." Supports multiple sites and growing content complexity.
+    entries:
+      - label: API Requests
+        name: api_requests
+        type: quota
+        metric: requests
+        limit: 500000
+        timeFrame: month
+        unit: 1
+        price: not-published
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: bytes
+        limit: 5
+        limitUnit: TB
+        timeFrame: month
+        price: not-published
+    elements:
+      - name: High-availability production
+      - name: Built-in CDN, WAF, and IDP support
+      - name: 'SLA: 99.9%'
+      - name: 'Environments: Dev, Auth, HA Production (99.9%)'
+      - name: dotCDN (included)
+      - name: Web Application Firewall (included)
+      - name: dotAI core (included)
+      - name: 'Support: Performance'
+  - id: dotcms-business
+    name: Business
+    type: paid
+    recommended: true
+    price: not-published
+    cta: https://www.dotcms.com/demo-request
+    description: >-
+      "For organizations managing multiple brands or regions that need scale, governance, and
+      performance without complexity." Supports a larger number of sites and more complex content
+      models.
+    entries:
+      - label: API Requests
+        name: api_requests
+        type: quota
+        metric: requests
+        limit: 2000000
+        timeFrame: month
+        unit: 1
+        price: not-published
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: bytes
+        limit: 15
+        limitUnit: TB
+        timeFrame: month
+        price: not-published
+    elements:
+      - name: Advanced workflows, permissions, and governance
+      - name: High-performance delivery with CDN and edge support
+      - name: 'SLA: 99.9%'
+      - name: 'Environments: Dev, HA Auth (99.9%), HA Production (99.9%)'
+      - name: IDP support (included)
+      - name: dotCDN (included)
+      - name: Web Application Firewall (included)
+      - name: 'Support: Performance'
+  - id: dotcms-enterprise
+    name: Enterprise
+    type: enterprise
+    price: not-published
+    cta: https://www.dotcms.com/demo-request
+    description: >-
+      "For enterprises running complex, multi-site ecosystems with strict performance, security,
+      and compliance requirements." Supports large-scale, multi-site and multi-brand
+      architectures.
+    entries:
+      - label: API Requests
+        name: api_requests
+        type: quota
+        metric: requests
+        limit: 10000000
+        timeFrame: month
+        unit: 1
+        price: not-published
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: bytes
+        limit: 50
+        limitUnit: TB
+        timeFrame: month
+        price: not-published
+    elements:
+      - name: Full environment flexibility
+      - name: Enterprise-grade security and access control
+      - name: Custom infrastructure, scaling, and support options
+      - name: 'SLA: 99.9%'
+      - name: Multi-Region Resiliency (custom)
+      - name: 'Support: Custom'
+add_ons:
+  note: >-
+    dotCMS lists thirteen add-ons on the comparison table with their unit of sale but with prices
+    shown only as relative `$` / `$$` markers. Units of sale are recorded because they are real
+    and useful; the amounts are not published.
+  items:
+    - name: Custom CDN
+      unit: annual
+      available_from: Professional
+    - name: SSO / SAML Support
+      unit: annual
+      available_from: Professional
+    - name: Multi-Region Resiliency
+      unit: custom
+      available_from: Professional
+    - name: Content Analytics and Experiments
+      unit: annual
+      status: beta
+      note: Currently beta with a stated future cost.
+    - name: Dev environment
+      unit: environment
+      available_from: Professional
+    - name: Auth environment
+      unit: environment
+      available_from: Professional
+    - name: HA Auth environment
+      unit: environment
+      available_from: Professional
+    - name: Prod environment
+      unit: environment
+      available_from: Business
+    - name: Content Types
+      unit: per 10 content types
+    - name: Sites
+      unit: per site
+    - name: Requests
+      unit: per 1,000,000 requests annually
+    - name: Bandwidth
+      unit: per 0.5 TB annually
+    - name: Storage
+      unit: per 1 TB annually
+deployment_models:
+  - SaaS (dotCMS Cloud)
+  - On premise
+  - Managed service
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - free
+  units:
+  - data
+  - request
+  plans:
+  - name: Starter
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - data
+    - request
+    periods:
+    - month
+  - name: Professional
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - data
+    - request
+    periods:
+    - month
+  - name: Business
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - data
+    - request
+    periods:
+    - month
+  - name: Enterprise
+    access: enterprise
+    model: free
+    model_how: derived
+    units:
+    - data
+    - request
+    periods:
+    - month
